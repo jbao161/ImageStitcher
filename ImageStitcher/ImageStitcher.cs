@@ -101,7 +101,6 @@ namespace ImageStitcher
 
                         form.StartPosition = FormStartPosition.CenterScreen;
                         form.ClientSize = stitchedimage.Size;
-
                         PictureBox pb = new PictureBox();
                         pb.Dock = DockStyle.Fill;
                         pb.Image = stitchedimage;
@@ -121,7 +120,7 @@ namespace ImageStitcher
             if (!(stitchedimage is null)) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image   
-                    saveFileDialog1.Filter = "JPeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
+                    saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
                     saveFileDialog1.Title = "Save an Image File";
                     saveFileDialog1.FileName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";
                     saveFileDialog1.RestoreDirectory = true;
