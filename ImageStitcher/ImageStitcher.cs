@@ -14,13 +14,10 @@ namespace ImageStitcher
     {
 
         private bool debugflag = true;
-        private System.Windows.Forms.PictureBox this_picturebox;
         private void debug(string message)
         {
             if (debugflag) Console.WriteLine(message);
         }
-        int imgleft_height, imgleft_width, imgright_height, imgright_width, result_height, result_width = 0, splitter_position, panel_height, panel_width, leftpicturebox_width, rightpicturebox_width;
-        float imgsize_ratio, splittersize_ratio;
 
         public MainWindow()
         {
@@ -42,10 +39,9 @@ namespace ImageStitcher
         private void pictureBox_DragDrop(object sender, DragEventArgs e)
         {
             string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            this_picturebox = ((System.Windows.Forms.PictureBox)sender);
             try
             {
-                this_picturebox.Image = Bitmap.FromFile(s[0]);
+                ((System.Windows.Forms.PictureBox)sender).Image = Bitmap.FromFile(s[0]);
             }
             catch (OutOfMemoryException ex)
             {
@@ -54,12 +50,20 @@ namespace ImageStitcher
             }
             // resize the splitcontainer
             // * get the image dimensions and compare with splitcontainer dimensions
-            if (debugflag) Console.WriteLine("Image dimensions: {0} height and {1} width", this_picturebox.Image.Height, this_picturebox.Image.Width);
-
+            if(!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
+            {
+                int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
+                int stitched_leftimg_width = (int) (pictureBox_leftpanel.Image.Width * min_height / (double) pictureBox_leftpanel.Image.Height);
+                int stitched_rightimg_width = (int) (pictureBox_rightpanel.Image.Width * min_height / (double) pictureBox_rightpanel.Image.Height);
+                int result_width = stitched_leftimg_width + stitched_rightimg_width;
+                this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Width * stitched_leftimg_width / result_width;
+            }
         }
 
         private Bitmap stitch_images()
         {
+            int imgleft_height, imgleft_width, imgright_height, imgright_width, result_height, result_width = 0;
+            double imgsize_ratio;
 
             if ((pictureBox_leftpanel.Image is null) || (pictureBox_rightpanel.Image is null))
             {
@@ -74,30 +78,26 @@ namespace ImageStitcher
                 imgright_height = pictureBox_rightpanel.Image.Height;
                 imgright_width = pictureBox_rightpanel.Image.Width;
                 result_height = Math.Min(imgleft_height, imgright_height);
-
+                Image stitched_leftimg = pictureBox_leftpanel.Image;
+                Image stitched_rightimg = pictureBox_rightpanel.Image;
                 if (imgleft_height > result_height)
                 {
-                    this_picturebox = pictureBox_leftpanel;
-                    imgsize_ratio = (float)result_height / (float)imgleft_height;
-                    this_picturebox.Image = new Bitmap(this_picturebox.Image,
+                    imgsize_ratio = (double)result_height / (double)imgleft_height;
+                    stitched_leftimg = new Bitmap(pictureBox_leftpanel.Image,
                     (int)(imgleft_width * imgsize_ratio), result_height);
-                    imgleft_width = this_picturebox.Image.Width;
-
                 }
                 else
                 {
-                    this_picturebox = pictureBox_rightpanel;
-                    imgsize_ratio = (float)result_height / (float)imgright_height;
-                    this_picturebox.Image = new Bitmap(this_picturebox.Image,
+                    imgsize_ratio = (double)result_height / (double)imgright_height;
+                    stitched_rightimg = new Bitmap(pictureBox_rightpanel.Image,
                     (int)(imgright_width * imgsize_ratio), result_height);
-                    imgright_width = this_picturebox.Image.Width;
                 }
-                result_width = imgleft_width + imgright_width;
+                result_width = stitched_leftimg.Width + stitched_rightimg.Width;
                 Bitmap stitchedimage = new Bitmap(result_width, result_height);
                 using (Graphics g = Graphics.FromImage(stitchedimage))
                 {
-                    g.DrawImage(pictureBox_leftpanel.Image, 0, 0);
-                    g.DrawImage(pictureBox_rightpanel.Image, imgleft_width, 0);
+                    g.DrawImage(stitched_leftimg, 0, 0);
+                    g.DrawImage(stitched_rightimg, stitched_leftimg.Width, 0);
                 }
                 return stitchedimage;
             }
