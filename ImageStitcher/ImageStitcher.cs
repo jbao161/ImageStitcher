@@ -50,11 +50,11 @@ namespace ImageStitcher
             }
             // resize the splitcontainer
             // * get the image dimensions and compare with splitcontainer dimensions
-            if(!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
+            if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
             {
                 int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
-                int stitched_leftimg_width = (int) (pictureBox_leftpanel.Image.Width * min_height / (double) pictureBox_leftpanel.Image.Height);
-                int stitched_rightimg_width = (int) (pictureBox_rightpanel.Image.Width * min_height / (double) pictureBox_rightpanel.Image.Height);
+                int stitched_leftimg_width = (int)(pictureBox_leftpanel.Image.Width * min_height / (double)pictureBox_leftpanel.Image.Height);
+                int stitched_rightimg_width = (int)(pictureBox_rightpanel.Image.Width * min_height / (double)pictureBox_rightpanel.Image.Height);
                 int result_width = stitched_leftimg_width + stitched_rightimg_width;
                 this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Width * stitched_leftimg_width / result_width;
             }
@@ -62,8 +62,6 @@ namespace ImageStitcher
 
         private Bitmap stitch_images()
         {
-            int imgleft_height, imgleft_width, imgright_height, imgright_width, result_height, result_width = 0;
-            double imgsize_ratio;
 
             if ((pictureBox_leftpanel.Image is null) || (pictureBox_rightpanel.Image is null))
             {
@@ -73,27 +71,18 @@ namespace ImageStitcher
             else
             {
                 // resize the taller image to the height of the smaller image
-                imgleft_height = pictureBox_leftpanel.Image.Height;
-                imgleft_width = pictureBox_leftpanel.Image.Width;
-                imgright_height = pictureBox_rightpanel.Image.Height;
-                imgright_width = pictureBox_rightpanel.Image.Width;
-                result_height = Math.Min(imgleft_height, imgright_height);
-                Image stitched_leftimg = pictureBox_leftpanel.Image;
-                Image stitched_rightimg = pictureBox_rightpanel.Image;
-                if (imgleft_height > result_height)
-                {
-                    imgsize_ratio = (double)result_height / (double)imgleft_height;
-                    stitched_leftimg = new Bitmap(pictureBox_leftpanel.Image,
-                    (int)(imgleft_width * imgsize_ratio), result_height);
-                }
-                else
-                {
-                    imgsize_ratio = (double)result_height / (double)imgright_height;
-                    stitched_rightimg = new Bitmap(pictureBox_rightpanel.Image,
-                    (int)(imgright_width * imgsize_ratio), result_height);
-                }
+                int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
+                int stitched_leftimg_width = (int)(min_height * pictureBox_leftpanel.Image.Width / (double)pictureBox_leftpanel.Image.Height);
+                int stitched_rightimg_width = (int)(min_height * pictureBox_rightpanel.Image.Width / (double)pictureBox_rightpanel.Image.Height);
+                int result_width = stitched_leftimg_width + stitched_rightimg_width;
+
+                Bitmap stitched_leftimg = new Bitmap(pictureBox_leftpanel.Image,
+                    stitched_leftimg_width, min_height);
+                Bitmap stitched_rightimg = new Bitmap(pictureBox_rightpanel.Image,
+                    stitched_rightimg_width, min_height);
+
                 result_width = stitched_leftimg.Width + stitched_rightimg.Width;
-                Bitmap stitchedimage = new Bitmap(result_width, result_height);
+                Bitmap stitchedimage = new Bitmap(result_width, min_height);
                 using (Graphics g = Graphics.FromImage(stitchedimage))
                 {
                     g.DrawImage(stitched_leftimg, 0, 0);
