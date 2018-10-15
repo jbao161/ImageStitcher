@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ImageStitcher
 {
+
     public partial class MainWindow : Form
     {
 
@@ -18,6 +14,31 @@ namespace ImageStitcher
         {
             if (debugflag) Console.WriteLine(message);
         }
+        /* Section 1 : Find a control at mouse location
+         * this is to find the picture being right clicked on when we get the copy paste context menu
+         * code stolen from https://stackoverflow.com/a/16543294
+        */
+        public static Control FindControlAtPoint(Control container, Point pos)
+        {
+            Control child;
+            foreach (Control c in container.Controls)
+            {
+                if (c.Visible && c.Bounds.Contains(pos))
+                {
+                    child = FindControlAtPoint(c, new Point(pos.X - c.Left, pos.Y - c.Top));
+                    if (child == null) return c;
+                    else return child;
+                }
+            }
+            return null;
+        }
+        public static Control FindControlAtCursor(Form form)
+        {
+            Point pos = Cursor.Position;
+            if (form.Bounds.Contains(pos))
+                return FindControlAtPoint(form, form.PointToClient(pos));
+            return null;
+        } // end Section 1
 
         public MainWindow()
         {
@@ -35,7 +56,10 @@ namespace ImageStitcher
             else
                 e.Effect = DragDropEffects.None;
         }
-
+        /*
+         * Drag and drop 
+         * picture files from Windows explorer onto the panel to load the image
+         */
         private void pictureBox_DragDrop(object sender, DragEventArgs e)
         {
             string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
@@ -48,8 +72,17 @@ namespace ImageStitcher
                 Console.WriteLine("File is not a valid image: {0}. \n {1}", s[0], ex);
                 return;
             }
-            // resize the splitcontainer
-            // * get the image dimensions and compare with splitcontainer dimensions
+            resize_imagepanels();
+        }
+        /* automatically resize the image
+        * concept: calculate the height and width of each image when they are stitched together
+        * (scale the taller image to the height of the shorter image, and keep aspect ratio)
+        * now you know the proportional width the left image takes up in the total stitched width
+        * multiply this proportion by the width of the viewing window and you get the width the left picture
+        * should take up. Put a divider there and the two images in 'Zoom' display will be of same height
+        */
+        private void resize_imagepanels()
+        {
             if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
             {
                 int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
@@ -59,10 +92,10 @@ namespace ImageStitcher
                 this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Width * stitched_leftimg_width / result_width;
             }
         }
-
+        /*  Create a new image by stitching the two panel images together
+         */
         private Bitmap stitch_images()
         {
-
             if ((pictureBox_leftpanel.Image is null) || (pictureBox_rightpanel.Image is null))
             {
                 debug("error. don't have both images loaded");
@@ -70,7 +103,7 @@ namespace ImageStitcher
             }
             else
             {
-                // resize the taller image to the height of the smaller image
+                // scale the taller image to the height of the shorter image, and keep aspect ratio
                 int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
                 int stitched_leftimg_width = (int)(min_height * pictureBox_leftpanel.Image.Width / (double)pictureBox_leftpanel.Image.Height);
                 int stitched_rightimg_width = (int)(min_height * pictureBox_rightpanel.Image.Width / (double)pictureBox_rightpanel.Image.Height);
@@ -91,6 +124,8 @@ namespace ImageStitcher
                 return stitchedimage;
             }
         }
+        /*  Open the stitched image in a viewing window
+         */
         private void button_preview_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = stitch_images();
@@ -114,6 +149,9 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
+        /*  Save the stiched image to a new file
+         *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
+         */
         private void button_save_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = stitch_images();
@@ -122,7 +160,7 @@ namespace ImageStitcher
                     // Displays a SaveFileDialog so the user can save the Image   
                     saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
                     saveFileDialog1.Title = "Save an Image File";
-                    saveFileDialog1.FileName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";
+                    saveFileDialog1.FileName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";                     // feature 1: timestamp
                     saveFileDialog1.RestoreDirectory = true;
                     saveFileDialog1.ShowDialog();
 
@@ -165,7 +203,68 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
-    }
+        /*  Section 2: Button controls to clear the picture panels
+         */
+        private void button_releaseright_Click(object sender, EventArgs e)
+        {
+            pictureBox_rightpanel.Image = null;
+        }
+
+        private void button_releaseleft_Click(object sender, EventArgs e)
+        {
+            pictureBox_leftpanel.Image = null;
+        } // end section 2
+
+        /* Section 3: Context menu for copy and paste
+         */
+        // open a copy paste menu at right click mouse location
+        private void control_MouseClick_copypastemenu(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                Point mPointWhenClicked = new Point(e.X, e.Y);
+                contextMenu_image.Show((Control)sender, e.X, e.Y);
+            }
+        }
+        // copy image to clipboard from panel 
+        private void contextMenu_image_item_copy_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (!(thispicturebox.Image is null))
+            {
+                DataObject dobj = new DataObject();
+                dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
+                Clipboard.SetDataObject(dobj, true);
+            }
+        }
+        // paste image to panel from file or clipboard 
+        private void contextMenu_image_item_paste_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (Clipboard.ContainsImage())
+            {
+                object o = Clipboard.GetImage();
+                if (o != null)
+                {
+                    thispicturebox.Image = (Image)o;
+                }
+            }
+            if (Clipboard.GetDataObject().GetDataPresent("FileDrop"))
+            {
+                string[] s = (string[])Clipboard.GetDataObject().GetData(DataFormats.FileDrop, false);
+                try
+                {
+                    thispicturebox.Image = Bitmap.FromFile(s[0]);
+                }
+                catch (OutOfMemoryException ex)
+                {
+                    Console.WriteLine("File is not a valid image: {0}. \n {1}", s[0], ex);
+                    return;
+                }
+            }
+            resize_imagepanels();
+        } // end section 3
+    } // end MainWindow : Form
 }
 
 

@@ -28,14 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel_bothimages = new System.Windows.Forms.Panel();
             this.splitContainer_bothimages = new System.Windows.Forms.SplitContainer();
             this.pictureBox_leftpanel = new System.Windows.Forms.PictureBox();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.button_releaseleft = new System.Windows.Forms.Button();
+            this.button_releaseright = new System.Windows.Forms.Button();
             this.button_preview = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenu_image_item_copy = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -44,6 +50,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_leftpanel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_rightpanel)).BeginInit();
             this.panel_controls.SuspendLayout();
+            this.contextMenu_image.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel_bothimages
@@ -54,7 +61,7 @@
             this.panel_bothimages.Controls.Add(this.splitContainer_bothimages);
             this.panel_bothimages.Location = new System.Drawing.Point(0, 0);
             this.panel_bothimages.Name = "panel_bothimages";
-            this.panel_bothimages.Size = new System.Drawing.Size(784, 433);
+            this.panel_bothimages.Size = new System.Drawing.Size(454, 433);
             this.panel_bothimages.TabIndex = 0;
             // 
             // splitContainer_bothimages
@@ -70,8 +77,8 @@
             // splitContainer_bothimages.Panel2
             // 
             this.splitContainer_bothimages.Panel2.Controls.Add(this.pictureBox_rightpanel);
-            this.splitContainer_bothimages.Size = new System.Drawing.Size(784, 433);
-            this.splitContainer_bothimages.SplitterDistance = 278;
+            this.splitContainer_bothimages.Size = new System.Drawing.Size(454, 433);
+            this.splitContainer_bothimages.SplitterDistance = 160;
             this.splitContainer_bothimages.SplitterWidth = 10;
             this.splitContainer_bothimages.TabIndex = 0;
             // 
@@ -81,12 +88,13 @@
             this.pictureBox_leftpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_leftpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_leftpanel.Name = "pictureBox_leftpanel";
-            this.pictureBox_leftpanel.Size = new System.Drawing.Size(278, 433);
+            this.pictureBox_leftpanel.Size = new System.Drawing.Size(160, 433);
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
             this.pictureBox_leftpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox_leftpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
+            this.pictureBox_leftpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
             // 
             // pictureBox_rightpanel
             // 
@@ -94,27 +102,52 @@
             this.pictureBox_rightpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_rightpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_rightpanel.Name = "pictureBox_rightpanel";
-            this.pictureBox_rightpanel.Size = new System.Drawing.Size(496, 433);
+            this.pictureBox_rightpanel.Size = new System.Drawing.Size(284, 433);
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
             this.pictureBox_rightpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox_rightpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
+            this.pictureBox_rightpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.button_releaseleft);
+            this.panel_controls.Controls.Add(this.button_releaseright);
             this.panel_controls.Controls.Add(this.button_preview);
             this.panel_controls.Controls.Add(this.button_save);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_controls.Location = new System.Drawing.Point(0, 439);
             this.panel_controls.Name = "panel_controls";
-            this.panel_controls.Size = new System.Drawing.Size(784, 122);
+            this.panel_controls.Size = new System.Drawing.Size(454, 122);
             this.panel_controls.TabIndex = 1;
+            // 
+            // button_releaseleft
+            // 
+            this.button_releaseleft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.button_releaseleft.Location = new System.Drawing.Point(0, 0);
+            this.button_releaseleft.Name = "button_releaseleft";
+            this.button_releaseleft.Size = new System.Drawing.Size(75, 122);
+            this.button_releaseleft.TabIndex = 4;
+            this.button_releaseleft.Text = "<- Release";
+            this.button_releaseleft.UseVisualStyleBackColor = true;
+            this.button_releaseleft.Click += new System.EventHandler(this.button_releaseleft_Click);
+            // 
+            // button_releaseright
+            // 
+            this.button_releaseright.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_releaseright.Location = new System.Drawing.Point(79, 0);
+            this.button_releaseright.Name = "button_releaseright";
+            this.button_releaseright.Size = new System.Drawing.Size(66, 122);
+            this.button_releaseright.TabIndex = 3;
+            this.button_releaseright.Text = "Release ->";
+            this.button_releaseright.UseVisualStyleBackColor = true;
+            this.button_releaseright.Click += new System.EventHandler(this.button_releaseright_Click);
             // 
             // button_preview
             // 
             this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_preview.Location = new System.Drawing.Point(475, 0);
+            this.button_preview.Location = new System.Drawing.Point(145, 0);
             this.button_preview.Name = "button_preview";
             this.button_preview.Size = new System.Drawing.Size(159, 122);
             this.button_preview.TabIndex = 2;
@@ -125,7 +158,7 @@
             // button_save
             // 
             this.button_save.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_save.Location = new System.Drawing.Point(634, 0);
+            this.button_save.Location = new System.Drawing.Point(304, 0);
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(150, 122);
             this.button_save.TabIndex = 0;
@@ -133,14 +166,36 @@
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
+            // contextMenu_image
+            // 
+            this.contextMenu_image.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenu_image_item_copy,
+            this.contextMenu_image_item_paste});
+            this.contextMenu_image.Name = "contextMenuStrip1";
+            this.contextMenu_image.Size = new System.Drawing.Size(103, 48);
+            // 
+            // contextMenu_image_item_copy
+            // 
+            this.contextMenu_image_item_copy.Name = "contextMenu_image_item_copy";
+            this.contextMenu_image_item_copy.Size = new System.Drawing.Size(102, 22);
+            this.contextMenu_image_item_copy.Text = "Copy";
+            this.contextMenu_image_item_copy.Click += new System.EventHandler(this.contextMenu_image_item_copy_Click);
+            // 
+            // contextMenu_image_item_paste
+            // 
+            this.contextMenu_image_item_paste.Name = "contextMenu_image_item_paste";
+            this.contextMenu_image_item_paste.Size = new System.Drawing.Size(102, 22);
+            this.contextMenu_image_item_paste.Text = "Paste";
+            this.contextMenu_image_item_paste.Click += new System.EventHandler(this.contextMenu_image_item_paste_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 561);
+            this.ClientSize = new System.Drawing.Size(454, 561);
             this.Controls.Add(this.panel_controls);
             this.Controls.Add(this.panel_bothimages);
-            this.MinimumSize = new System.Drawing.Size(400, 300);
+            this.MinimumSize = new System.Drawing.Size(470, 450);
             this.Name = "MainWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Image Stitcher";
@@ -153,6 +208,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_leftpanel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_rightpanel)).EndInit();
             this.panel_controls.ResumeLayout(false);
+            this.contextMenu_image.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -167,6 +223,11 @@
         private System.Windows.Forms.Button button_preview;
         private System.Windows.Forms.Button button_save;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.Button button_releaseright;
+        private System.Windows.Forms.Button button_releaseleft;
+        private System.Windows.Forms.ContextMenuStrip contextMenu_image;
+        private System.Windows.Forms.ToolStripMenuItem contextMenu_image_item_copy;
+        private System.Windows.Forms.ToolStripMenuItem contextMenu_image_item_paste;
     }
 }
 
