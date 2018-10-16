@@ -169,7 +169,7 @@ namespace ImageStitcher
                            (System.IO.FileStream)saveFileDialog1.OpenFile();
                         // Saves the Image in the appropriate ImageFormat based upon the  
                         // File type selected in the dialog box.  
-                        // NOTE that the FilterIndex property is one-based.  
+                        // NOTE that the FilterIndex property is one-based.
                         switch (saveFileDialog1.FilterIndex)
                         {
                             case 1:
