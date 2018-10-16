@@ -162,10 +162,7 @@ namespace ImageStitcher
                     saveFileDialog1.Title = "Save an Image File";
                     saveFileDialog1.FileName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";                     // feature 1: timestamp
                     saveFileDialog1.RestoreDirectory = true;
-                    saveFileDialog1.ShowDialog();
-
-                    // If the file name is not an empty string open it for saving.  
-                    if (saveFileDialog1.FileName != "")
+                    if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
                         // Saves the Image via a FileStream created by the OpenFile method.  
                         System.IO.FileStream fs =
