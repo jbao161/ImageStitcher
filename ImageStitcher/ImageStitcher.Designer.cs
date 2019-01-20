@@ -44,6 +44,7 @@
             this.contextMenu_image_item_copy = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_swapimages = new System.Windows.Forms.Button();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -114,6 +115,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.button_swapimages);
             this.panel_controls.Controls.Add(this.button_verticalhorizontal);
             this.panel_controls.Controls.Add(this.button_releaseleft);
             this.panel_controls.Controls.Add(this.button_releaseright);
@@ -127,9 +129,10 @@
             // 
             // button_verticalhorizontal
             // 
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(234, 25);
+            this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(376, 0);
             this.button_verticalhorizontal.Name = "button_verticalhorizontal";
-            this.button_verticalhorizontal.Size = new System.Drawing.Size(133, 73);
+            this.button_verticalhorizontal.Size = new System.Drawing.Size(133, 122);
             this.button_verticalhorizontal.TabIndex = 5;
             this.button_verticalhorizontal.Text = "Stack images vertically";
             this.button_verticalhorizontal.UseVisualStyleBackColor = true;
@@ -186,7 +189,7 @@
             this.contextMenu_image_item_paste,
             this.clearToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(181, 92);
+            this.contextMenu_image.Size = new System.Drawing.Size(103, 70);
             // 
             // contextMenu_image_item_copy
             // 
@@ -205,9 +208,20 @@
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
+            // button_swapimages
+            // 
+            this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_swapimages.Location = new System.Drawing.Point(240, 0);
+            this.button_swapimages.Name = "button_swapimages";
+            this.button_swapimages.Size = new System.Drawing.Size(136, 122);
+            this.button_swapimages.TabIndex = 6;
+            this.button_swapimages.Text = "Swap Images";
+            this.button_swapimages.UseVisualStyleBackColor = true;
+            this.button_swapimages.Click += new System.EventHandler(this.button_swapimages_Click);
             // 
             // MainWindow
             // 
@@ -251,6 +265,7 @@
         private System.Windows.Forms.ToolStripMenuItem contextMenu_image_item_paste;
         private System.Windows.Forms.Button button_verticalhorizontal;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.Button button_swapimages;
     }
 }
 

@@ -241,8 +241,17 @@ namespace ImageStitcher
                         Console.WriteLine("{0}", ex);
                     }
             }
-        /*  Section 2: Contexte menu strip controls to clear the picture panels
+        /*  Section 2: Button controls to clear the picture panels
          */
+        private void button_releaseright_Click(object sender, EventArgs e)
+        {
+            pictureBox_rightpanel.Image = null;
+        }
+
+        private void button_releaseleft_Click(object sender, EventArgs e)
+        {
+            pictureBox_leftpanel.Image = null;
+        }
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Try to cast the sender to a ToolStripItem
@@ -253,16 +262,16 @@ namespace ImageStitcher
                 ContextMenuStrip owner = menuItem.Owner as ContextMenuStrip;
                 if (owner != null)
                 {
-                    // Get the control that is displaying this context menu
-                    ((PictureBox)owner.SourceControl).Image = null;
+                   // Get the control that is displaying this context menu
+                   ((PictureBox) owner.SourceControl).Image = null;
                 }
             }
         }// end section 2
 
-        /* Section 3: Context menu for copy and paste
-         */
-        // open a copy paste menu at right click mouse location
-        private void control_MouseClick_copypastemenu(object sender, MouseEventArgs e)
+            /* Section 3: Context menu for copy and paste
+             */
+            // open a copy paste menu at right click mouse location
+            private void control_MouseClick_copypastemenu(object sender, MouseEventArgs e)
             {
                 if (e.Button == MouseButtons.Right)
                 {
@@ -328,7 +337,14 @@ namespace ImageStitcher
             resize_imagepanels();
         }
 
-       
+        private void button_swapimages_Click(object sender, EventArgs e)
+        {
+            Bitmap image_tempswap = (pictureBox_leftpanel.Image == null ? null : new Bitmap(pictureBox_leftpanel.Image));
+            pictureBox_leftpanel.Image = (pictureBox_rightpanel.Image==null? null : new Bitmap (pictureBox_rightpanel.Image));
+            pictureBox_rightpanel.Image = image_tempswap;
+            resize_imagepanels();
+        }
+    
     } // end MainWindow : Form
 }
 
