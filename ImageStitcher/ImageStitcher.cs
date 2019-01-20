@@ -65,11 +65,11 @@ namespace ImageStitcher
             string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             try
             {
+                // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
                 using (var bmpTemp = new Bitmap(s[0]))
                 {
                     ((System.Windows.Forms.PictureBox)sender).Image = new Bitmap(bmpTemp);
                 }
-
             }
             catch (OutOfMemoryException ex)
             {
