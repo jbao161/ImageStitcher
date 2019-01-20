@@ -34,6 +34,7 @@
             this.pictureBox_leftpanel = new System.Windows.Forms.PictureBox();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.button_verticalhorizontal = new System.Windows.Forms.Button();
             this.button_releaseleft = new System.Windows.Forms.Button();
             this.button_releaseright = new System.Windows.Forms.Button();
             this.button_preview = new System.Windows.Forms.Button();
@@ -42,6 +43,7 @@
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenu_image_item_copy = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -112,6 +114,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.button_verticalhorizontal);
             this.panel_controls.Controls.Add(this.button_releaseleft);
             this.panel_controls.Controls.Add(this.button_releaseright);
             this.panel_controls.Controls.Add(this.button_preview);
@@ -122,6 +125,16 @@
             this.panel_controls.Size = new System.Drawing.Size(884, 122);
             this.panel_controls.TabIndex = 1;
             // 
+            // button_verticalhorizontal
+            // 
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(234, 25);
+            this.button_verticalhorizontal.Name = "button_verticalhorizontal";
+            this.button_verticalhorizontal.Size = new System.Drawing.Size(133, 73);
+            this.button_verticalhorizontal.TabIndex = 5;
+            this.button_verticalhorizontal.Text = "Stack images vertically";
+            this.button_verticalhorizontal.UseVisualStyleBackColor = true;
+            this.button_verticalhorizontal.Click += new System.EventHandler(this.button_verticalhorizontal_Click);
+            // 
             // button_releaseleft
             // 
             this.button_releaseleft.Dock = System.Windows.Forms.DockStyle.Left;
@@ -129,7 +142,7 @@
             this.button_releaseleft.Name = "button_releaseleft";
             this.button_releaseleft.Size = new System.Drawing.Size(75, 122);
             this.button_releaseleft.TabIndex = 4;
-            this.button_releaseleft.Text = "<- Release";
+            this.button_releaseleft.Text = "<- Clear Image";
             this.button_releaseleft.UseVisualStyleBackColor = true;
             this.button_releaseleft.Click += new System.EventHandler(this.button_releaseleft_Click);
             // 
@@ -140,7 +153,7 @@
             this.button_releaseright.Name = "button_releaseright";
             this.button_releaseright.Size = new System.Drawing.Size(66, 122);
             this.button_releaseright.TabIndex = 3;
-            this.button_releaseright.Text = "Release ->";
+            this.button_releaseright.Text = "Clear Image ->";
             this.button_releaseright.UseVisualStyleBackColor = true;
             this.button_releaseright.Click += new System.EventHandler(this.button_releaseright_Click);
             // 
@@ -170,9 +183,10 @@
             // 
             this.contextMenu_image.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextMenu_image_item_copy,
-            this.contextMenu_image_item_paste});
+            this.contextMenu_image_item_paste,
+            this.clearToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(103, 48);
+            this.contextMenu_image.Size = new System.Drawing.Size(181, 92);
             // 
             // contextMenu_image_item_copy
             // 
@@ -187,6 +201,13 @@
             this.contextMenu_image_item_paste.Size = new System.Drawing.Size(102, 22);
             this.contextMenu_image_item_paste.Text = "Paste";
             this.contextMenu_image_item_paste.Click += new System.EventHandler(this.contextMenu_image_item_paste_Click);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -228,6 +249,8 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu_image;
         private System.Windows.Forms.ToolStripMenuItem contextMenu_image_item_copy;
         private System.Windows.Forms.ToolStripMenuItem contextMenu_image_item_paste;
+        private System.Windows.Forms.Button button_verticalhorizontal;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
     }
 }
 
