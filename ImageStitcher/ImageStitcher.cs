@@ -1,6 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ImageStitcher
@@ -238,6 +241,17 @@ namespace ImageStitcher
                         }
 
                         fs.Close();
+                    } // if dialog OK
+                    // Opens Fle Directory if checkbox enabled
+                    if (checkBox_openaftersave.Checked)
+                    {
+                        string args = string.Format("/e, /select, \"{0}\"", System.IO.Path.GetFullPath(saveFileDialog1.FileName));
+
+                        ProcessStartInfo info = new ProcessStartInfo();
+                        info.FileName = "explorer";
+                        info.Arguments = args;
+                        Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
+                        Process.Start(info);
                     }
                 }
                 catch (Exception ex)
@@ -351,7 +365,6 @@ namespace ImageStitcher
             pictureBox_rightpanel.Image = image_tempswap;
             resize_imagepanels();
         }
-
     } // end MainWindow : Form
 }
 
