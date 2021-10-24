@@ -35,18 +35,18 @@
             this.pictureBox_leftpanel = new System.Windows.Forms.PictureBox();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
-            this.checkBox_openaftersave = new System.Windows.Forms.CheckBox();
-            this.button_swapimages = new System.Windows.Forms.Button();
-            this.button_releaseleft = new System.Windows.Forms.Button();
+            this.button_verticalhorizontal = new System.Windows.Forms.Button();
             this.button_releaseright = new System.Windows.Forms.Button();
+            this.checkBox_openaftersave = new System.Windows.Forms.CheckBox();
             this.button_preview = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
+            this.button_swapimages = new System.Windows.Forms.Button();
+            this.button_releaseleft = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenu_image_item_copy = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button_verticalhorizontal = new System.Windows.Forms.Button();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -97,6 +97,7 @@
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
+            this.pictureBox_leftpanel.Click += new System.EventHandler(this.PanelFocus_Left);
             this.pictureBox_leftpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox_leftpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
             this.pictureBox_leftpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
@@ -111,6 +112,7 @@
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
+            this.pictureBox_rightpanel.Click += new System.EventHandler(this.PanelFocus_Right);
             this.pictureBox_rightpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox_rightpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
             this.pictureBox_rightpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
@@ -131,44 +133,17 @@
             this.panel_controls.Size = new System.Drawing.Size(978, 75);
             this.panel_controls.TabIndex = 7;
             // 
-            // checkBox_openaftersave
+            // button_verticalhorizontal
             // 
-            this.checkBox_openaftersave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkBox_openaftersave.AutoSize = true;
-            this.checkBox_openaftersave.Checked = true;
-            this.checkBox_openaftersave.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_openaftersave.Location = new System.Drawing.Point(839, 55);
-            this.checkBox_openaftersave.Name = "checkBox_openaftersave";
-            this.checkBox_openaftersave.Size = new System.Drawing.Size(136, 17);
-            this.checkBox_openaftersave.TabIndex = 7;
-            this.checkBox_openaftersave.Text = "Open Folder after Save";
-            this.checkBox_openaftersave.UseVisualStyleBackColor = true;
-            // 
-            // button_swapimages
-            // 
-            this.button_swapimages.AutoSize = true;
-            this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button_swapimages.Location = new System.Drawing.Point(85, 0);
-            this.button_swapimages.Name = "button_swapimages";
-            this.button_swapimages.Size = new System.Drawing.Size(81, 75);
-            this.button_swapimages.TabIndex = 5;
-            this.button_swapimages.Text = "Swap Images";
-            this.button_swapimages.UseVisualStyleBackColor = true;
-            this.button_swapimages.Click += new System.EventHandler(this.button_swapimages_Click);
-            // 
-            // button_releaseleft
-            // 
-            this.button_releaseleft.AutoSize = true;
-            this.button_releaseleft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_releaseleft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button_releaseleft.Location = new System.Drawing.Point(0, 0);
-            this.button_releaseleft.Name = "button_releaseleft";
-            this.button_releaseleft.Size = new System.Drawing.Size(85, 75);
-            this.button_releaseleft.TabIndex = 3;
-            this.button_releaseleft.Text = "<- Clear Image";
-            this.button_releaseleft.UseVisualStyleBackColor = true;
-            this.button_releaseleft.Click += new System.EventHandler(this.button_releaseleft_Click);
+            this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(166, 0);
+            this.button_verticalhorizontal.Name = "button_verticalhorizontal";
+            this.button_verticalhorizontal.Size = new System.Drawing.Size(522, 75);
+            this.button_verticalhorizontal.TabIndex = 4;
+            this.button_verticalhorizontal.Text = "Stack images vertically";
+            this.button_verticalhorizontal.UseVisualStyleBackColor = true;
+            this.button_verticalhorizontal.Click += new System.EventHandler(this.button_verticalhorizontal_Click);
             // 
             // button_releaseright
             // 
@@ -181,6 +156,19 @@
             this.button_releaseright.Text = "Clear Image ->";
             this.button_releaseright.UseVisualStyleBackColor = true;
             this.button_releaseright.Click += new System.EventHandler(this.button_releaseright_Click);
+            // 
+            // checkBox_openaftersave
+            // 
+            this.checkBox_openaftersave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBox_openaftersave.AutoSize = true;
+            this.checkBox_openaftersave.Checked = true;
+            this.checkBox_openaftersave.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_openaftersave.Location = new System.Drawing.Point(839, 55);
+            this.checkBox_openaftersave.Name = "checkBox_openaftersave";
+            this.checkBox_openaftersave.Size = new System.Drawing.Size(136, 17);
+            this.checkBox_openaftersave.TabIndex = 7;
+            this.checkBox_openaftersave.Text = "Open Folder after Save";
+            this.checkBox_openaftersave.UseVisualStyleBackColor = true;
             // 
             // button_preview
             // 
@@ -208,6 +196,32 @@
             this.button_save.Text = "Save";
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
+            // 
+            // button_swapimages
+            // 
+            this.button_swapimages.AutoSize = true;
+            this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Left;
+            this.button_swapimages.Location = new System.Drawing.Point(85, 0);
+            this.button_swapimages.Name = "button_swapimages";
+            this.button_swapimages.Size = new System.Drawing.Size(81, 75);
+            this.button_swapimages.TabIndex = 5;
+            this.button_swapimages.Text = "Swap Images";
+            this.button_swapimages.UseVisualStyleBackColor = true;
+            this.button_swapimages.Click += new System.EventHandler(this.button_swapimages_Click);
+            // 
+            // button_releaseleft
+            // 
+            this.button_releaseleft.AutoSize = true;
+            this.button_releaseleft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_releaseleft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.button_releaseleft.Location = new System.Drawing.Point(0, 0);
+            this.button_releaseleft.Name = "button_releaseleft";
+            this.button_releaseleft.Size = new System.Drawing.Size(85, 75);
+            this.button_releaseleft.TabIndex = 3;
+            this.button_releaseleft.Text = "<- Clear Image";
+            this.button_releaseleft.UseVisualStyleBackColor = true;
+            this.button_releaseleft.Click += new System.EventHandler(this.button_releaseleft_Click);
             // 
             // contextMenu_image
             // 
@@ -238,18 +252,6 @@
             this.clearToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
-            // 
-            // button_verticalhorizontal
-            // 
-            this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(166, 0);
-            this.button_verticalhorizontal.Name = "button_verticalhorizontal";
-            this.button_verticalhorizontal.Size = new System.Drawing.Size(522, 75);
-            this.button_verticalhorizontal.TabIndex = 4;
-            this.button_verticalhorizontal.Text = "Stack images vertically";
-            this.button_verticalhorizontal.UseVisualStyleBackColor = true;
-            this.button_verticalhorizontal.Click += new System.EventHandler(this.button_verticalhorizontal_Click);
             // 
             // MainWindow
             // 

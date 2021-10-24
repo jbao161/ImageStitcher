@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -13,6 +14,7 @@ namespace ImageStitcher
     {
 
         private bool debugflag = true;
+        private static int panelfocus = 1;
         private void debug(string message)
         {
             if (debugflag) Console.WriteLine(message);
@@ -55,7 +57,9 @@ namespace ImageStitcher
         private void pictureBox_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
                 e.Effect = DragDropEffects.All;
+            }
             else
                 e.Effect = DragDropEffects.None;
         }
@@ -73,6 +77,9 @@ namespace ImageStitcher
                 {
                     ((System.Windows.Forms.PictureBox)sender).Image = new Bitmap(bmpTemp);
                 }
+                if (sender == pictureBox_leftpanel) panelfocus = 0;
+                if (sender == pictureBox_rightpanel) panelfocus = 1;
+                imagePaths[panelfocus] = s[0];
             }
             catch (OutOfMemoryException ex)
             {
@@ -341,14 +348,74 @@ namespace ImageStitcher
 
         /*  Section 4: Keyboard arrows change image to next file in folder
         */
-        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        //{
-        //    if (keyData == (Keys.Right))
-        //    {
-        //        return true;
-        //    }
-        //    return base.ProcessCmdKey(ref msg, keyData);
-        //}
+        private void PanelFocus_Left(object sender, EventArgs e)
+        {
+            panelfocus=0;
+        }
+        private void PanelFocus_Right(object sender, EventArgs e)
+        {
+            panelfocus = 1;
+        }
+
+        // Local field to store the files enumerator;
+        static IEnumerator<string> filesEnumerator;
+        static string[] imagePaths = new string[2];
+
+        // You can wrap the calls to MoveNext, and Current property in a simple wrapper method..
+        // Can also add your error handling here.
+        public static string GetNextFile()
+        {
+            
+            // You would want to make this call, at appropriate time in your code.
+            filesEnumerator = Directory.EnumerateFiles(imagePaths[panelfocus]).GetEnumerator();
+
+            if (filesEnumerator != null && filesEnumerator.MoveNext())
+            {
+                return filesEnumerator.Current;
+            }
+
+            // You can choose to throw exception if you like..
+            // How you handle things like this, is up to you.
+            return null;
+        }
+
+        // Call GetNextFile() whenever you user clicks the next button on your UI.
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((panelfocus==1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Right))
+            {
+                //do something
+                MessageBox.Show(imagePaths[panelfocus]);
+                MessageBox.Show("right key pressed on right panel");
+                return true;
+            }
+            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Left))
+            {
+                //do something
+                MessageBox.Show(imagePaths[panelfocus]);
+                MessageBox.Show("left key pressed on right panel");
+                return true;
+            }
+            if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.Right))
+            {
+                MessageBox.Show(imagePaths[panelfocus]);
+                MessageBox.Show("right key pressed on left panel");
+                return true;
+            }
+            if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.Left))
+            {
+                //do something
+                MessageBox.Show(imagePaths[panelfocus]);
+                MessageBox.Show("left key pressed on left panel");
+                return true;
+            }
+            else
+            {
+                return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
         /*  Section 5: Toggle top/bottom or side/side stitching
         */
         private void button_verticalhorizontal_Click(object sender, EventArgs e)
