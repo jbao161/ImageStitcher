@@ -369,18 +369,6 @@ namespace ImageStitcher
                 {
                     thispicturebox.Image = (Image)o;
                 }
-                if (thispicturebox == pictureBox_rightpanel)
-                {
-                    pictureBox_rightpanel.Image = null;
-                    imageFilesRightPanel = null;
-                    imageIndexRightPanel = 0;
-                }
-                if (thispicturebox == pictureBox_leftpanel)
-                {
-                    pictureBox_leftpanel.Image = null;
-                    imageFilesLeftPanel = null;
-                    imageIndexLeftPanel = 0;
-                }
             }
             if (Clipboard.GetDataObject().GetDataPresent("FileDrop"))
             {
