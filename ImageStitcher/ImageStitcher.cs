@@ -90,28 +90,24 @@ namespace ImageStitcher
                 if (sender == pictureBox_leftpanel)
                 {
                     panelfocus = 0;
-                    imagePaths[panelfocus] = s[0];
 
                     imageFilesLeftPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]));
+                    imageCountLeftPanel = imageFilesLeftPanel.Count();
                     for (int i = 0; i < imageFilesLeftPanel.Count; i++)
                     {
                         if (imageFilesLeftPanel[i] == s[0]) imageIndexLeftPanel = i;
                     }
-                    filesEnumeratorLeft = Directory.EnumerateFiles(Path.GetDirectoryName(imagePaths[panelfocus])).GetEnumerator();
-                    while (filesEnumeratorLeft.Current != s[0]) { filesEnumeratorLeft.MoveNext(); } // warning: possibility of infinite loop
                 }
                 if (sender == pictureBox_rightpanel)
                 {
                     panelfocus = 1;
-                    imagePaths[panelfocus] = s[0];
 
                     imageFilesRightPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]));
+                    imageCountRightPanel = imageFilesRightPanel.Count();
                     for (int i = 0; i < imageFilesRightPanel.Count; i++)
                     {
                         if (imageFilesRightPanel[i] == s[0]) imageIndexRightPanel = i;
                     }
-                    filesEnumeratorRight = Directory.EnumerateFiles(Path.GetDirectoryName(imagePaths[panelfocus])).GetEnumerator();
-                    while (filesEnumeratorRight.Current != s[0]) { filesEnumeratorRight.MoveNext(); } // warning: possibility of infinite loop
                 }
             }
             catch (OutOfMemoryException ex)
@@ -398,28 +394,24 @@ namespace ImageStitcher
                     if (thispicturebox == pictureBox_leftpanel)
                     {
                         panelfocus = 0;
-                        imagePaths[panelfocus] = s[0];
 
                         imageFilesLeftPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]));
-                        for (int i = 0; i < imageFilesLeftPanel.Count; i++)
+                        imageCountLeftPanel = imageFilesLeftPanel.Count();
+                        for (int i = 0; i < imageCountLeftPanel; i++)
                         {
                             if (imageFilesLeftPanel[i] == s[0]) imageIndexLeftPanel = i;
                         }
-                        filesEnumeratorLeft = Directory.EnumerateFiles(Path.GetDirectoryName(imagePaths[panelfocus])).GetEnumerator();
-                        while (filesEnumeratorLeft.Current != s[0]) { filesEnumeratorLeft.MoveNext(); } // warning: possibility of infinite loop
                     }
                     if (thispicturebox == pictureBox_rightpanel)
                     {
                         panelfocus = 1;
-                        imagePaths[panelfocus] = s[0];
 
                         imageFilesRightPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]));
-                        for (int i = 0; i < imageFilesRightPanel.Count; i++)
+                        imageCountRightPanel = imageFilesRightPanel.Count();
+                        for (int i = 0; i < imageCountRightPanel; i++)
                         {
                             if (imageFilesRightPanel[i] == s[0]) imageIndexRightPanel = i;
                         }
-                        filesEnumeratorRight = Directory.EnumerateFiles(Path.GetDirectoryName(imagePaths[panelfocus])).GetEnumerator();
-                        while (filesEnumeratorRight.Current != s[0]) { filesEnumeratorRight.MoveNext(); } // warning: possibility of infinite loop
                     }
                 }
                 catch (OutOfMemoryException ex)
@@ -445,14 +437,13 @@ namespace ImageStitcher
         }
 
         // Local field to store the files enumerator;
-        private static IEnumerator<string> filesEnumeratorLeft;
 
-        private static IEnumerator<string> filesEnumeratorRight;
         private static List<string> imageFilesLeftPanel;
         private static List<string> imageFilesRightPanel;
         private static int imageIndexLeftPanel = 0;
         private static int imageIndexRightPanel = 0;
-        private static string[] imagePaths = new string[2];
+        private static int imageCountLeftPanel = 0;
+        private static int imageCountRightPanel = 0;
 
         // You can wrap the calls to MoveNext, and Current property in a simple wrapper method..
         // Can also add your error handling here.
@@ -465,15 +456,15 @@ namespace ImageStitcher
 
         // Call GetNextFile() whenever you user clicks the next button on your UI.
 
-        private static List<string> EnumerateImageFiles(string directory)
+        private static List<string> EnumerateImageFiles(string folderPath)
         {
             // https://stackoverflow.com/questions/7039580/multiple-file-extensions-searchpattern-for-system-io-directory-getfiles
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".gif", ".png", ".tiff", ".exif", ".bmp" };
-            Directory.EnumerateFiles(Path.GetDirectoryName(imagePaths[panelfocus])).GetEnumerator();
             var filteredFiles = Directory
-            .EnumerateFiles(directory) //<--- .NET 4.5
+            .EnumerateFiles(folderPath) //<--- .NET 4.5
             .Where(file => allowedExtensions.Any(file.ToLower().EndsWith))
             .ToList();
+            filteredFiles.Sort();
             return filteredFiles;
         }
 
@@ -484,7 +475,7 @@ namespace ImageStitcher
                 if (imageFilesRightPanel != null)
                 {
                     int nextImageIndex = imageIndexRightPanel + 1;
-                    if (nextImageIndex >= imageFilesRightPanel.Count) nextImageIndex = 0;
+                    if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
                     imageIndexRightPanel = nextImageIndex;
                     using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
                     {
@@ -499,7 +490,7 @@ namespace ImageStitcher
                 if (imageFilesRightPanel != null)
                 {
                     int nextImageIndex = imageIndexRightPanel - 1;
-                    if (nextImageIndex < 0) nextImageIndex = imageFilesRightPanel.Count - 1;
+                    if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
                     imageIndexRightPanel = nextImageIndex;
                     using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
                     {
@@ -514,7 +505,7 @@ namespace ImageStitcher
                 if (imageFilesLeftPanel != null)
                 {
                     int nextImageIndex = imageIndexLeftPanel + 1;
-                    if (nextImageIndex >= imageFilesLeftPanel.Count) nextImageIndex = 0;
+                    if (nextImageIndex >= imageCountLeftPanel) nextImageIndex = 0;
                     imageIndexLeftPanel = nextImageIndex;
                     using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
                     {
@@ -529,7 +520,7 @@ namespace ImageStitcher
                 if (imageFilesLeftPanel != null)
                 {
                     int nextImageIndex = imageIndexLeftPanel - 1;
-                    if (nextImageIndex < 0) nextImageIndex = imageFilesLeftPanel.Count - 1;
+                    if (nextImageIndex < 0) nextImageIndex = imageCountLeftPanel - 1;
                     imageIndexLeftPanel = nextImageIndex;
                     using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
                     {
@@ -561,6 +552,15 @@ namespace ImageStitcher
             pictureBox_leftpanel.Image = (pictureBox_rightpanel.Image == null ? null : new Bitmap(pictureBox_rightpanel.Image));
             pictureBox_rightpanel.Image = image_tempswap;
             resize_imagepanels();
+            var tmp1 = imageFilesLeftPanel;
+            imageFilesLeftPanel = imageFilesRightPanel;
+            imageFilesRightPanel = tmp1;
+            var tmp2 = imageIndexLeftPanel;
+            imageIndexLeftPanel = imageIndexRightPanel;
+            imageIndexRightPanel = tmp2;
+            var tmp3 = imageCountLeftPanel;
+            imageCountLeftPanel = imageCountRightPanel;
+            imageCountRightPanel = tmp3;
         }
     } // end MainWindow : Form
 }
