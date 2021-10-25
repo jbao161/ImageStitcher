@@ -470,6 +470,7 @@ namespace ImageStitcher
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            // left and right arrow keys for changing image
             if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Right))
             {
                 if (imageFilesRightPanel != null)
@@ -530,6 +531,21 @@ namespace ImageStitcher
                 resize_imagepanels();
                 return true;
             }
+            // R hotkey for rotations
+            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.R))
+            {
+                Image img = pictureBox_rightpanel.Image;
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                pictureBox_rightpanel.Image = img;
+                return true;
+            }
+            if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.R))
+            {
+                Image img = pictureBox_leftpanel.Image;
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                pictureBox_leftpanel.Image = img;
+                return true;
+            }
             else
             {
                 return base.ProcessCmdKey(ref msg, keyData);
@@ -561,6 +577,17 @@ namespace ImageStitcher
             var tmp3 = imageCountLeftPanel;
             imageCountLeftPanel = imageCountRightPanel;
             imageCountRightPanel = tmp3;
+        }
+
+        private void rotateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (!(thispicturebox.Image is null))
+            {
+                Image img = thispicturebox.Image;
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                thispicturebox.Image = img;
+            }
         }
     } // end MainWindow : Form
 }
