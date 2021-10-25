@@ -48,6 +48,9 @@
             this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rotateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.previousLeftArrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nextRightArrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -230,9 +233,12 @@
             this.contextMenu_image_item_copy,
             this.contextMenu_image_item_paste,
             this.clearToolStripMenuItem,
-            this.rotateToolStripMenuItem});
+            this.toolStripMenuItem1,
+            this.rotateToolStripMenuItem,
+            this.previousLeftArrowToolStripMenuItem,
+            this.nextRightArrowToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(181, 114);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 164);
             // 
             // contextMenu_image_item_copy
             // 
@@ -258,9 +264,28 @@
             // rotateToolStripMenuItem
             // 
             this.rotateToolStripMenuItem.Name = "rotateToolStripMenuItem";
-            this.rotateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.rotateToolStripMenuItem.Text = "Rotate";
+            this.rotateToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.rotateToolStripMenuItem.Text = "Rotate (R)";
             this.rotateToolStripMenuItem.Click += new System.EventHandler(this.rotateToolStripMenuItem_Click);
+            // 
+            // previousLeftArrowToolStripMenuItem
+            // 
+            this.previousLeftArrowToolStripMenuItem.Name = "previousLeftArrowToolStripMenuItem";
+            this.previousLeftArrowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.previousLeftArrowToolStripMenuItem.Text = "Previous (Left Arrow)";
+            this.previousLeftArrowToolStripMenuItem.Click += new System.EventHandler(this.previousLeftArrowToolStripMenuItem_Click);
+            // 
+            // nextRightArrowToolStripMenuItem
+            // 
+            this.nextRightArrowToolStripMenuItem.Name = "nextRightArrowToolStripMenuItem";
+            this.nextRightArrowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.nextRightArrowToolStripMenuItem.Text = "Next (Right Arrow)";
+            this.nextRightArrowToolStripMenuItem.Click += new System.EventHandler(this.nextRightArrowToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(182, 6);
             // 
             // MainWindow
             // 
@@ -309,6 +334,9 @@
         private System.Windows.Forms.CheckBox checkBox_openaftersave;
         private System.Windows.Forms.Button button_verticalhorizontal;
         private System.Windows.Forms.ToolStripMenuItem rotateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem previousLeftArrowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nextRightArrowToolStripMenuItem;
     }
 }
 

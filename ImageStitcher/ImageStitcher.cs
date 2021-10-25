@@ -582,12 +582,79 @@ namespace ImageStitcher
         private void rotateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (thispicturebox is null) return;
             if (!(thispicturebox.Image is null))
             {
                 Image img = thispicturebox.Image;
                 img.RotateFlip(RotateFlipType.Rotate90FlipNone);
                 thispicturebox.Image = img;
             }
+        }
+
+        private void previousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (thispicturebox == pictureBox_rightpanel && pictureBox_rightpanel.Image != null)
+            {
+                if (imageFilesRightPanel != null)
+                {
+                    int nextImageIndex = imageIndexRightPanel - 1;
+                    if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
+                    imageIndexRightPanel = nextImageIndex;
+                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
+                    {
+                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
+                    }
+                }
+                resize_imagepanels();
+            }
+
+            if (thispicturebox == pictureBox_leftpanel && pictureBox_leftpanel.Image != null)
+            {
+                if (imageFilesLeftPanel != null)
+                {
+                    int nextImageIndex = imageIndexLeftPanel - 1;
+                    if (nextImageIndex < 0) nextImageIndex = imageCountLeftPanel - 1;
+                    imageIndexLeftPanel = nextImageIndex;
+                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
+                    {
+                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
+                    }
+                }
+                resize_imagepanels();
+            }
+        }
+
+        private void nextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (thispicturebox == pictureBox_rightpanel && pictureBox_rightpanel.Image != null)
+            {
+                if (imageFilesRightPanel != null)
+                {
+                    int nextImageIndex = imageIndexRightPanel + 1;
+                    if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
+                    imageIndexRightPanel = nextImageIndex;
+                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
+                    {
+                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
+                    }
+                }
+            }
+            if (thispicturebox == pictureBox_leftpanel && pictureBox_leftpanel.Image != null)
+            {
+                if (imageFilesLeftPanel != null)
+                {
+                    int nextImageIndex = imageIndexLeftPanel + 1;
+                    if (nextImageIndex >= imageCountLeftPanel) nextImageIndex = 0;
+                    imageIndexLeftPanel = nextImageIndex;
+                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
+                    {
+                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
+                    }
+                }
+            }
+            resize_imagepanels();
         }
     } // end MainWindow : Form
 }
