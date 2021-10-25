@@ -2,6 +2,8 @@
 Joins two images side by side. Drag and Drop two image files from Windows onto the panels. 
 Program automatically shrinks the taller image, keeping aspect ratio. Save stitched image to new file.
 
+![Alt text](screenshot/imagestitcher1.3.jpg?raw=true "Screenshot 1.3")
+
 v1.3.0
 Change images within a directory using Left/Right arrow keys 
 Rotate with R key
@@ -13,3 +15,4 @@ Remember last save directory and option to open
 
 v1.1.0
 Filename automatically generated using a timestamp prefix
+
