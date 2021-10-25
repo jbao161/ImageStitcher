@@ -155,7 +155,7 @@
             this.button_releaseright.TabIndex = 2;
             this.button_releaseright.Text = "Clear Image ->";
             this.button_releaseright.UseVisualStyleBackColor = true;
-            this.button_releaseright.Click += new System.EventHandler(this.button_releaseright_Click);
+            this.button_releaseright.Click += new System.EventHandler(this.button_ClearRightPanel_Click);
             // 
             // checkBox_openaftersave
             // 
@@ -221,7 +221,7 @@
             this.button_releaseleft.TabIndex = 3;
             this.button_releaseleft.Text = "<- Clear Image";
             this.button_releaseleft.UseVisualStyleBackColor = true;
-            this.button_releaseleft.Click += new System.EventHandler(this.button_releaseleft_Click);
+            this.button_releaseleft.Click += new System.EventHandler(this.button_ClearLeftPanel_Click);
             // 
             // contextMenu_image
             // 
