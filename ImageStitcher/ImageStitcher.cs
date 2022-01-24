@@ -74,18 +74,18 @@ namespace ImageStitcher
          * Drag and drop
          * picture files from Windows explorer onto the panel to load the image
          */
-
+        private static int maxLengthFileList = (int)1.0e9;
         private void pictureBox_DragDrop(object sender, DragEventArgs e)
         {
+            int maxFilesCount = maxLengthFileList;
             string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            try
+            bool isFolder = File.GetAttributes(s[0]).HasFlag(FileAttributes.Directory);
+            bool isImage = allowedImageExtensions.Any(s[0].ToLower().EndsWith);
+            string folderPath = Path.GetDirectoryName(s[0]);
+            if (isFolder) { folderPath = s[0]; }
+            List<string> imageList = null;
+            if (isFolder | isImage)
             {
-                // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
-                using (var bmpTemp = new Bitmap(s[0]))
-                {
-                    ((System.Windows.Forms.PictureBox)sender).Image = new Bitmap(bmpTemp);
-                }
-
                 // set the pseudo-focus on the left or right panel
                 // then enumerate a list of all image files in the same directory as the loaded image
                 // then store the position of the loaded image in that list
@@ -93,26 +93,42 @@ namespace ImageStitcher
                 {
                     panelfocus = 0;
 
-                    imageFilesLeftPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]));
+                    imageFilesLeftPanel = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
                     imageCountLeftPanel = imageFilesLeftPanel.Count();
-                    for (int i = 0; i < imageFilesLeftPanel.Count; i++)
+                    if (imageCountLeftPanel < maxFilesCount) maxFilesCount = imageCountLeftPanel;
+                    for (int i = 0; i < maxFilesCount; i++)
                     {
                         if (imageFilesLeftPanel[i] == s[0]) { imageIndexLeftPanel = i; previmageIndexLeftPanel = imageIndexLeftPanel; }
-                        }
+                    }
+                    imageList = imageFilesLeftPanel;
+                    if (isFolder) { imageIndexLeftPanel = 0; previmageIndexLeftPanel = imageIndexLeftPanel; }
                 }
                 if (sender == pictureBox_rightpanel)
                 {
                     panelfocus = 1;
 
-                    imageFilesRightPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]));
+                    imageFilesRightPanel = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
                     imageCountRightPanel = imageFilesRightPanel.Count();
-                    for (int i = 0; i < imageFilesRightPanel.Count; i++)
+                    if (imageCountRightPanel < maxFilesCount) maxFilesCount = imageCountRightPanel;
+                    for (int i = 0; i < maxFilesCount; i++)
                     {
                         if (imageFilesRightPanel[i] == s[0]) { imageIndexRightPanel = i; previmageIndexRightPanel = imageIndexRightPanel; }
-                        }
+                    }
+                    imageList = imageFilesRightPanel;
+                    if (isFolder) { imageIndexRightPanel = 0; previmageIndexRightPanel = imageIndexRightPanel; }
                 }
             }
-            catch (OutOfMemoryException ex)
+            try
+            {
+                // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
+                string imagepath = s[0];
+                if (isFolder) imagepath = imageList[0];
+                using (var bmpTemp = new Bitmap(imagepath))
+                {
+                    ((System.Windows.Forms.PictureBox)sender).Image = new Bitmap(bmpTemp);
+                }
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine("File is not a valid image: {0}. \n {1}", s[0], ex);
                 return;
@@ -349,7 +365,7 @@ namespace ImageStitcher
             if (e.Button == MouseButtons.Right)
             {
             }
-                if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 Point mPointWhenClicked = new Point(e.X, e.Y);
                 contextMenu_image.Show((Control)sender, e.X, e.Y);
@@ -367,7 +383,18 @@ namespace ImageStitcher
                 Clipboard.SetDataObject(dobj, true);
             }
         }
-
+        //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
+        private static String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif" };
+        public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
+        {
+            List<String> filesFound = new List<String>();
+            var searchOption = isRecursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly;
+            foreach (var filter in filters)
+            {
+                filesFound.AddRange(Directory.GetFiles(searchFolder, String.Format("*.{0}", filter), searchOption));
+            }
+            return filesFound;
+        }
         // paste image to panel from file or clipboard
         private void contextMenu_image_item_paste_Click(object sender, EventArgs e)
         {
@@ -393,7 +420,7 @@ namespace ImageStitcher
                     {
                         panelfocus = 0;
 
-                        imageFilesLeftPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]));
+                        imageFilesLeftPanel = EnumerateImageFiles(Path.GetDirectoryName(s[0]), allowedImageExtensions, false);
                         imageCountLeftPanel = imageFilesLeftPanel.Count();
                         for (int i = 0; i < imageCountLeftPanel; i++)
                         {
