@@ -361,8 +361,9 @@ namespace ImageStitcher
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (thispicturebox == pictureBox_leftpanel) { panelfocus = 0; }
             if (thispicturebox == pictureBox_rightpanel) { panelfocus = 1; }
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Left)
             {
+                RandomToolStripMenuItem_Click(sender, e);
             }
             if (e.Button == MouseButtons.Right)
             {
@@ -783,6 +784,54 @@ namespace ImageStitcher
                     {
                         pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
                     }
+                }
+                catch (Exception) { throw; }
+            }
+        }
+        //https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
+        private static readonly Random getrandom = new Random();
+        public static int GetRandomNumber(int min, int max)
+        {
+            lock (getrandom) // synchronize
+            {
+                return getrandom.Next(min, max);
+            }
+        }
+        private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (panelfocus == 0 && imageCountLeftPanel > 1)
+            {
+                int randomindex = imageIndexLeftPanel;
+                for (int i = 0; i < 10 && randomindex == imageIndexLeftPanel; i++)
+                {
+                    randomindex = GetRandomNumber(0, imageCountLeftPanel);
+                }
+                try
+                {
+                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[randomindex]))
+                    {
+                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
+                    }
+                    previmageIndexLeftPanel = imageIndexLeftPanel;
+                    imageIndexLeftPanel = randomindex;
+                }
+                catch (Exception) { throw; }
+            }
+            if (panelfocus == 1 && imageCountRightPanel > 1)
+            {
+                int randomindex = imageIndexRightPanel;
+                for (int i = 0; i < 10 && randomindex == imageIndexRightPanel; i++)
+                {
+                    randomindex = GetRandomNumber(0, imageCountRightPanel);
+                }
+                try
+                {
+                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[randomindex]))
+                    {
+                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
+                    }
+                    previmageIndexRightPanel = imageIndexRightPanel;
+                    imageIndexRightPanel = randomindex;
                 }
                 catch (Exception) { throw; }
             }
