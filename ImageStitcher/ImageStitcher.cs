@@ -244,24 +244,30 @@ namespace ImageStitcher
 
         /*  Open the stitched image in a viewing window
          */
-
         private void Button_preview_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
+            Form form = new Form();
             if (!(stitchedimage is null)) try
                 {
-                    using (Form form = new Form())
                     {
                         form.StartPosition = FormStartPosition.CenterScreen;
                         form.ClientSize = stitchedimage.Size;
+                        form.WindowState = FormWindowState.Maximized;
                         PictureBox pb = new PictureBox
                         {
                             Dock = DockStyle.Fill,
                             Image = stitchedimage,
                             SizeMode = PictureBoxSizeMode.Zoom
                         };
+                        void PreviewFormClose(object sen, EventArgs eve)
+                        {
+                            form.Close();
+                        }
+                        pb.MouseClick += PreviewFormClose;
                         form.Controls.Add(pb);
-                        form.ShowDialog();
+                        //Subscribe for event using designer or in constructor or form load
+                        form.Show();
                     }
                 }
                 catch (Exception ex)
@@ -428,17 +434,6 @@ namespace ImageStitcher
             return filesFound;
         }
 
-        /*        private static List<string> EnumerateImageFiles(string folderPath)
-        {
-            // https://stackoverflow.com/questions/7039580/multiple-file-extensions-searchpattern-for-system-io-directory-getfiles
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".gif", ".png", ".tiff", ".exif", ".bmp" };
-            var filteredFiles = Directory
-            .EnumerateFiles(folderPath) //<--- .NET 4.5
-            .Where(file => allowedExtensions.Any(file.ToLower().EndsWith))
-            .ToList();
-            filteredFiles.Sort();
-            return filteredFiles;
-        }*/
 
         //https://stackoverflow.com/questions/4886327/determine-what-control-the-contextmenustrip-was-used-on
         private static int contextmenufocus = 0;
