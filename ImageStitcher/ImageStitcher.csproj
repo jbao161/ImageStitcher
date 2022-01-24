@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SuperFastBlur.cs" />
     <Compile Include="ImageStitcher.cs">
       <SubType>Form</SubType>
     </Compile>
