@@ -110,9 +110,9 @@
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
-            this.pictureBox_leftpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
-            this.pictureBox_leftpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
-            this.pictureBox_leftpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
+            this.pictureBox_leftpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
+            this.pictureBox_leftpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
+            this.pictureBox_leftpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Control_MouseClick_copypastemenu);
             // 
             // pictureBox_rightpanel
             // 
@@ -124,9 +124,9 @@
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
-            this.pictureBox_rightpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
-            this.pictureBox_rightpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
-            this.pictureBox_rightpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
+            this.pictureBox_rightpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
+            this.pictureBox_rightpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
+            this.pictureBox_rightpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Control_MouseClick_copypastemenu);
             // 
             // panel_controls
             // 
@@ -154,7 +154,7 @@
             this.button_verticalhorizontal.TabIndex = 4;
             this.button_verticalhorizontal.Text = "Stack images vertically";
             this.button_verticalhorizontal.UseVisualStyleBackColor = true;
-            this.button_verticalhorizontal.Click += new System.EventHandler(this.button_verticalhorizontal_Click);
+            this.button_verticalhorizontal.Click += new System.EventHandler(this.Button_verticalhorizontal_Click);
             // 
             // button_releaseright
             // 
@@ -166,7 +166,7 @@
             this.button_releaseright.TabIndex = 2;
             this.button_releaseright.Text = "Clear Image ->";
             this.button_releaseright.UseVisualStyleBackColor = true;
-            this.button_releaseright.Click += new System.EventHandler(this.button_ClearRightPanel_Click);
+            this.button_releaseright.Click += new System.EventHandler(this.Button_ClearRightPanel_Click);
             // 
             // checkBox_openaftersave
             // 
@@ -192,7 +192,7 @@
             this.button_preview.TabIndex = 1;
             this.button_preview.Text = "Preview";
             this.button_preview.UseVisualStyleBackColor = true;
-            this.button_preview.Click += new System.EventHandler(this.button_preview_Click);
+            this.button_preview.Click += new System.EventHandler(this.Button_preview_Click);
             // 
             // button_save
             // 
@@ -206,7 +206,7 @@
             this.button_save.TabIndex = 0;
             this.button_save.Text = "Save";
             this.button_save.UseVisualStyleBackColor = true;
-            this.button_save.Click += new System.EventHandler(this.button_save_Click);
+            this.button_save.Click += new System.EventHandler(this.Button_save_Click);
             // 
             // button_swapimages
             // 
@@ -219,7 +219,7 @@
             this.button_swapimages.TabIndex = 5;
             this.button_swapimages.Text = "Swap Images";
             this.button_swapimages.UseVisualStyleBackColor = true;
-            this.button_swapimages.Click += new System.EventHandler(this.button_swapimages_Click);
+            this.button_swapimages.Click += new System.EventHandler(this.Button_swapimages_Click);
             // 
             // button_releaseleft
             // 
@@ -232,7 +232,7 @@
             this.button_releaseleft.TabIndex = 3;
             this.button_releaseleft.Text = "<- Clear Image";
             this.button_releaseleft.UseVisualStyleBackColor = true;
-            this.button_releaseleft.Click += new System.EventHandler(this.button_ClearLeftPanel_Click);
+            this.button_releaseleft.Click += new System.EventHandler(this.Button_ClearLeftPanel_Click);
             // 
             // contextMenu_image
             // 
@@ -261,21 +261,21 @@
             this.contextMenu_image_item_copy.Name = "contextMenu_image_item_copy";
             this.contextMenu_image_item_copy.Size = new System.Drawing.Size(185, 22);
             this.contextMenu_image_item_copy.Text = "Copy";
-            this.contextMenu_image_item_copy.Click += new System.EventHandler(this.contextMenu_image_item_copy_Click);
+            this.contextMenu_image_item_copy.Click += new System.EventHandler(this.ContextMenu_image_item_copy_Click);
             // 
             // contextMenu_image_item_paste
             // 
             this.contextMenu_image_item_paste.Name = "contextMenu_image_item_paste";
             this.contextMenu_image_item_paste.Size = new System.Drawing.Size(185, 22);
             this.contextMenu_image_item_paste.Text = "Paste";
-            this.contextMenu_image_item_paste.Click += new System.EventHandler(this.contextMenu_image_item_paste_Click);
+            this.contextMenu_image_item_paste.Click += new System.EventHandler(this.ContextMenu_image_item_paste_Click);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
             this.clearToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.ClearToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -287,42 +287,42 @@
             this.rotateToolStripMenuItem.Name = "rotateToolStripMenuItem";
             this.rotateToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.rotateToolStripMenuItem.Text = "Rotate (R)";
-            this.rotateToolStripMenuItem.Click += new System.EventHandler(this.rotateToolStripMenuItem_Click);
+            this.rotateToolStripMenuItem.Click += new System.EventHandler(this.RotateToolStripMenuItem_Click);
             // 
             // previousLeftArrowToolStripMenuItem
             // 
             this.previousLeftArrowToolStripMenuItem.Name = "previousLeftArrowToolStripMenuItem";
             this.previousLeftArrowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.previousLeftArrowToolStripMenuItem.Text = "Previous (Left Arrow)";
-            this.previousLeftArrowToolStripMenuItem.Click += new System.EventHandler(this.previousLeftArrowToolStripMenuItem_Click);
+            this.previousLeftArrowToolStripMenuItem.Click += new System.EventHandler(this.PreviousLeftArrowToolStripMenuItem_Click);
             // 
             // nextRightArrowToolStripMenuItem
             // 
             this.nextRightArrowToolStripMenuItem.Name = "nextRightArrowToolStripMenuItem";
             this.nextRightArrowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.nextRightArrowToolStripMenuItem.Text = "Next (Right Arrow)";
-            this.nextRightArrowToolStripMenuItem.Click += new System.EventHandler(this.nextRightArrowToolStripMenuItem_Click);
+            this.nextRightArrowToolStripMenuItem.Click += new System.EventHandler(this.NextRightArrowToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.editToolStripMenuItem.Text = "Edit";
-            this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
+            this.editToolStripMenuItem.Click += new System.EventHandler(this.EditToolStripMenuItem_Click);
             // 
             // openFileLocationToolStripMenuItem
             // 
             this.openFileLocationToolStripMenuItem.Name = "openFileLocationToolStripMenuItem";
             this.openFileLocationToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.openFileLocationToolStripMenuItem.Text = "Open File Location";
-            this.openFileLocationToolStripMenuItem.Click += new System.EventHandler(this.openFileLocationToolStripMenuItem_Click);
+            this.openFileLocationToolStripMenuItem.Click += new System.EventHandler(this.OpenFileLocationToolStripMenuItem_Click);
             // 
             // sendToTrashToolStripMenuItem
             // 
             this.sendToTrashToolStripMenuItem.Name = "sendToTrashToolStripMenuItem";
             this.sendToTrashToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.sendToTrashToolStripMenuItem.Text = "Send to Trash";
-            this.sendToTrashToolStripMenuItem.Click += new System.EventHandler(this.sendToTrashToolStripMenuItem_Click);
+            this.sendToTrashToolStripMenuItem.Click += new System.EventHandler(this.SendToTrashToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -345,14 +345,14 @@
             this.jumpBackToolStripMenuItem.Name = "jumpBackToolStripMenuItem";
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
-            this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.jumpBackToolStripMenuItem_Click);
+            this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
             // blurBToolStripMenuItem
             // 
             this.blurBToolStripMenuItem.Name = "blurBToolStripMenuItem";
             this.blurBToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.blurBToolStripMenuItem.Text = "Blur (B)";
-            this.blurBToolStripMenuItem.Click += new System.EventHandler(this.blurBToolStripMenuItem_Click);
+            this.blurBToolStripMenuItem.Click += new System.EventHandler(this.BlurBToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 

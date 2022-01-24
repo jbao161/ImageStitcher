@@ -12,11 +12,11 @@ namespace ImageStitcher
 {
     public partial class MainWindow : Form
     {
-        private bool debugflag = true;
+        private readonly bool debugflag = true;
         private static int panelfocus = 0;
-        private static int bluramount = 10;
+        private static readonly int bluramount = 10;
 
-        private void debug(string message)
+        private void MsgDebug(string message)
         {
             if (debugflag) Console.WriteLine(message);
         }
@@ -60,7 +60,7 @@ namespace ImageStitcher
             pictureBox_leftpanel.AllowDrop = true;
         }
 
-        private void pictureBox_DragEnter(object sender, DragEventArgs e)
+        private void PictureBox_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -74,9 +74,9 @@ namespace ImageStitcher
          * Drag and drop
          * picture files from Windows explorer onto the panel to load the image
          */
-        private static int maxLengthFileList = (int)1.0e9;
+        private static readonly int maxLengthFileList = (int)1.0e9;
 
-        private void pictureBox_DragDrop(object sender, DragEventArgs e)
+        private void PictureBox_DragDrop(object sender, DragEventArgs e)
         {
             int maxFilesCount = maxLengthFileList;
             string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
@@ -130,7 +130,7 @@ namespace ImageStitcher
                 }
             }
             catch (Exception) { throw; }
-            resize_imagepanels();
+            Resize_imagepanels();
         }
 
         /* automatically resize the image
@@ -141,7 +141,7 @@ namespace ImageStitcher
         * should take up. Put a divider there and the two images in 'Zoom' display will be of same height
         */
 
-        private void resize_imagepanels()
+        private void Resize_imagepanels()
         {
             if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
             {
@@ -167,11 +167,11 @@ namespace ImageStitcher
         /*  Create a new image by stitching the two panel images together
          */
 
-        private Bitmap stitch_images()
+        private Bitmap Stitch_images()
         {
             if ((pictureBox_leftpanel.Image is null) || (pictureBox_rightpanel.Image is null))
             {
-                debug("error. don't have both images loaded");
+                MsgDebug("error. don't have both images loaded");
                 return null;
             }
             else
@@ -227,19 +227,21 @@ namespace ImageStitcher
         /*  Open the stitched image in a viewing window
          */
 
-        private void button_preview_Click(object sender, EventArgs e)
+        private void Button_preview_Click(object sender, EventArgs e)
         {
-            Bitmap stitchedimage = stitch_images();
+            Bitmap stitchedimage = Stitch_images();
             if (!(stitchedimage is null)) try
                 {
                     using (Form form = new Form())
                     {
                         form.StartPosition = FormStartPosition.CenterScreen;
                         form.ClientSize = stitchedimage.Size;
-                        PictureBox pb = new PictureBox();
-                        pb.Dock = DockStyle.Fill;
-                        pb.Image = stitchedimage;
-                        pb.SizeMode = PictureBoxSizeMode.Zoom;
+                        PictureBox pb = new PictureBox
+                        {
+                            Dock = DockStyle.Fill,
+                            Image = stitchedimage,
+                            SizeMode = PictureBoxSizeMode.Zoom
+                        };
                         form.Controls.Add(pb);
                         form.ShowDialog();
                     }
@@ -254,9 +256,9 @@ namespace ImageStitcher
          *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
          */
 
-        private void button_save_Click(object sender, EventArgs e)
+        private void Button_save_Click(object sender, EventArgs e)
         {
-            Bitmap stitchedimage = stitch_images();
+            Bitmap stitchedimage = Stitch_images();
             if (!(stitchedimage is null)) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
@@ -302,9 +304,11 @@ namespace ImageStitcher
                     {
                         string args = string.Format("/e, /select, \"{0}\"", System.IO.Path.GetFullPath(saveFileDialog1.FileName));
 
-                        ProcessStartInfo info = new ProcessStartInfo();
-                        info.FileName = "explorer";
-                        info.Arguments = args;
+                        ProcessStartInfo info = new ProcessStartInfo
+                        {
+                            FileName = "explorer",
+                            Arguments = args
+                        };
                         Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
                         Process.Start(info);
                     }
@@ -318,7 +322,7 @@ namespace ImageStitcher
         /*  Section 2: Button controls to clear the picture panels
          */
 
-        private void button_ClearRightPanel_Click(object sender, EventArgs e)
+        private void Button_ClearRightPanel_Click(object sender, EventArgs e)
         {
             pictureBox_rightpanel.Image = null;
             imageFilesRightPanel = null;
@@ -326,7 +330,7 @@ namespace ImageStitcher
             previmageIndexRightPanel = imageIndexRightPanel;
         }
 
-        private void button_ClearLeftPanel_Click(object sender, EventArgs e)
+        private void Button_ClearLeftPanel_Click(object sender, EventArgs e)
         {
             pictureBox_leftpanel.Image = null;
             imageFilesLeftPanel = null;
@@ -334,15 +338,13 @@ namespace ImageStitcher
             previmageIndexLeftPanel = imageIndexLeftPanel;
         }
 
-        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Try to cast the sender to a ToolStripItem
-            ToolStripItem menuItem = sender as ToolStripItem;
-            if (menuItem != null)
+            if (sender is ToolStripItem menuItem)
             {
                 // Retrieve the ContextMenuStrip that owns this ToolStripItem
-                ContextMenuStrip owner = menuItem.Owner as ContextMenuStrip;
-                if (owner != null)
+                if (menuItem.Owner is ContextMenuStrip owner)
                 {
                     // Get the control that is displaying this context menu
                     ((PictureBox)owner.SourceControl).Image = null;
@@ -354,7 +356,7 @@ namespace ImageStitcher
          */
 
         // open a copy paste menu at right click mouse location
-        private void control_MouseClick_copypastemenu(object sender, MouseEventArgs e)
+        private void Control_MouseClick_copypastemenu(object sender, MouseEventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (thispicturebox == pictureBox_leftpanel) { panelfocus = 0; }
@@ -364,13 +366,12 @@ namespace ImageStitcher
             }
             if (e.Button == MouseButtons.Right)
             {
-                Point mPointWhenClicked = new Point(e.X, e.Y);
                 contextMenu_image.Show((Control)sender, e.X, e.Y);
             }
         }
 
         // copy image to clipboard from panel
-        private void contextMenu_image_item_copy_Click(object sender, EventArgs e)
+        private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (!(thispicturebox.Image is null))
@@ -382,8 +383,7 @@ namespace ImageStitcher
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
-        private static String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif" };
-
+        private static readonly String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif" };
         public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
         {
             List<String> filesFound = new List<String>();
@@ -394,9 +394,20 @@ namespace ImageStitcher
             }
             return filesFound;
         }
+        /*        private static List<string> EnumerateImageFiles(string folderPath)
+        {
+            // https://stackoverflow.com/questions/7039580/multiple-file-extensions-searchpattern-for-system-io-directory-getfiles
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".gif", ".png", ".tiff", ".exif", ".bmp" };
+            var filteredFiles = Directory
+            .EnumerateFiles(folderPath) //<--- .NET 4.5
+            .Where(file => allowedExtensions.Any(file.ToLower().EndsWith))
+            .ToList();
+            filteredFiles.Sort();
+            return filteredFiles;
+        }*/
 
         // paste image to panel from file or clipboard
-        private void contextMenu_image_item_paste_Click(object sender, EventArgs e)
+        private void ContextMenu_image_item_paste_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (Clipboard.ContainsImage())
@@ -411,7 +422,7 @@ namespace ImageStitcher
             {
                 this.DoDragDrop(Clipboard.GetDataObject(), DragDropEffects.All);
             }
-            resize_imagepanels();
+            Resize_imagepanels();
         } // end section 3
 
         /*  Section 4: Keyboard arrows change image to next file in folder
@@ -427,28 +438,6 @@ namespace ImageStitcher
         private static int imageCountLeftPanel = 0;
         private static int imageCountRightPanel = 0;
 
-        // You can wrap the calls to MoveNext, and Current property in a simple wrapper method..
-        // Can also add your error handling here.
-        public static string GetNextFile()
-        {
-            // You can choose to throw exception if you like..
-            // How you handle things like this, is up to you.
-            return null;
-        }
-
-        // Call GetNextFile() whenever you user clicks the next button on your UI.
-
-        private static List<string> EnumerateImageFiles(string folderPath)
-        {
-            // https://stackoverflow.com/questions/7039580/multiple-file-extensions-searchpattern-for-system-io-directory-getfiles
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".gif", ".png", ".tiff", ".exif", ".bmp" };
-            var filteredFiles = Directory
-            .EnumerateFiles(folderPath) //<--- .NET 4.5
-            .Where(file => allowedExtensions.Any(file.ToLower().EndsWith))
-            .ToList();
-            filteredFiles.Sort();
-            return filteredFiles;
-        }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -470,7 +459,7 @@ namespace ImageStitcher
                     }
                     catch (Exception) { throw; }
                 }
-                resize_imagepanels();
+                Resize_imagepanels();
                 return true;
             }
             if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.Right))
@@ -490,7 +479,7 @@ namespace ImageStitcher
                     }
                     catch (Exception) { throw; }
                 }
-                resize_imagepanels();
+                Resize_imagepanels();
                 return true;
             }
             if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Left))
@@ -510,7 +499,7 @@ namespace ImageStitcher
                     }
                     catch (Exception) { throw; }
                 }
-                resize_imagepanels();
+                Resize_imagepanels();
                 return true;
             }
             if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Right))
@@ -530,7 +519,7 @@ namespace ImageStitcher
                     }
                     catch (Exception) { throw; }
                 }
-                resize_imagepanels();
+                Resize_imagepanels();
                 return true;
             }
 
@@ -576,19 +565,19 @@ namespace ImageStitcher
         /*  Section 5: Toggle top/bottom or side/side stitching
         */
 
-        private void button_verticalhorizontal_Click(object sender, EventArgs e)
+        private void Button_verticalhorizontal_Click(object sender, EventArgs e)
         {
             splitContainer_bothimages.Orientation = (splitContainer_bothimages.Orientation == Orientation.Vertical ? Orientation.Horizontal : Orientation.Vertical);
             button_verticalhorizontal.Text = (splitContainer_bothimages.Orientation == Orientation.Vertical ? "Stack images vertically" : "Put images side by side");
-            resize_imagepanels();
+            Resize_imagepanels();
         }
 
-        private void button_swapimages_Click(object sender, EventArgs e)
+        private void Button_swapimages_Click(object sender, EventArgs e)
         {
             Bitmap image_tempswap = (pictureBox_leftpanel.Image == null ? null : new Bitmap(pictureBox_leftpanel.Image));
             pictureBox_leftpanel.Image = (pictureBox_rightpanel.Image == null ? null : new Bitmap(pictureBox_rightpanel.Image));
             pictureBox_rightpanel.Image = image_tempswap;
-            resize_imagepanels();
+            Resize_imagepanels();
             var tmp1 = imageFilesLeftPanel;
             imageFilesLeftPanel = imageFilesRightPanel;
             imageFilesRightPanel = tmp1;
@@ -602,10 +591,9 @@ namespace ImageStitcher
             imageCountRightPanel = tmp3;
         }
 
-        private void rotateToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RotateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
-            if (thispicturebox is null) return;
+            if (!(FindControlAtCursor(this) is PictureBox thispicturebox)) return;
             if (!(thispicturebox.Image is null))
             {
                 Image img = thispicturebox.Image;
@@ -614,9 +602,8 @@ namespace ImageStitcher
             }
         }
 
-        private void previousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PreviousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null)
@@ -634,7 +621,7 @@ namespace ImageStitcher
                     }
                     catch (Exception) { throw; }
                 }
-                resize_imagepanels();
+                Resize_imagepanels();
             }
             if (panelfocus == 1 && pictureBox_rightpanel.Image != null)
             {
@@ -653,13 +640,12 @@ namespace ImageStitcher
                     }
                     catch (Exception) { throw; }
                 }
-                resize_imagepanels();
+                Resize_imagepanels();
             }
         }
 
-        private void nextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
+        private void NextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null)
@@ -696,13 +682,12 @@ namespace ImageStitcher
                     catch (Exception) { throw; }
                 }
             }
-            resize_imagepanels();
+            Resize_imagepanels();
         }
 
-        private void blurBToolStripMenuItem_Click(object sender, EventArgs e)
+        private void BlurBToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
-            if (thispicturebox is null) return;
+            if (!(FindControlAtCursor(this) is PictureBox thispicturebox)) return;
             if (!(thispicturebox.Image is null))
             {
                 var blur = new GaussianBlur(thispicturebox.Image as Bitmap);
@@ -712,27 +697,29 @@ namespace ImageStitcher
         }
 
         //https://stackoverflow.com/questions/16022188/open-an-image-with-the-windows-default-editor-in-c-sharp
-        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        private void EditToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesLeftPanel[imageIndexLeftPanel]);
-                startInfo.Verb = "edit";
+                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesLeftPanel[imageIndexLeftPanel])
+                {
+                    Verb = "edit"
+                };
                 Process.Start(startInfo);
             }
             if (panelfocus == 1 && pictureBox_rightpanel.Image != null)
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel]);
-                startInfo.Verb = "edit";
+                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel])
+                {
+                    Verb = "edit"
+                };
                 Process.Start(startInfo);
             }
         }
 
         //https://stackoverflow.com/questions/9646114/open-file-location
-        private void openFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (panelfocus == 0 && imageFilesLeftPanel[imageIndexLeftPanel] != null)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
@@ -745,9 +732,8 @@ namespace ImageStitcher
 
         //https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin
         //https://www.c-sharpcorner.com/UploadFile/mahesh/how-to-remove-an-item-from-a-C-Sharp-list/
-        private void sendToTrashToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SendToTrashToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (panelfocus == 0 && imageFilesLeftPanel[imageIndexLeftPanel] != null)
             {
                 FileSystem.DeleteFile(imageFilesLeftPanel[imageIndexLeftPanel],
@@ -756,7 +742,7 @@ namespace ImageStitcher
             Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
                 imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
                 imageCountLeftPanel--;
-                previousLeftArrowToolStripMenuItem_Click(sender, e);
+                PreviousLeftArrowToolStripMenuItem_Click(sender, e);
             }
             if (panelfocus == 1 && imageFilesRightPanel[imageIndexRightPanel] != null)
             {
@@ -766,13 +752,12 @@ namespace ImageStitcher
             Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
                 imageFilesRightPanel.RemoveAt(imageIndexRightPanel);
                 imageCountRightPanel--;
-                previousLeftArrowToolStripMenuItem_Click(sender, e);
+                PreviousLeftArrowToolStripMenuItem_Click(sender, e);
             }
         }
 
-        private void jumpBackToolStripMenuItem_Click(object sender, EventArgs e)
+        private void JumpBackToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (panelfocus == 0 && imageFilesLeftPanel[previmageIndexLeftPanel] != null)
             {
                 int swapImageIndex = imageIndexLeftPanel;
