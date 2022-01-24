@@ -58,6 +58,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blurBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -108,7 +110,6 @@
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
-            this.pictureBox_leftpanel.Click += new System.EventHandler(this.PanelFocus_Left);
             this.pictureBox_leftpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox_leftpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
             this.pictureBox_leftpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
@@ -123,7 +124,6 @@
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
-            this.pictureBox_rightpanel.Click += new System.EventHandler(this.PanelFocus_Right);
             this.pictureBox_rightpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragDrop);
             this.pictureBox_rightpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox_DragEnter);
             this.pictureBox_rightpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.control_MouseClick_copypastemenu);
@@ -243,16 +243,18 @@
             this.toolStripSeparator1,
             this.contextMenu_image_item_copy,
             this.contextMenu_image_item_paste,
-            this.clearToolStripMenuItem,
             this.toolStripMenuItem1,
             this.rotateToolStripMenuItem,
+            this.blurBToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.clearToolStripMenuItem,
             this.previousLeftArrowToolStripMenuItem,
             this.nextRightArrowToolStripMenuItem,
             this.toolStripSeparator2,
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 286);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 292);
             // 
             // contextMenu_image_item_copy
             // 
@@ -320,6 +322,7 @@
             this.sendToTrashToolStripMenuItem.Name = "sendToTrashToolStripMenuItem";
             this.sendToTrashToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.sendToTrashToolStripMenuItem.Text = "Send to Trash";
+            this.sendToTrashToolStripMenuItem.Click += new System.EventHandler(this.sendToTrashToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -342,6 +345,19 @@
             this.jumpBackToolStripMenuItem.Name = "jumpBackToolStripMenuItem";
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
+            this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.jumpBackToolStripMenuItem_Click);
+            // 
+            // blurBToolStripMenuItem
+            // 
+            this.blurBToolStripMenuItem.Name = "blurBToolStripMenuItem";
+            this.blurBToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.blurBToolStripMenuItem.Text = "Blur (B)";
+            this.blurBToolStripMenuItem.Click += new System.EventHandler(this.blurBToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(182, 6);
             // 
             // MainWindow
             // 
@@ -400,6 +416,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem randomToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem jumpBackToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem blurBToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

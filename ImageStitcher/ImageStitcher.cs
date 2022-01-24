@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -12,9 +13,8 @@ namespace ImageStitcher
     public partial class MainWindow : Form
     {
         private bool debugflag = true;
-        private static int panelfocus = 1;
-
-        private static int bluramount = 4;
+        private static int panelfocus = 0;
+        private static int bluramount = 10;
 
         private void debug(string message)
         {
@@ -97,8 +97,8 @@ namespace ImageStitcher
                     imageCountLeftPanel = imageFilesLeftPanel.Count();
                     for (int i = 0; i < imageFilesLeftPanel.Count; i++)
                     {
-                        if (imageFilesLeftPanel[i] == s[0]) imageIndexLeftPanel = i;
-                    }
+                        if (imageFilesLeftPanel[i] == s[0]) { imageIndexLeftPanel = i; previmageIndexLeftPanel = imageIndexLeftPanel; }
+                        }
                 }
                 if (sender == pictureBox_rightpanel)
                 {
@@ -108,8 +108,8 @@ namespace ImageStitcher
                     imageCountRightPanel = imageFilesRightPanel.Count();
                     for (int i = 0; i < imageFilesRightPanel.Count; i++)
                     {
-                        if (imageFilesRightPanel[i] == s[0]) imageIndexRightPanel = i;
-                    }
+                        if (imageFilesRightPanel[i] == s[0]) { imageIndexRightPanel = i; previmageIndexRightPanel = imageIndexRightPanel; }
+                        }
                 }
             }
             catch (OutOfMemoryException ex)
@@ -310,6 +310,7 @@ namespace ImageStitcher
             pictureBox_rightpanel.Image = null;
             imageFilesRightPanel = null;
             imageIndexRightPanel = 0;
+            previmageIndexRightPanel = imageIndexRightPanel;
         }
 
         private void button_ClearLeftPanel_Click(object sender, EventArgs e)
@@ -317,6 +318,7 @@ namespace ImageStitcher
             pictureBox_leftpanel.Image = null;
             imageFilesLeftPanel = null;
             imageIndexLeftPanel = 0;
+            previmageIndexLeftPanel = imageIndexLeftPanel;
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
@@ -341,7 +343,13 @@ namespace ImageStitcher
         // open a copy paste menu at right click mouse location
         private void control_MouseClick_copypastemenu(object sender, MouseEventArgs e)
         {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (thispicturebox == pictureBox_leftpanel) { panelfocus = 0; }
+            if (thispicturebox == pictureBox_rightpanel) { panelfocus = 1; }
             if (e.Button == MouseButtons.Right)
+            {
+            }
+                if (e.Button == MouseButtons.Right)
             {
                 Point mPointWhenClicked = new Point(e.X, e.Y);
                 contextMenu_image.Show((Control)sender, e.X, e.Y);
@@ -389,8 +397,8 @@ namespace ImageStitcher
                         imageCountLeftPanel = imageFilesLeftPanel.Count();
                         for (int i = 0; i < imageCountLeftPanel; i++)
                         {
-                            if (imageFilesLeftPanel[i] == s[0]) imageIndexLeftPanel = i;
-                        }
+                            if (imageFilesLeftPanel[i] == s[0]) { imageIndexLeftPanel = i; previmageIndexLeftPanel = imageIndexLeftPanel; }
+                            }
                     }
                     if (thispicturebox == pictureBox_rightpanel)
                     {
@@ -400,8 +408,8 @@ namespace ImageStitcher
                         imageCountRightPanel = imageFilesRightPanel.Count();
                         for (int i = 0; i < imageCountRightPanel; i++)
                         {
-                            if (imageFilesRightPanel[i] == s[0]) imageIndexRightPanel = i;
-                        }
+                            if (imageFilesRightPanel[i] == s[0]) { imageIndexRightPanel = i; previmageIndexRightPanel = imageIndexRightPanel; }
+                            }
                     }
                 }
                 catch (OutOfMemoryException ex)
@@ -415,23 +423,14 @@ namespace ImageStitcher
 
         /*  Section 4: Keyboard arrows change image to next file in folder
         */
-
-        private void PanelFocus_Left(object sender, EventArgs e)
-        {
-            panelfocus = 0;
-        }
-
-        private void PanelFocus_Right(object sender, EventArgs e)
-        {
-            panelfocus = 1;
-        }
-
         // Local field to store the files enumerator;
 
         private static List<string> imageFilesLeftPanel;
         private static List<string> imageFilesRightPanel;
         private static int imageIndexLeftPanel = 0;
         private static int imageIndexRightPanel = 0;
+        private static int previmageIndexLeftPanel = 0;
+        private static int previmageIndexRightPanel = 0;
         private static int imageCountLeftPanel = 0;
         private static int imageCountRightPanel = 0;
 
@@ -461,31 +460,17 @@ namespace ImageStitcher
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // left and right arrow keys for changing image
-            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Right))
+            if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.Left))
             {
-                if (imageFilesRightPanel != null)
+                if (imageFilesLeftPanel != null)
                 {
-                    int nextImageIndex = imageIndexRightPanel + 1;
-                    if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
-                    imageIndexRightPanel = nextImageIndex;
-                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
+                    int nextImageIndex = imageIndexLeftPanel - 1;
+                    if (nextImageIndex < 0) nextImageIndex = imageCountLeftPanel - 1;
+                    previmageIndexLeftPanel = imageIndexLeftPanel;
+                    imageIndexLeftPanel = nextImageIndex;
+                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
                     {
-                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
-                    }
-                }
-                resize_imagepanels();
-                return true;
-            }
-            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Left))
-            {
-                if (imageFilesRightPanel != null)
-                {
-                    int nextImageIndex = imageIndexRightPanel - 1;
-                    if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
-                    imageIndexRightPanel = nextImageIndex;
-                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
-                    {
-                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
+                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
                     }
                 }
                 resize_imagepanels();
@@ -497,6 +482,7 @@ namespace ImageStitcher
                 {
                     int nextImageIndex = imageIndexLeftPanel + 1;
                     if (nextImageIndex >= imageCountLeftPanel) nextImageIndex = 0;
+                    previmageIndexLeftPanel = imageIndexLeftPanel;
                     imageIndexLeftPanel = nextImageIndex;
                     using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
                     {
@@ -506,29 +492,40 @@ namespace ImageStitcher
                 resize_imagepanels();
                 return true;
             }
-            if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.Left))
+            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Left))
             {
-                if (imageFilesLeftPanel != null)
+                if (imageFilesRightPanel != null)
                 {
-                    int nextImageIndex = imageIndexLeftPanel - 1;
-                    if (nextImageIndex < 0) nextImageIndex = imageCountLeftPanel - 1;
-                    imageIndexLeftPanel = nextImageIndex;
-                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
+                    int nextImageIndex = imageIndexRightPanel - 1;
+                    if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
+                    previmageIndexRightPanel = imageIndexRightPanel;
+                    imageIndexRightPanel = nextImageIndex;
+                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
                     {
-                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
+                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
                     }
                 }
                 resize_imagepanels();
                 return true;
             }
-            // R hotkey for rotations
-            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.R))
+            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.Right))
             {
-                Image img = pictureBox_rightpanel.Image;
-                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                pictureBox_rightpanel.Image = img;
+                if (imageFilesRightPanel != null)
+                {
+                    int nextImageIndex = imageIndexRightPanel + 1;
+                    if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
+                    previmageIndexRightPanel = imageIndexRightPanel;
+                    imageIndexRightPanel = nextImageIndex;
+                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
+                    {
+                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
+                    }
+                }
+                resize_imagepanels();
                 return true;
             }
+
+            // R hotkey for rotations
             if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.R))
             {
                 Image img = pictureBox_leftpanel.Image;
@@ -536,14 +533,15 @@ namespace ImageStitcher
                 pictureBox_leftpanel.Image = img;
                 return true;
             }
-            // B hotkey for blur
-            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.B))
+            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.R))
             {
-                var blur = new GaussianBlur(pictureBox_rightpanel.Image as Bitmap);
-                Bitmap result = blur.Process(bluramount);
-                pictureBox_rightpanel.Image = result;
+                Image img = pictureBox_rightpanel.Image;
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                pictureBox_rightpanel.Image = img;
                 return true;
             }
+
+            // B hotkey for blur
             if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.B))
             {
                 var blur = new GaussianBlur(pictureBox_leftpanel.Image as Bitmap);
@@ -551,6 +549,14 @@ namespace ImageStitcher
                 pictureBox_leftpanel.Image = result;
                 return true;
             }
+            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.B))
+            {
+                var blur = new GaussianBlur(pictureBox_rightpanel.Image as Bitmap);
+                Bitmap result = blur.Process(bluramount);
+                pictureBox_rightpanel.Image = result;
+                return true;
+            }
+
             // end of hotkeys. ignore the keystroke
             else
             {
@@ -578,7 +584,9 @@ namespace ImageStitcher
             imageFilesLeftPanel = imageFilesRightPanel;
             imageFilesRightPanel = tmp1;
             var tmp2 = imageIndexLeftPanel;
+            previmageIndexLeftPanel = imageIndexLeftPanel;
             imageIndexLeftPanel = imageIndexRightPanel;
+            previmageIndexRightPanel = imageIndexRightPanel;
             imageIndexRightPanel = tmp2;
             var tmp3 = imageCountLeftPanel;
             imageCountLeftPanel = imageCountRightPanel;
@@ -600,12 +608,13 @@ namespace ImageStitcher
         private void previousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
-            if (thispicturebox == pictureBox_leftpanel && pictureBox_leftpanel.Image != null)
+            if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null)
                 {
                     int nextImageIndex = imageIndexLeftPanel - 1;
                     if (nextImageIndex < 0) nextImageIndex = imageCountLeftPanel - 1;
+                    previmageIndexLeftPanel = imageIndexLeftPanel;
                     imageIndexLeftPanel = nextImageIndex;
                     using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
                     {
@@ -614,12 +623,13 @@ namespace ImageStitcher
                 }
                 resize_imagepanels();
             }
-            if (thispicturebox == pictureBox_rightpanel && pictureBox_rightpanel.Image != null)
+            if (panelfocus == 1 && pictureBox_rightpanel.Image != null)
             {
                 if (imageFilesRightPanel != null)
                 {
                     int nextImageIndex = imageIndexRightPanel - 1;
                     if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
+                    previmageIndexRightPanel = imageIndexRightPanel;
                     imageIndexRightPanel = nextImageIndex;
                     using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
                     {
@@ -633,12 +643,13 @@ namespace ImageStitcher
         private void nextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
-            if (thispicturebox == pictureBox_leftpanel && pictureBox_leftpanel.Image != null)
+            if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null)
                 {
                     int nextImageIndex = imageIndexLeftPanel + 1;
                     if (nextImageIndex >= imageCountLeftPanel) nextImageIndex = 0;
+                    previmageIndexLeftPanel = imageIndexLeftPanel;
                     imageIndexLeftPanel = nextImageIndex;
                     try
                     {
@@ -651,12 +662,13 @@ namespace ImageStitcher
 
                 }
             }
-            if (thispicturebox == pictureBox_rightpanel && pictureBox_rightpanel.Image != null)
+            if (panelfocus == 1 && pictureBox_rightpanel.Image != null)
             {
                 if (imageFilesRightPanel != null)
                 {
                     int nextImageIndex = imageIndexRightPanel + 1;
                     if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
+                    previmageIndexRightPanel = imageIndexRightPanel;
                     imageIndexRightPanel = nextImageIndex;
                     try
                     {
@@ -687,13 +699,13 @@ namespace ImageStitcher
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
-            if (thispicturebox == pictureBox_leftpanel && pictureBox_leftpanel.Image != null)
+            if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesLeftPanel[imageIndexLeftPanel]);
                 startInfo.Verb = "edit";
                 Process.Start(startInfo);
             }
-            if (thispicturebox == pictureBox_rightpanel && pictureBox_rightpanel.Image != null)
+            if (panelfocus == 1 && pictureBox_rightpanel.Image != null)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel]);
                 startInfo.Verb = "edit";
@@ -705,13 +717,73 @@ namespace ImageStitcher
         private void openFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
-            if (thispicturebox == pictureBox_leftpanel && imageFilesLeftPanel[imageIndexLeftPanel] != null)
+            if (panelfocus == 0 && imageFilesLeftPanel[imageIndexLeftPanel] != null)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
             }
-            if (thispicturebox == pictureBox_rightpanel && imageFilesRightPanel[imageIndexRightPanel] != null)
+            if (panelfocus == 1 && imageFilesRightPanel[imageIndexRightPanel] != null)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
+            }
+        }
+
+        //https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin
+        //https://www.c-sharpcorner.com/UploadFile/mahesh/how-to-remove-an-item-from-a-C-Sharp-list/
+        private void sendToTrashToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (panelfocus == 0 && imageFilesLeftPanel[imageIndexLeftPanel] != null)
+            {
+                FileSystem.DeleteFile(imageFilesLeftPanel[imageIndexLeftPanel],
+            Microsoft.VisualBasic.FileIO.UIOption.AllDialogs,
+            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin,
+            Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
+                imageCountLeftPanel--;
+                previousLeftArrowToolStripMenuItem_Click(sender, e);
+            }
+            if (panelfocus == 1 && imageFilesRightPanel[imageIndexRightPanel] != null)
+            {
+                FileSystem.DeleteFile(imageFilesRightPanel[imageIndexRightPanel],
+            Microsoft.VisualBasic.FileIO.UIOption.AllDialogs,
+            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin,
+            Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                imageFilesRightPanel.RemoveAt(imageIndexRightPanel);
+                imageCountRightPanel--;
+                previousLeftArrowToolStripMenuItem_Click(sender, e);
+            }
+        }
+
+        private void jumpBackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (panelfocus == 0 && imageFilesLeftPanel[previmageIndexLeftPanel] != null)
+            {
+                int swapImageIndex = imageIndexLeftPanel;
+                imageIndexLeftPanel = previmageIndexLeftPanel;
+                previmageIndexLeftPanel = swapImageIndex;
+                try
+                {
+                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[imageIndexLeftPanel]))
+                    {
+                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
+                    }
+                }
+                catch (Exception) { throw; }
+            }
+            if (panelfocus == 1 && imageFilesRightPanel[previmageIndexRightPanel] != null)
+            {
+                int swapImageIndex = imageIndexRightPanel;
+                imageIndexRightPanel = previmageIndexRightPanel;
+                previmageIndexRightPanel = swapImageIndex;
+                try
+                {
+                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[imageIndexRightPanel]))
+                    {
+                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
+                    }
+                }
+                catch (Exception) { throw; }
             }
         }
     } // end MainWindow : Form
