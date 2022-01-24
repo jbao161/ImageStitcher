@@ -683,6 +683,7 @@ namespace ImageStitcher
             }
         }
 
+        //https://stackoverflow.com/questions/16022188/open-an-image-with-the-windows-default-editor-in-c-sharp
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
@@ -697,6 +698,20 @@ namespace ImageStitcher
                 ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel]);
                 startInfo.Verb = "edit";
                 Process.Start(startInfo);
+            }
+        }
+
+        //https://stackoverflow.com/questions/9646114/open-file-location
+        private void openFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (thispicturebox == pictureBox_leftpanel && imageFilesLeftPanel[imageIndexLeftPanel] != null)
+            {
+                Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
+            }
+            if (thispicturebox == pictureBox_rightpanel && imageFilesRightPanel[imageIndexRightPanel] != null)
+            {
+                Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
             }
         }
     } // end MainWindow : Form
