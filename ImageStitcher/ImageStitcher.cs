@@ -322,34 +322,39 @@ namespace ImageStitcher
         /*  Section 2: Button controls to clear the picture panels
          */
 
-        private void Button_ClearRightPanel_Click(object sender, EventArgs e)
+        private void ClearPanel(int activePanel)
         {
-            pictureBox_rightpanel.Image = null;
-            imageFilesRightPanel = null;
-            imageIndexRightPanel = 0;
-            previmageIndexRightPanel = imageIndexRightPanel;
-        }
-
-        private void Button_ClearLeftPanel_Click(object sender, EventArgs e)
-        {
-            pictureBox_leftpanel.Image = null;
-            imageFilesLeftPanel = null;
-            imageIndexLeftPanel = 0;
-            previmageIndexLeftPanel = imageIndexLeftPanel;
+            if (activePanel == 0)
+            {
+                pictureBox_leftpanel.Image = null;
+                imageFilesLeftPanel = null;
+                imageCountLeftPanel = 0;
+                imageIndexLeftPanel = 0;
+                previmageIndexLeftPanel = imageIndexLeftPanel;
+            }
+            if (activePanel == 1)
+            {
+                pictureBox_rightpanel.Image = null;
+                imageFilesRightPanel = null;
+                imageCountRightPanel = 0;
+                imageIndexRightPanel = 0;
+                previmageIndexRightPanel = imageIndexRightPanel;
+            }
         }
 
         private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Try to cast the sender to a ToolStripItem
-            if (sender is ToolStripItem menuItem)
-            {
-                // Retrieve the ContextMenuStrip that owns this ToolStripItem
-                if (menuItem.Owner is ContextMenuStrip owner)
+            // how to get active panel for context menu
+            /*
+             if (sender is ToolStripItem menuItem)
                 {
-                    // Get the control that is displaying this context menu
-                    ((PictureBox)owner.SourceControl).Image = null;
-                }
-            }
+                    if (menuItem.Owner is ContextMenuStrip owner)
+                    {
+                        ((PictureBox) owner.SourceControl).Image = null;
+                    }
+                 } 
+            */
+            ClearPanel(panelfocus);
         }// end section 2
 
         /* Section 3: Context menu for copy and paste
@@ -420,6 +425,13 @@ namespace ImageStitcher
         private void ContextMenu_image_item_paste_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            if (sender is ToolStripItem menuItem)
+            {
+                if (menuItem.Owner is ContextMenuStrip owner)
+                {
+                    thispicturebox = (PictureBox)owner.SourceControl;
+                }
+            }
             if (Clipboard.ContainsImage())
             {
                 object o = Clipboard.GetImage();
@@ -623,6 +635,7 @@ namespace ImageStitcher
                 thispicturebox.Image = img;
             }
         }
+
         private void LoadPreviousImage(int activePanel)
         {
             if (activePanel == 0 && pictureBox_leftpanel.Image != null)
@@ -664,6 +677,7 @@ namespace ImageStitcher
                 Resize_imagepanels();
             }
         }
+
         private void PreviousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadPreviousImage(panelfocus);
@@ -709,6 +723,7 @@ namespace ImageStitcher
             }
             Resize_imagepanels();
         }
+
         private void NextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadNextImage(panelfocus);
@@ -787,7 +802,7 @@ namespace ImageStitcher
 
         private void JumpBack(int activepanel)
         {
-            if (activepanel == 0 && imageFilesLeftPanel[previmageIndexLeftPanel] != null)
+            if (activepanel == 0 && imageFilesLeftPanel != null)
             {
                 int swapImageIndex = imageIndexLeftPanel;
                 imageIndexLeftPanel = previmageIndexLeftPanel;
@@ -801,7 +816,7 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
             }
-            if (activepanel == 1 && imageFilesRightPanel[previmageIndexRightPanel] != null)
+            if (activepanel == 1 && imageFilesRightPanel != null)
             {
                 int swapImageIndex = imageIndexRightPanel;
                 imageIndexRightPanel = previmageIndexRightPanel;
@@ -816,6 +831,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
             }
         }
+
         private void JumpBackToolStripMenuItem_Click(object sender, EventArgs e)
         {
             JumpBack(panelfocus);
@@ -871,6 +887,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
             }
         }
+
         private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadRandomImage(panelfocus);
