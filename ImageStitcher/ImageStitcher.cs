@@ -361,13 +361,20 @@ namespace ImageStitcher
             PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
             if (thispicturebox == pictureBox_leftpanel) { panelfocus = 0; }
             if (thispicturebox == pictureBox_rightpanel) { panelfocus = 1; }
+            if ((MainWindow.ModifierKeys == Keys.Alt) && e.Button == MouseButtons.Left)
+            {
+                JumpBack(panelfocus);
+                return;
+            }
             if (e.Button == MouseButtons.Left)
             {
                 RandomToolStripMenuItem_Click(sender, e);
+                return;
             }
             if (e.Button == MouseButtons.Right)
             {
                 contextMenu_image.Show((Control)sender, e.X, e.Y);
+                return;
             }
         }
 
@@ -385,6 +392,7 @@ namespace ImageStitcher
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
         private static readonly String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif" };
+
         public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
         {
             List<String> filesFound = new List<String>();
@@ -395,6 +403,7 @@ namespace ImageStitcher
             }
             return filesFound;
         }
+
         /*        private static List<string> EnumerateImageFiles(string folderPath)
         {
             // https://stackoverflow.com/questions/7039580/multiple-file-extensions-searchpattern-for-system-io-directory-getfiles
@@ -438,7 +447,6 @@ namespace ImageStitcher
         private static int previmageIndexRightPanel = 0;
         private static int imageCountLeftPanel = 0;
         private static int imageCountRightPanel = 0;
-
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -556,6 +564,19 @@ namespace ImageStitcher
                 return true;
             }
 
+            // C hotkey for randomize both panels
+            if (keyData == Keys.C)
+            {
+                LoadRandomImage(0); LoadRandomImage(1);
+                return true;
+            }
+
+            // Alt + C hotkey for jump back both panels
+            if (keyData == (Keys.Alt | Keys.C))
+            {
+                JumpBack(0); JumpBack(1);
+                return true;
+            }
             // end of hotkeys. ignore the keystroke
             else
             {
@@ -602,10 +623,9 @@ namespace ImageStitcher
                 thispicturebox.Image = img;
             }
         }
-
-        private void PreviousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadPreviousImage(int activePanel)
         {
-            if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
+            if (activePanel == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null)
                 {
@@ -624,7 +644,7 @@ namespace ImageStitcher
                 }
                 Resize_imagepanels();
             }
-            if (panelfocus == 1 && pictureBox_rightpanel.Image != null)
+            if (activePanel == 1 && pictureBox_rightpanel.Image != null)
             {
                 if (imageFilesRightPanel != null)
                 {
@@ -644,10 +664,14 @@ namespace ImageStitcher
                 Resize_imagepanels();
             }
         }
-
-        private void NextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PreviousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (panelfocus == 0 && pictureBox_leftpanel.Image != null)
+            LoadPreviousImage(panelfocus);
+        }
+
+        private void LoadNextImage(int activePanel)
+        {
+            if (activePanel == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null)
                 {
@@ -665,7 +689,7 @@ namespace ImageStitcher
                     catch (Exception) { throw; }
                 }
             }
-            if (panelfocus == 1 && pictureBox_rightpanel.Image != null)
+            if (activePanel == 1 && pictureBox_rightpanel.Image != null)
             {
                 if (imageFilesRightPanel != null)
                 {
@@ -684,6 +708,10 @@ namespace ImageStitcher
                 }
             }
             Resize_imagepanels();
+        }
+        private void NextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadNextImage(panelfocus);
         }
 
         private void BlurBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -757,9 +785,9 @@ namespace ImageStitcher
             }
         }
 
-        private void JumpBackToolStripMenuItem_Click(object sender, EventArgs e)
+        private void JumpBack(int activepanel)
         {
-            if (panelfocus == 0 && imageFilesLeftPanel[previmageIndexLeftPanel] != null)
+            if (activepanel == 0 && imageFilesLeftPanel[previmageIndexLeftPanel] != null)
             {
                 int swapImageIndex = imageIndexLeftPanel;
                 imageIndexLeftPanel = previmageIndexLeftPanel;
@@ -773,7 +801,7 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
             }
-            if (panelfocus == 1 && imageFilesRightPanel[previmageIndexRightPanel] != null)
+            if (activepanel == 1 && imageFilesRightPanel[previmageIndexRightPanel] != null)
             {
                 int swapImageIndex = imageIndexRightPanel;
                 imageIndexRightPanel = previmageIndexRightPanel;
@@ -788,8 +816,14 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
             }
         }
+        private void JumpBackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            JumpBack(panelfocus);
+        }
+
         //https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
         private static readonly Random getrandom = new Random();
+
         public static int GetRandomNumber(int min, int max)
         {
             lock (getrandom) // synchronize
@@ -797,9 +831,10 @@ namespace ImageStitcher
                 return getrandom.Next(min, max);
             }
         }
-        private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private void LoadRandomImage(int activePanel)
         {
-            if (panelfocus == 0 && imageCountLeftPanel > 1)
+            if (activePanel == 0 && imageCountLeftPanel > 1)
             {
                 int randomindex = imageIndexLeftPanel;
                 for (int i = 0; i < 10 && randomindex == imageIndexLeftPanel; i++)
@@ -817,7 +852,7 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
             }
-            if (panelfocus == 1 && imageCountRightPanel > 1)
+            if (activePanel == 1 && imageCountRightPanel > 1)
             {
                 int randomindex = imageIndexRightPanel;
                 for (int i = 0; i < 10 && randomindex == imageIndexRightPanel; i++)
@@ -835,6 +870,10 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
             }
+        }
+        private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadRandomImage(panelfocus);
         }
     } // end MainWindow : Form
 }
