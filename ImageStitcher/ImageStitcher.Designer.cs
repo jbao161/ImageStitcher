@@ -166,7 +166,7 @@
             this.button_releaseright.TabIndex = 2;
             this.button_releaseright.Text = "Clear Image ->";
             this.button_releaseright.UseVisualStyleBackColor = true;
-
+            this.button_releaseright.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Button_releaseright_MouseClick);
             // 
             // checkBox_openaftersave
             // 
@@ -232,7 +232,7 @@
             this.button_releaseleft.TabIndex = 3;
             this.button_releaseleft.Text = "<- Clear Image";
             this.button_releaseleft.UseVisualStyleBackColor = true;
-
+            this.button_releaseleft.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Button_releaseleft_MouseClick);
             // 
             // contextMenu_image
             // 
@@ -254,7 +254,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 314);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 292);
             // 
             // editToolStripMenuItem
             // 

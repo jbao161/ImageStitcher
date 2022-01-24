@@ -74,63 +74,81 @@ namespace ImageStitcher
          * Drag and drop
          * picture files from Windows explorer onto the panel to load the image
          */
+
+        // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
         private static readonly int maxLengthFileList = (int)1.0e9;
 
-        private void PictureBox_DragDrop(object sender, DragEventArgs e)
+        private void DragDropHandler(int activePanel, string[] filepaths)
         {
             int maxFilesCount = maxLengthFileList;
-            string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            bool isFolder = File.GetAttributes(s[0]).HasFlag(FileAttributes.Directory);
-            bool isImage = allowedImageExtensions.Any(s[0].ToLower().EndsWith);
-            string folderPath = Path.GetDirectoryName(s[0]);
-            if (isFolder) { folderPath = s[0]; }
+
+            bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
+            bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
+            string folderPath = Path.GetDirectoryName(filepaths[0]);
+            if (isFolder) { folderPath = filepaths[0]; }
             List<string> imageList = null;
             if (isFolder | isImage)
             {
                 // set the pseudo-focus on the left or right panel
                 // then enumerate a list of all image files in the same directory as the loaded image
                 // then store the position of the loaded image in that list
-                if (sender == pictureBox_leftpanel)
+                if (activePanel == 0)
                 {
-                    panelfocus = 0;
-
                     imageFilesLeftPanel = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
                     imageCountLeftPanel = imageFilesLeftPanel.Count();
                     if (imageCountLeftPanel < maxFilesCount) maxFilesCount = imageCountLeftPanel;
                     for (int i = 0; i < maxFilesCount; i++)
                     {
-                        if (imageFilesLeftPanel[i] == s[0]) { imageIndexLeftPanel = i; previmageIndexLeftPanel = imageIndexLeftPanel; }
+                        if (imageFilesLeftPanel[i] == filepaths[0]) { imageIndexLeftPanel = i; previmageIndexLeftPanel = imageIndexLeftPanel; }
                     }
                     imageList = imageFilesLeftPanel;
                     if (isFolder) { imageIndexLeftPanel = 0; previmageIndexLeftPanel = imageIndexLeftPanel; }
+                    try
+                    {
+                        string imagepath = filepaths[0];
+                        if (isFolder) imagepath = imageList[0];
+                        using (var bmpTemp = new Bitmap(imagepath))
+                        {
+                            pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
+                        }
+                    }
+                    catch (Exception) { throw; }
                 }
-                if (sender == pictureBox_rightpanel)
+                if (activePanel == 1)
                 {
-                    panelfocus = 1;
-
                     imageFilesRightPanel = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
                     imageCountRightPanel = imageFilesRightPanel.Count();
                     if (imageCountRightPanel < maxFilesCount) maxFilesCount = imageCountRightPanel;
                     for (int i = 0; i < maxFilesCount; i++)
                     {
-                        if (imageFilesRightPanel[i] == s[0]) { imageIndexRightPanel = i; previmageIndexRightPanel = imageIndexRightPanel; }
+                        if (imageFilesRightPanel[i] == filepaths[0]) { imageIndexRightPanel = i; previmageIndexRightPanel = imageIndexRightPanel; }
                     }
                     imageList = imageFilesRightPanel;
                     if (isFolder) { imageIndexRightPanel = 0; previmageIndexRightPanel = imageIndexRightPanel; }
+                    try
+                    {
+                        string imagepath = filepaths[0];
+                        if (isFolder) imagepath = imageList[0];
+                        using (var bmpTemp = new Bitmap(imagepath))
+                        {
+                            pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
+                        }
+                    }
+                    catch (Exception) { throw; }
                 }
+                Resize_imagepanels();
             }
-            try
-            {
-                // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
-                string imagepath = s[0];
-                if (isFolder) imagepath = imageList[0];
-                using (var bmpTemp = new Bitmap(imagepath))
-                {
-                    ((System.Windows.Forms.PictureBox)sender).Image = new Bitmap(bmpTemp);
-                }
-            }
-            catch (Exception) { throw; }
-            Resize_imagepanels();
+        }
+
+        private void PictureBox_DragDrop(object sender, DragEventArgs e)
+        {
+            PictureBox activePictureBox = null;
+            if (FindControlAtCursor(this) is PictureBox box) { activePictureBox = box; }
+
+            if (activePictureBox == pictureBox_leftpanel) { panelfocus = 0; }
+            if (activePictureBox == pictureBox_rightpanel) { panelfocus = 1; }
+            string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            DragDropHandler(panelfocus, s);
         }
 
         /* automatically resize the image
@@ -352,7 +370,7 @@ namespace ImageStitcher
                     {
                         ((PictureBox) owner.SourceControl).Image = null;
                     }
-                 } 
+                 }
             */
             ClearPanel(panelfocus);
         }// end section 2
@@ -378,6 +396,7 @@ namespace ImageStitcher
             }
             if (e.Button == MouseButtons.Right)
             {
+                contextmenufocus = panelfocus;
                 contextMenu_image.Show((Control)sender, e.X, e.Y);
                 return;
             }
@@ -421,31 +440,34 @@ namespace ImageStitcher
             return filteredFiles;
         }*/
 
+        //https://stackoverflow.com/questions/4886327/determine-what-control-the-contextmenustrip-was-used-on
+        private static int contextmenufocus = 0;
+
+        private void ContextMenuStrip_Opened(object sender, EventArgs e)
+        {
+            contextmenufocus = panelfocus;
+        }
+
         // paste image to panel from file or clipboard
         private void ContextMenu_image_item_paste_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
-            if (sender is ToolStripItem menuItem)
-            {
-                if (menuItem.Owner is ContextMenuStrip owner)
-                {
-                    thispicturebox = (PictureBox)owner.SourceControl;
-                }
-            }
             if (Clipboard.ContainsImage())
             {
                 object o = Clipboard.GetImage();
                 if (o != null)
                 {
-                    thispicturebox.Image = (Image)o;
+                    if (contextmenufocus == 0) { pictureBox_leftpanel.Image = (Image)o; }
+                    if (contextmenufocus == 1) { pictureBox_rightpanel.Image = (Image)o; }
                 }
             }
             if (Clipboard.GetDataObject().GetDataPresent("FileDrop"))
             {
-                this.DoDragDrop(Clipboard.GetDataObject(), DragDropEffects.All);
+                string[] s = (string[])Clipboard.GetDataObject().GetData(DataFormats.FileDrop, false);
+                DragDropHandler(contextmenufocus, s);
             }
             Resize_imagepanels();
-        } // end section 3
+        }
+         // end section 3
 
         /*  Section 4: Keyboard arrows change image to next file in folder
         */
@@ -891,6 +913,16 @@ namespace ImageStitcher
         private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadRandomImage(panelfocus);
+        }
+
+        private void Button_releaseleft_MouseClick(object sender, MouseEventArgs e)
+        {
+            ClearPanel(0);
+        }
+
+        private void Button_releaseright_MouseClick(object sender, MouseEventArgs e)
+        {
+            ClearPanel(1);
         }
     } // end MainWindow : Form
 }
