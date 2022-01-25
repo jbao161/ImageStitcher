@@ -397,7 +397,7 @@ namespace ImageStitcher
             }
             if (e.Button == MouseButtons.Left)
             {
-                RandomToolStripMenuItem_Click(sender, e);
+                if (checkBox_randomOnClick.Checked) { RandomToolStripMenuItem_Click(sender, e); }
                 return;
             }
             if (e.Button == MouseButtons.Right)
@@ -562,18 +562,9 @@ namespace ImageStitcher
             }
 
             // R hotkey for rotations
-            if ((panelfocus == 0) && pictureBox_leftpanel.Image != null && (keyData == Keys.R))
+            if (keyData == Keys.R)
             {
-                Image img = pictureBox_leftpanel.Image;
-                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                pictureBox_leftpanel.Image = img;
-                return true;
-            }
-            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null && (keyData == Keys.R))
-            {
-                Image img = pictureBox_rightpanel.Image;
-                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                pictureBox_rightpanel.Image = img;
+                RotateImage(panelfocus);
                 return true;
             }
 
@@ -642,15 +633,26 @@ namespace ImageStitcher
             imageCountRightPanel = tmp3;
         }
 
+        private void RotateImage(int activePanel)
+        {
+            if ((activePanel == 0) && pictureBox_leftpanel.Image != null)
+            {
+                Image img = pictureBox_leftpanel.Image;
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                pictureBox_leftpanel.Image = img;
+                Resize_imagepanels();
+            }
+            if ((activePanel == 1) && pictureBox_rightpanel.Image != null)
+            {
+                Image img = pictureBox_rightpanel.Image;
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                pictureBox_rightpanel.Image = img;
+                Resize_imagepanels();
+            }
+        }
         private void RotateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!(FindControlAtCursor(this) is PictureBox thispicturebox)) return;
-            if (!(thispicturebox.Image is null))
-            {
-                Image img = thispicturebox.Image;
-                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                thispicturebox.Image = img;
-            }
+            RotateImage(panelfocus);
         }
 
         private void LoadPreviousImage(int activePanel)
@@ -847,6 +849,7 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
             }
+            Resize_imagepanels();
         }
 
         private void JumpBackToolStripMenuItem_Click(object sender, EventArgs e)
@@ -903,6 +906,7 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
             }
+            Resize_imagepanels();
         }
 
         private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
@@ -918,6 +922,23 @@ namespace ImageStitcher
         private void Button_releaseright_MouseClick(object sender, MouseEventArgs e)
         {
             ClearPanel(1);
+        }
+
+        private void mirrorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if ((panelfocus == 0) && pictureBox_leftpanel.Image != null )
+            {
+                Image img = pictureBox_leftpanel.Image;
+                img.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                pictureBox_leftpanel.Image = img;
+            }
+            if ((panelfocus == 1) && pictureBox_rightpanel.Image != null )
+            {
+                Image img = pictureBox_rightpanel.Image;
+                img.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                pictureBox_rightpanel.Image = img;
+
+            }
         }
     } // end MainWindow : Form
 }

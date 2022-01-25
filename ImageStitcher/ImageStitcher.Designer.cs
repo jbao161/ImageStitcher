@@ -35,13 +35,9 @@
             this.pictureBox_leftpanel = new System.Windows.Forms.PictureBox();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
-            this.button_verticalhorizontal = new System.Windows.Forms.Button();
-            this.button_releaseright = new System.Windows.Forms.Button();
             this.checkBox_openaftersave = new System.Windows.Forms.CheckBox();
             this.button_preview = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
-            this.button_swapimages = new System.Windows.Forms.Button();
-            this.button_releaseleft = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,6 +56,10 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_verticalhorizontal = new System.Windows.Forms.Button();
+            this.button_swapimages = new System.Windows.Forms.Button();
+            this.checkBox_randomOnClick = new System.Windows.Forms.CheckBox();
+            this.mirrorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -130,43 +130,18 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.checkBox_randomOnClick);
             this.panel_controls.Controls.Add(this.button_verticalhorizontal);
-            this.panel_controls.Controls.Add(this.button_releaseright);
             this.panel_controls.Controls.Add(this.checkBox_openaftersave);
+            this.panel_controls.Controls.Add(this.button_swapimages);
             this.panel_controls.Controls.Add(this.button_preview);
             this.panel_controls.Controls.Add(this.button_save);
-            this.panel_controls.Controls.Add(this.button_swapimages);
-            this.panel_controls.Controls.Add(this.button_releaseleft);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_controls.Location = new System.Drawing.Point(0, 510);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(978, 75);
             this.panel_controls.TabIndex = 7;
-            // 
-            // button_verticalhorizontal
-            // 
-            this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(166, 0);
-            this.button_verticalhorizontal.Name = "button_verticalhorizontal";
-            this.button_verticalhorizontal.Size = new System.Drawing.Size(522, 75);
-            this.button_verticalhorizontal.TabIndex = 4;
-            this.button_verticalhorizontal.Text = "Stack images vertically";
-            this.button_verticalhorizontal.UseVisualStyleBackColor = true;
-            this.button_verticalhorizontal.Click += new System.EventHandler(this.Button_verticalhorizontal_Click);
-            // 
-            // button_releaseright
-            // 
-            this.button_releaseright.AutoSize = true;
-            this.button_releaseright.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_releaseright.Location = new System.Drawing.Point(688, 0);
-            this.button_releaseright.Name = "button_releaseright";
-            this.button_releaseright.Size = new System.Drawing.Size(85, 75);
-            this.button_releaseright.TabIndex = 2;
-            this.button_releaseright.Text = "Clear Image ->";
-            this.button_releaseright.UseVisualStyleBackColor = true;
-            this.button_releaseright.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Button_releaseright_MouseClick);
             // 
             // checkBox_openaftersave
             // 
@@ -183,12 +158,11 @@
             // 
             // button_preview
             // 
-            this.button_preview.AutoSize = true;
             this.button_preview.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_preview.Location = new System.Drawing.Point(773, 0);
+            this.button_preview.Location = new System.Drawing.Point(698, 0);
             this.button_preview.Name = "button_preview";
-            this.button_preview.Size = new System.Drawing.Size(55, 75);
+            this.button_preview.Size = new System.Drawing.Size(130, 75);
             this.button_preview.TabIndex = 1;
             this.button_preview.Text = "Preview";
             this.button_preview.UseVisualStyleBackColor = true;
@@ -208,32 +182,6 @@
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.Button_save_Click);
             // 
-            // button_swapimages
-            // 
-            this.button_swapimages.AutoSize = true;
-            this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button_swapimages.Location = new System.Drawing.Point(85, 0);
-            this.button_swapimages.Name = "button_swapimages";
-            this.button_swapimages.Size = new System.Drawing.Size(81, 75);
-            this.button_swapimages.TabIndex = 5;
-            this.button_swapimages.Text = "Swap Images";
-            this.button_swapimages.UseVisualStyleBackColor = true;
-            this.button_swapimages.Click += new System.EventHandler(this.Button_swapimages_Click);
-            // 
-            // button_releaseleft
-            // 
-            this.button_releaseleft.AutoSize = true;
-            this.button_releaseleft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_releaseleft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button_releaseleft.Location = new System.Drawing.Point(0, 0);
-            this.button_releaseleft.Name = "button_releaseleft";
-            this.button_releaseleft.Size = new System.Drawing.Size(85, 75);
-            this.button_releaseleft.TabIndex = 3;
-            this.button_releaseleft.Text = "<- Clear Image";
-            this.button_releaseleft.UseVisualStyleBackColor = true;
-            this.button_releaseleft.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Button_releaseleft_MouseClick);
-            // 
             // contextMenu_image
             // 
             this.contextMenu_image.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -246,6 +194,7 @@
             this.toolStripMenuItem1,
             this.rotateToolStripMenuItem,
             this.blurBToolStripMenuItem,
+            this.mirrorToolStripMenuItem,
             this.toolStripSeparator3,
             this.clearToolStripMenuItem,
             this.previousLeftArrowToolStripMenuItem,
@@ -254,7 +203,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 292);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 336);
             // 
             // editToolStripMenuItem
             // 
@@ -360,6 +309,49 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
+            // button_verticalhorizontal
+            // 
+            this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(268, 0);
+            this.button_verticalhorizontal.Name = "button_verticalhorizontal";
+            this.button_verticalhorizontal.Size = new System.Drawing.Size(300, 75);
+            this.button_verticalhorizontal.TabIndex = 8;
+            this.button_verticalhorizontal.Text = "Stack images vertically";
+            this.button_verticalhorizontal.UseVisualStyleBackColor = true;
+            this.button_verticalhorizontal.Click += new System.EventHandler(this.Button_verticalhorizontal_Click);
+            // 
+            // button_swapimages
+            // 
+            this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_swapimages.Location = new System.Drawing.Point(568, 0);
+            this.button_swapimages.Name = "button_swapimages";
+            this.button_swapimages.Size = new System.Drawing.Size(130, 75);
+            this.button_swapimages.TabIndex = 5;
+            this.button_swapimages.Text = "Swap Images";
+            this.button_swapimages.UseVisualStyleBackColor = true;
+            this.button_swapimages.Click += new System.EventHandler(this.Button_swapimages_Click);
+            // 
+            // checkBox_randomOnClick
+            // 
+            this.checkBox_randomOnClick.AutoSize = true;
+            this.checkBox_randomOnClick.Checked = true;
+            this.checkBox_randomOnClick.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_randomOnClick.Location = new System.Drawing.Point(25, 17);
+            this.checkBox_randomOnClick.Name = "checkBox_randomOnClick";
+            this.checkBox_randomOnClick.Size = new System.Drawing.Size(152, 17);
+            this.checkBox_randomOnClick.TabIndex = 9;
+            this.checkBox_randomOnClick.Text = "Randomize Image on Click";
+            this.checkBox_randomOnClick.UseVisualStyleBackColor = true;
+            // 
+            // mirrorToolStripMenuItem
+            // 
+            this.mirrorToolStripMenuItem.Name = "mirrorToolStripMenuItem";
+            this.mirrorToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.mirrorToolStripMenuItem.Text = "Mirror";
+            this.mirrorToolStripMenuItem.Click += new System.EventHandler(this.mirrorToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -397,15 +389,11 @@
         private System.Windows.Forms.Button button_preview;
         private System.Windows.Forms.Button button_save;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.Button button_releaseright;
-        private System.Windows.Forms.Button button_releaseleft;
         private System.Windows.Forms.ContextMenuStrip contextMenu_image;
         private System.Windows.Forms.ToolStripMenuItem contextMenu_image_item_copy;
         private System.Windows.Forms.ToolStripMenuItem contextMenu_image_item_paste;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
-        private System.Windows.Forms.Button button_swapimages;
         private System.Windows.Forms.CheckBox checkBox_openaftersave;
-        private System.Windows.Forms.Button button_verticalhorizontal;
         private System.Windows.Forms.ToolStripMenuItem rotateToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem previousLeftArrowToolStripMenuItem;
@@ -419,6 +407,10 @@
         private System.Windows.Forms.ToolStripMenuItem jumpBackToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem blurBToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.Button button_verticalhorizontal;
+        private System.Windows.Forms.Button button_swapimages;
+        private System.Windows.Forms.CheckBox checkBox_randomOnClick;
+        private System.Windows.Forms.ToolStripMenuItem mirrorToolStripMenuItem;
     }
 }
 
