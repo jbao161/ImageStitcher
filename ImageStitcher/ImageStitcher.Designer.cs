@@ -350,7 +350,7 @@
             this.mirrorToolStripMenuItem.Name = "mirrorToolStripMenuItem";
             this.mirrorToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.mirrorToolStripMenuItem.Text = "Mirror";
-            this.mirrorToolStripMenuItem.Click += new System.EventHandler(this.mirrorToolStripMenuItem_Click);
+            this.mirrorToolStripMenuItem.Click += new System.EventHandler(this.MirrorToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
