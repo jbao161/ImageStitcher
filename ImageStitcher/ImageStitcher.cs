@@ -15,7 +15,7 @@ namespace ImageStitcher
         private readonly bool debugflag = true;
         private static int activePanel = 0;
         private static readonly int bluramount = 10;
-
+        // private static readonly int maxLengthFileList = (int)1.0e9;
         private void MsgDebug(string message)
         {
             if (debugflag) Console.WriteLine(message);
@@ -74,13 +74,10 @@ namespace ImageStitcher
          * Drag and drop
          * picture files from Windows explorer onto the panel to load the image
          */
-
         // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
-        private static readonly int maxLengthFileList = (int)1.0e9;
 
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
-            int maxFilesCount = maxLengthFileList;
 
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
             bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
@@ -92,49 +89,36 @@ namespace ImageStitcher
                 // set the pseudo-focus on the left or right panel
                 // then enumerate a list of all image files in the same directory as the loaded image
                 // then store the position of the loaded image in that list
-                if (targetPanel == 0)
+
+                imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
+                int imageCount = imageList.Count();
+                int imageIndex = 0;
+                string imagepath = filepaths[0];
+
+
+                if (isFolder) { imageIndex = 0; imagepath = imageList[0]; }
+
+                if (LoadImage(targetPanel, imagepath))
                 {
-                    imageFilesLeftPanel = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
-                    imageCountLeftPanel = imageFilesLeftPanel.Count();
-                    if (imageCountLeftPanel < maxFilesCount) maxFilesCount = imageCountLeftPanel;
-                    for (int i = 0; i < maxFilesCount; i++)
+                    for (int i = 0; i < imageCount; i++)
                     {
-                        if (imageFilesLeftPanel[i] == filepaths[0]) { imageIndexLeftPanel = i; previmageIndexLeftPanel = imageIndexLeftPanel; }
+                        if (imageList[i] == filepaths[0]) { imageIndex = i; }
                     }
-                    imageList = imageFilesLeftPanel;
-                    if (isFolder) { imageIndexLeftPanel = 0; previmageIndexLeftPanel = imageIndexLeftPanel; }
-                    try
+
+                    if (targetPanel == 0)
                     {
-                        string imagepath = filepaths[0];
-                        if (isFolder) imagepath = imageList[0];
-                        using (var bmpTemp = new Bitmap(imagepath))
-                        {
-                            pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
-                        }
+                        imageFilesLeftPanel = imageList;
+                        imageCountLeftPanel = imageCount;
+                        imageIndexLeftPanel = imageIndex;
+                        priorimageIndexLeftPanel = imageIndex;
                     }
-                    catch (Exception) { throw; }
-                }
-                if (targetPanel == 1)
-                {
-                    imageFilesRightPanel = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
-                    imageCountRightPanel = imageFilesRightPanel.Count();
-                    if (imageCountRightPanel < maxFilesCount) maxFilesCount = imageCountRightPanel;
-                    for (int i = 0; i < maxFilesCount; i++)
+                    if (targetPanel == 1)
                     {
-                        if (imageFilesRightPanel[i] == filepaths[0]) { imageIndexRightPanel = i; previmageIndexRightPanel = imageIndexRightPanel; }
+                        imageFilesRightPanel = imageList;
+                        imageCountRightPanel = imageCount;
+                        imageIndexRightPanel = imageIndex;
+                        priorimageIndexRightPanel = imageIndex;
                     }
-                    imageList = imageFilesRightPanel;
-                    if (isFolder) { imageIndexRightPanel = 0; previmageIndexRightPanel = imageIndexRightPanel; }
-                    try
-                    {
-                        string imagepath = filepaths[0];
-                        if (isFolder) imagepath = imageList[0];
-                        using (var bmpTemp = new Bitmap(imagepath))
-                        {
-                            pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
-                        }
-                    }
-                    catch (Exception) { throw; }
                 }
                 Resize_imagepanels();
             }
@@ -355,7 +339,7 @@ namespace ImageStitcher
                 imageFilesLeftPanel = null;
                 imageCountLeftPanel = 0;
                 imageIndexLeftPanel = 0;
-                previmageIndexLeftPanel = imageIndexLeftPanel;
+                priorimageIndexLeftPanel = imageIndexLeftPanel;
             }
             if (targetPanel == 1)
             {
@@ -363,7 +347,7 @@ namespace ImageStitcher
                 imageFilesRightPanel = null;
                 imageCountRightPanel = 0;
                 imageIndexRightPanel = 0;
-                previmageIndexRightPanel = imageIndexRightPanel;
+                priorimageIndexRightPanel = imageIndexRightPanel;
             }
         }
 
@@ -426,7 +410,7 @@ namespace ImageStitcher
 
         public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
         {
-            List<String> filesFound = new List<String>();
+            List<String> filesFound = new List<String>() ;
             var searchOption = isRecursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly;
             foreach (var filter in filters)
             {
@@ -473,8 +457,8 @@ namespace ImageStitcher
         private static List<string> imageFilesRightPanel;
         private static int imageIndexLeftPanel = 0;
         private static int imageIndexRightPanel = 0;
-        private static int previmageIndexLeftPanel = 0;
-        private static int previmageIndexRightPanel = 0;
+        private static int priorimageIndexLeftPanel = 0;
+        private static int priorimageIndexRightPanel = 0;
         private static int imageCountLeftPanel = 0;
         private static int imageCountRightPanel = 0;
 
@@ -523,9 +507,9 @@ namespace ImageStitcher
             imageFilesLeftPanel = imageFilesRightPanel;
             imageFilesRightPanel = tmp1;
             var tmp2 = imageIndexLeftPanel;
-            previmageIndexLeftPanel = imageIndexLeftPanel;
+            priorimageIndexLeftPanel = imageIndexLeftPanel;
             imageIndexLeftPanel = imageIndexRightPanel;
-            previmageIndexRightPanel = imageIndexRightPanel;
+            priorimageIndexRightPanel = imageIndexRightPanel;
             imageIndexRightPanel = tmp2;
             var tmp3 = imageCountLeftPanel;
             imageCountLeftPanel = imageCountRightPanel;
@@ -563,16 +547,12 @@ namespace ImageStitcher
                 {
                     int nextImageIndex = imageIndexLeftPanel - 1;
                     if (nextImageIndex < 0) nextImageIndex = imageCountLeftPanel - 1;
-                    previmageIndexLeftPanel = imageIndexLeftPanel;
-                    imageIndexLeftPanel = nextImageIndex;
-                    try
+
+                    if (LoadImage(targetPanel, imageFilesLeftPanel[nextImageIndex]))
                     {
-                        using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
-                        {
-                            pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
-                        }
+                        priorimageIndexLeftPanel = imageIndexLeftPanel;
+                        imageIndexLeftPanel = nextImageIndex;
                     }
-                    catch (Exception) { throw; }
                 }
                 Resize_imagepanels();
             }
@@ -582,16 +562,12 @@ namespace ImageStitcher
                 {
                     int nextImageIndex = imageIndexRightPanel - 1;
                     if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
-                    previmageIndexRightPanel = imageIndexRightPanel;
-                    imageIndexRightPanel = nextImageIndex;
-                    try
+
+                if (LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
                     {
-                        using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
-                        {
-                            pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
-                        }
+                        priorimageIndexRightPanel = imageIndexRightPanel;
+                        imageIndexRightPanel = nextImageIndex;
                     }
-                    catch (Exception) { throw; }
                 }
                 Resize_imagepanels();
             }
@@ -610,16 +586,12 @@ namespace ImageStitcher
                 {
                     int nextImageIndex = imageIndexLeftPanel + 1;
                     if (nextImageIndex >= imageCountLeftPanel) nextImageIndex = 0;
-                    previmageIndexLeftPanel = imageIndexLeftPanel;
-                    imageIndexLeftPanel = nextImageIndex;
-                    try
+
+                    if (LoadImage(targetPanel, imageFilesLeftPanel[nextImageIndex]))
                     {
-                        using (var bmpTemp = new Bitmap(imageFilesLeftPanel[nextImageIndex]))
-                        {
-                            pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
-                        }
+                        priorimageIndexLeftPanel = imageIndexLeftPanel;
+                        imageIndexLeftPanel = nextImageIndex;
                     }
-                    catch (Exception) { throw; }
                 }
             }
             if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
@@ -628,16 +600,11 @@ namespace ImageStitcher
                 {
                     int nextImageIndex = imageIndexRightPanel + 1;
                     if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
-                    previmageIndexRightPanel = imageIndexRightPanel;
-                    imageIndexRightPanel = nextImageIndex;
-                    try
+                    if(LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
                     {
-                        using (var bmpTemp = new Bitmap(imageFilesRightPanel[nextImageIndex]))
-                        {
-                            pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
-                        }
+                        priorimageIndexRightPanel = imageIndexRightPanel;
+                        imageIndexRightPanel = nextImageIndex;
                     }
-                    catch (Exception) { throw; }
                 }
             }
             Resize_imagepanels();
@@ -749,31 +716,22 @@ namespace ImageStitcher
         {
             if (targetPanel == 0 && imageFilesLeftPanel != null)
             {
-                int swapImageIndex = imageIndexLeftPanel;
-                imageIndexLeftPanel = previmageIndexLeftPanel;
-                previmageIndexLeftPanel = swapImageIndex;
-                try
+                if (LoadImage(targetPanel, imageFilesLeftPanel[priorimageIndexLeftPanel]))
                 {
-                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[imageIndexLeftPanel]))
-                    {
-                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
-                    }
+                    int swapImageIndex = imageIndexLeftPanel;
+                    imageIndexLeftPanel = priorimageIndexLeftPanel;
+                    priorimageIndexLeftPanel = swapImageIndex;
                 }
-                catch (Exception) { throw; }
             }
             if (targetPanel == 1 && imageFilesRightPanel != null)
             {
-                int swapImageIndex = imageIndexRightPanel;
-                imageIndexRightPanel = previmageIndexRightPanel;
-                previmageIndexRightPanel = swapImageIndex;
-                try
+
+                if (LoadImage(targetPanel, imageFilesRightPanel[priorimageIndexRightPanel])) 
                 {
-                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[imageIndexRightPanel]))
-                    {
-                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
-                    }
+                    int swapImageIndex = imageIndexRightPanel;
+                    imageIndexRightPanel = priorimageIndexRightPanel;
+                    priorimageIndexRightPanel = swapImageIndex;
                 }
-                catch (Exception) { throw; }
             }
             Resize_imagepanels();
         }
@@ -794,6 +752,19 @@ namespace ImageStitcher
             }
         }
 
+        private bool LoadImage(int targetPanel, string imagePath)
+        {
+            try
+            {
+                using (var bmpTemp = new Bitmap(imagePath))
+                {
+                    if (targetPanel == 0) { pictureBox_leftpanel.Image = new Bitmap(bmpTemp); }
+                    if (targetPanel == 1) { pictureBox_rightpanel.Image = new Bitmap(bmpTemp); }
+                    return true;
+                }
+            }
+            catch (Exception) { MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath); return false; }
+        }
         private void LoadRandomImage(int targetPanel)
         {
             if (targetPanel == 0 && imageCountLeftPanel > 1)
@@ -803,16 +774,11 @@ namespace ImageStitcher
                 {
                     randomindex = GetRandomNumber(0, imageCountLeftPanel);
                 }
-                try
+                if (LoadImage(targetPanel, imageFilesLeftPanel[randomindex]))
                 {
-                    using (var bmpTemp = new Bitmap(imageFilesLeftPanel[randomindex]))
-                    {
-                        pictureBox_leftpanel.Image = new Bitmap(bmpTemp);
-                    }
-                    previmageIndexLeftPanel = imageIndexLeftPanel;
+                    priorimageIndexLeftPanel = imageIndexLeftPanel;
                     imageIndexLeftPanel = randomindex;
                 }
-                catch (Exception) { throw; }
             }
             if (targetPanel == 1 && imageCountRightPanel > 1)
             {
@@ -821,16 +787,11 @@ namespace ImageStitcher
                 {
                     randomindex = GetRandomNumber(0, imageCountRightPanel);
                 }
-                try
+                if (LoadImage(targetPanel, imageFilesRightPanel[randomindex]))
                 {
-                    using (var bmpTemp = new Bitmap(imageFilesRightPanel[randomindex]))
-                    {
-                        pictureBox_rightpanel.Image = new Bitmap(bmpTemp);
-                    }
-                    previmageIndexRightPanel = imageIndexRightPanel;
+                    priorimageIndexRightPanel = imageIndexRightPanel;
                     imageIndexRightPanel = randomindex;
                 }
-                catch (Exception) { throw; }
             }
             Resize_imagepanels();
         }
