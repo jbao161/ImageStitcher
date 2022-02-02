@@ -21,12 +21,12 @@ namespace ImageStitcher
             if (debugflag) Console.WriteLine(message);
         }
 
-        /* Section 1 : Find a control at mouse location
-         * this is to find the picture being right clicked on when we get the copy paste context menu
-         * https://stackoverflow.com/a/16543294
-        */
+    /* Section 1 : Find a control at mouse location
+     * this is to find the picture being right clicked on when we get the copy paste context menu
+     * https://stackoverflow.com/a/16543294
+    */
 
-        public static Control FindControlAtPoint(Control container, Point pos)
+    public static Control FindControlAtPoint(Control container, Point pos)
         {
             Control child;
             foreach (Control c in container.Controls)
@@ -52,8 +52,15 @@ namespace ImageStitcher
         public MainWindow()
         {
             InitializeComponent();
+            UpdateLabelImageIndex();
         }
 
+        private void UpdateLabelImageIndex()
+        {
+
+          label_imageindex_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : ((imageIndexLeftPanel+1) + "/" + imageCountLeftPanel);
+          label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel+1) + "/" + imageCountRightPanel);
+        }
         private void MainWindow_Load(object sender, EventArgs e)
         {
             pictureBox_rightpanel.AllowDrop = true;
@@ -121,6 +128,7 @@ namespace ImageStitcher
                     }
                 }
                 Resize_imagepanels();
+                UpdateLabelImageIndex();
             }
         }
 
@@ -349,6 +357,7 @@ namespace ImageStitcher
                 imageIndexRightPanel = 0;
                 priorimageIndexRightPanel = imageIndexRightPanel;
             }
+            UpdateLabelImageIndex();
         }
 
         private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
@@ -396,7 +405,7 @@ namespace ImageStitcher
         // copy image to clipboard from panel
         private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
         {
-            PictureBox thispicturebox = FindControlAtCursor(this) as PictureBox;
+            PictureBox thispicturebox = contextmenufocus == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
             if (!(thispicturebox.Image is null))
             {
                 DataObject dobj = new DataObject();
@@ -514,6 +523,7 @@ namespace ImageStitcher
             var tmp3 = imageCountLeftPanel;
             imageCountLeftPanel = imageCountRightPanel;
             imageCountRightPanel = tmp3;
+            UpdateLabelImageIndex();
         }
 
         private void RotateImage(int targetPanel)
@@ -571,6 +581,7 @@ namespace ImageStitcher
                 }
                 Resize_imagepanels();
             }
+            UpdateLabelImageIndex();
         }
 
         private void PreviousLeftArrowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -608,6 +619,7 @@ namespace ImageStitcher
                 }
             }
             Resize_imagepanels();
+            UpdateLabelImageIndex();
         }
 
         private void NextRightArrowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -705,6 +717,7 @@ namespace ImageStitcher
                     throw;
                 }
             }
+            UpdateLabelImageIndex();
         }
 
         private void SendToTrashToolStripMenuItem_Click(object sender, EventArgs e)
@@ -734,6 +747,7 @@ namespace ImageStitcher
                 }
             }
             Resize_imagepanels();
+            UpdateLabelImageIndex();
         }
 
         private void JumpBackToolStripMenuItem_Click(object sender, EventArgs e)
@@ -765,6 +779,7 @@ namespace ImageStitcher
             }
             catch (Exception) { MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath); return false; }
         }
+
         private void LoadRandomImage(int targetPanel)
         {
             if (targetPanel == 0 && imageCountLeftPanel > 1)
@@ -794,6 +809,7 @@ namespace ImageStitcher
                 }
             }
             Resize_imagepanels();
+            UpdateLabelImageIndex();
         }
 
         private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
