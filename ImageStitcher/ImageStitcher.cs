@@ -6,7 +6,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace ImageStitcher
 {
@@ -236,17 +238,54 @@ namespace ImageStitcher
 
         /*  Open the stitched image in a viewing window
          */
+        readonly double screen_height = SystemParameters.PrimaryScreenHeight;
+        readonly double screen_width = SystemParameters.PrimaryScreenWidth;
+
 
         private void Button_preview_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
             Form form = new Form();
+            form.Text = "Preview";
             if (!(stitchedimage is null)) try
                 {
-                    {
-                        form.StartPosition = FormStartPosition.CenterScreen;
+                    var width = Screen.PrimaryScreen.Bounds.Width;
+                    var height = Screen.PrimaryScreen.Bounds.Width;
+                    form.StartPosition = FormStartPosition.CenterScreen;
                         form.ClientSize = stitchedimage.Size;
-                        form.WindowState = FormWindowState.Maximized;
+                        // https://stackoverflow.com/questions/21273520/how-do-i-startposition-of-the-form-from-the-current-mouse-cursor-position
+                        if (form.ClientSize.Height > 0.9 * height || form.ClientSize.Width > width)
+                        {
+                            form.WindowState = FormWindowState.Maximized;
+                        } else
+                        {
+                            // center the image on screen
+                            form.StartPosition = FormStartPosition.Manual;
+                            form.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - form.Width) / 2,
+                            (Screen.PrimaryScreen.WorkingArea.Height - form.Height) / 2);
+                            // Nudge the image so it is always underneath the mouse cursor and immediately clickable.
+                            if (Cursor.Position.X < form.Left)
+                            {
+                                form.Left = Cursor.Position.X - 20;
+                                //MessageBox.Show("nudging image to the left.");
+                            } 
+                            else if (Cursor.Position.X > form.Right)
+                            {
+                                form.Left = (Cursor.Position.X - form.ClientSize.Width);
+                                // MessageBox.Show("nudging image to the right.");
+                            }
+                            if (Cursor.Position.Y < form.Top)
+                            {
+                                form.Top = Cursor.Position.Y;
+                                // MessageBox.Show("nudging the image up.");
+                            }
+                            else if(Cursor.Position.Y > form.Bottom)
+                            {
+                                form.Top = (Cursor.Position.Y - form.ClientSize.Height);
+                                // MessageBox.Show("nudging the image down.");
+                            }
+                    }
+
                         PictureBox pb = new PictureBox
                         {
                             Dock = DockStyle.Fill,
@@ -261,7 +300,7 @@ namespace ImageStitcher
                         form.Controls.Add(pb);
                         //Subscribe for event using designer or in constructor or form load
                         form.Show();
-                    }
+
                 }
                 catch (Exception ex)
                 {
