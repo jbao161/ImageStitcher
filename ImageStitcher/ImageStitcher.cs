@@ -8,12 +8,25 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
-using MessageBox = System.Windows.Forms.MessageBox;
+using System.Runtime.InteropServices;
 
 namespace ImageStitcher
 {
     public partial class MainWindow : Form
     {
+        // begin https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
+        [DllImport("user32.dll")]
+        static extern IntPtr FindWindow(IntPtr classname, string title); // extern method: FindWindow
+
+        [DllImport("user32.dll")]
+        static extern void MoveWindow(IntPtr hwnd, int X, int Y,
+            int nWidth, int nHeight, bool rePaint); // extern method: MoveWindow
+
+        [DllImport("user32.dll")]
+        static extern bool GetWindowRect
+            (IntPtr hwnd, out Rectangle rect); // extern method: GetWindowRect
+        // end https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
+
         private readonly bool debugflag = true;
         private static int activePanel = 0;
         private static readonly int bluramount = 10;
@@ -238,15 +251,14 @@ namespace ImageStitcher
 
         /*  Open the stitched image in a viewing window
          */
-        readonly double screen_height = SystemParameters.PrimaryScreenHeight;
-        readonly double screen_width = SystemParameters.PrimaryScreenWidth;
-
 
         private void Button_preview_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
-            Form form = new Form();
-            form.Text = "Preview";
+            Form form = new Form
+            {
+                Text = "Preview"
+            };
             if (!(stitchedimage is null)) try
                 {
                     var width = Screen.PrimaryScreen.Bounds.Width;
@@ -805,6 +817,25 @@ namespace ImageStitcher
             }
         }
 
+        //https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
+        void FindAndMoveMsgBox(int x, int y, bool repaint, string title)
+        {
+            Thread thr = new Thread(() => // create a new thread
+            {
+                IntPtr msgBox = IntPtr.Zero;
+                // while there's no MessageBox, FindWindow returns IntPtr.Zero
+                while ((msgBox = FindWindow(IntPtr.Zero, title)) == IntPtr.Zero) ;
+                // after the while loop, msgBox is the handle of your MessageBox
+                Rectangle r = new Rectangle();
+                GetWindowRect(msgBox, out r); // Gets the rectangle of the message box
+                MoveWindow(msgBox /* handle of the message box */, x, y,
+                   r.Width - r.X /* width of originally message box */,
+                   r.Height - r.Y /* height of originally message box */,
+                   repaint /* if true, the message box repaints */);
+            });
+            thr.Start(); // starts the thread
+        }
+
         private bool LoadImage(int targetPanel, string imagePath)
         {
             try
@@ -816,7 +847,10 @@ namespace ImageStitcher
                     return true;
                 }
             }
-            catch (Exception) { MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath); return false; }
+            catch (Exception) {
+                FindAndMoveMsgBox(Cursor.Position.X - 250, Cursor.Position.Y - 120, true, "Attention"); // can't find the dimensions of MessageBox!
+                System.Windows.Forms.MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath, "Attention");
+                return false; }
         }
 
         private void LoadRandomImage(int targetPanel)

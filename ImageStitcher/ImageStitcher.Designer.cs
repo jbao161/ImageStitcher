@@ -107,7 +107,8 @@
             // label_imageindex_leftpanel
             // 
             this.label_imageindex_leftpanel.AutoSize = true;
-            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(3, 486);
+            this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 486);
             this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
             this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
             this.label_imageindex_leftpanel.TabIndex = 1;
