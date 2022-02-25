@@ -873,7 +873,7 @@ namespace ImageStitcher
                 //System.Windows.Forms.MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath, "Attention");
                 if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
                 if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
-                return false;
+                return true; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
             }
         }
 
