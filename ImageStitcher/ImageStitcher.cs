@@ -5,10 +5,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Windows;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace ImageStitcher
 {
@@ -16,32 +16,34 @@ namespace ImageStitcher
     {
         // begin https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
         [DllImport("user32.dll")]
-        static extern IntPtr FindWindow(IntPtr classname, string title); // extern method: FindWindow
+        private static extern IntPtr FindWindow(IntPtr classname, string title); // extern method: FindWindow
 
         [DllImport("user32.dll")]
-        static extern void MoveWindow(IntPtr hwnd, int X, int Y,
+        private static extern void MoveWindow(IntPtr hwnd, int X, int Y,
             int nWidth, int nHeight, bool rePaint); // extern method: MoveWindow
 
         [DllImport("user32.dll")]
-        static extern bool GetWindowRect
+        private static extern bool GetWindowRect
             (IntPtr hwnd, out Rectangle rect); // extern method: GetWindowRect
+
         // end https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
 
         private readonly bool debugflag = true;
         private static int activePanel = 0;
         private static readonly int bluramount = 10;
+
         // private static readonly int maxLengthFileList = (int)1.0e9;
         private void MsgDebug(string message)
         {
             if (debugflag) Console.WriteLine(message);
         }
 
-    /* Section 1 : Find a control at mouse location
-     * this is to find the picture being right clicked on when we get the copy paste context menu
-     * https://stackoverflow.com/a/16543294
-    */
+        /* Section 1 : Find a control at mouse location
+         * this is to find the picture being right clicked on when we get the copy paste context menu
+         * https://stackoverflow.com/a/16543294
+        */
 
-    public static Control FindControlAtPoint(Control container, Point pos)
+        public static Control FindControlAtPoint(Control container, Point pos)
         {
             Control child;
             foreach (Control c in container.Controls)
@@ -72,10 +74,10 @@ namespace ImageStitcher
 
         private void UpdateLabelImageIndex()
         {
-
-          label_imageindex_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : ((imageIndexLeftPanel+1) + "/" + imageCountLeftPanel);
-          label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel+1) + "/" + imageCountRightPanel);
+            label_imageindex_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : ((imageIndexLeftPanel + 1) + "/" + imageCountLeftPanel);
+            label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel + 1) + "/" + imageCountRightPanel);
         }
+
         private void MainWindow_Load(object sender, EventArgs e)
         {
             pictureBox_rightpanel.AllowDrop = true;
@@ -100,7 +102,6 @@ namespace ImageStitcher
 
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
-
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
             bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
             string folderPath = Path.GetDirectoryName(filepaths[0]);
@@ -116,7 +117,6 @@ namespace ImageStitcher
                 int imageCount = imageList.Count();
                 int imageIndex = 0;
                 string imagepath = filepaths[0];
-
 
                 if (isFolder) { imageIndex = 0; imagepath = imageList[0]; }
 
@@ -264,55 +264,55 @@ namespace ImageStitcher
                     var width = Screen.PrimaryScreen.Bounds.Width;
                     var height = Screen.PrimaryScreen.Bounds.Width;
                     form.StartPosition = FormStartPosition.CenterScreen;
-                        form.ClientSize = stitchedimage.Size;
-                        // https://stackoverflow.com/questions/21273520/how-do-i-startposition-of-the-form-from-the-current-mouse-cursor-position
-                        if (form.ClientSize.Height > 0.9 * height || form.ClientSize.Width > width)
+                    form.ClientSize = stitchedimage.Size;
+                    // https://stackoverflow.com/questions/21273520/how-do-i-startposition-of-the-form-from-the-current-mouse-cursor-position
+                    if (form.ClientSize.Height > 0.9 * height || form.ClientSize.Width > width)
+                    {
+                        form.WindowState = FormWindowState.Maximized;
+                    }
+                    else
+                    {
+                        // center the image on screen
+                        form.StartPosition = FormStartPosition.Manual;
+                        form.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - form.Width) / 2,
+                        (Screen.PrimaryScreen.WorkingArea.Height - form.Height) / 2);
+                        // Nudge the image so it is always underneath the mouse cursor and immediately clickable.
+                        if (Cursor.Position.X < form.Left)
                         {
-                            form.WindowState = FormWindowState.Maximized;
-                        } else
+                            form.Left = Cursor.Position.X - 20;
+                            //MessageBox.Show("nudging image to the left.");
+                        }
+                        else if (Cursor.Position.X > form.Right)
                         {
-                            // center the image on screen
-                            form.StartPosition = FormStartPosition.Manual;
-                            form.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - form.Width) / 2,
-                            (Screen.PrimaryScreen.WorkingArea.Height - form.Height) / 2);
-                            // Nudge the image so it is always underneath the mouse cursor and immediately clickable.
-                            if (Cursor.Position.X < form.Left)
-                            {
-                                form.Left = Cursor.Position.X - 20;
-                                //MessageBox.Show("nudging image to the left.");
-                            } 
-                            else if (Cursor.Position.X > form.Right)
-                            {
-                                form.Left = (Cursor.Position.X - form.ClientSize.Width);
-                                // MessageBox.Show("nudging image to the right.");
-                            }
-                            if (Cursor.Position.Y < form.Top)
-                            {
-                                form.Top = Cursor.Position.Y;
-                                // MessageBox.Show("nudging the image up.");
-                            }
-                            else if(Cursor.Position.Y > form.Bottom)
-                            {
-                                form.Top = (Cursor.Position.Y - form.ClientSize.Height);
-                                // MessageBox.Show("nudging the image down.");
-                            }
+                            form.Left = (Cursor.Position.X - form.ClientSize.Width);
+                            // MessageBox.Show("nudging image to the right.");
+                        }
+                        if (Cursor.Position.Y < form.Top)
+                        {
+                            form.Top = Cursor.Position.Y;
+                            // MessageBox.Show("nudging the image up.");
+                        }
+                        else if (Cursor.Position.Y > form.Bottom)
+                        {
+                            form.Top = (Cursor.Position.Y - form.ClientSize.Height);
+                            // MessageBox.Show("nudging the image down.");
+                        }
                     }
 
-                        PictureBox pb = new PictureBox
-                        {
-                            Dock = DockStyle.Fill,
-                            Image = stitchedimage,
-                            SizeMode = PictureBoxSizeMode.Zoom
-                        };
-                        void PreviewFormClose(object sen, EventArgs eve)
-                        {
-                            form.Close();
-                        }
-                        pb.MouseClick += PreviewFormClose;
-                        form.Controls.Add(pb);
-                        //Subscribe for event using designer or in constructor or form load
-                        form.Show();
-
+                    PictureBox pb = new PictureBox
+                    {
+                        Dock = DockStyle.Fill,
+                        Image = stitchedimage,
+                        SizeMode = PictureBoxSizeMode.Zoom
+                    };
+                    void PreviewFormClose(object sen, EventArgs eve)
+                    {
+                        form.Close();
+                    }
+                    pb.MouseClick += PreviewFormClose;
+                    form.Controls.Add(pb);
+                    //Subscribe for event using designer or in constructor or form load
+                    form.Show();
                 }
                 catch (Exception ex)
                 {
@@ -470,7 +470,7 @@ namespace ImageStitcher
 
         public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
         {
-            List<String> filesFound = new List<String>() ;
+            List<String> filesFound = new List<String>();
             var searchOption = isRecursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly;
             foreach (var filter in filters)
             {
@@ -624,7 +624,7 @@ namespace ImageStitcher
                     int nextImageIndex = imageIndexRightPanel - 1;
                     if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
 
-                if (LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
+                    if (LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
                     {
                         priorimageIndexRightPanel = imageIndexRightPanel;
                         imageIndexRightPanel = nextImageIndex;
@@ -662,7 +662,7 @@ namespace ImageStitcher
                 {
                     int nextImageIndex = imageIndexRightPanel + 1;
                     if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
-                    if(LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
+                    if (LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
                     {
                         priorimageIndexRightPanel = imageIndexRightPanel;
                         imageIndexRightPanel = nextImageIndex;
@@ -686,13 +686,14 @@ namespace ImageStitcher
                 Bitmap result = blur.Process(bluramount);
                 pictureBox_leftpanel.Image = result;
             }
-            if ((targetPanel == 1) && pictureBox_rightpanel.Image != null )
+            if ((targetPanel == 1) && pictureBox_rightpanel.Image != null)
             {
                 var blur = new GaussianBlur(pictureBox_rightpanel.Image as Bitmap);
                 Bitmap result = blur.Process(bluramount);
                 pictureBox_rightpanel.Image = result;
             }
         }
+
         private void BlurBToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Blur(activePanel);
@@ -737,7 +738,7 @@ namespace ImageStitcher
 
         private void SendToTrash(int targetPanel)
         {
-            if (targetPanel == 0 && pictureBox_leftpanel.Image!=null && imageFilesLeftPanel != null)
+            if (targetPanel == 0 && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null)
             {
                 try
                 {
@@ -747,9 +748,9 @@ namespace ImageStitcher
                         Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
                     imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
                     imageCountLeftPanel--;
-                    LoadPreviousImage(activePanel);
                 }
                 catch (Exception) { throw; }
+                LoadPreviousImage(targetPanel);
             }
             if (targetPanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null)
             {
@@ -761,12 +762,12 @@ namespace ImageStitcher
                         Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
                     imageFilesRightPanel.RemoveAt(imageIndexRightPanel);
                     imageCountRightPanel--;
-                    LoadPreviousImage(activePanel);
                 }
                 catch (Exception)
                 {
                     throw;
                 }
+                LoadPreviousImage(targetPanel);
             }
             UpdateLabelImageIndex();
         }
@@ -789,8 +790,7 @@ namespace ImageStitcher
             }
             if (targetPanel == 1 && imageFilesRightPanel != null)
             {
-
-                if (LoadImage(targetPanel, imageFilesRightPanel[priorimageIndexRightPanel])) 
+                if (LoadImage(targetPanel, imageFilesRightPanel[priorimageIndexRightPanel]))
                 {
                     int swapImageIndex = imageIndexRightPanel;
                     imageIndexRightPanel = priorimageIndexRightPanel;
@@ -818,7 +818,7 @@ namespace ImageStitcher
         }
 
         //https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
-        void FindAndMoveMsgBox(int x, int y, bool repaint, string title)
+        private void FindAndMoveMsgBox(int x, int y, bool repaint, string title)
         {
             Thread thr = new Thread(() => // create a new thread
             {
@@ -836,21 +836,45 @@ namespace ImageStitcher
             thr.Start(); // starts the thread
         }
 
+        public static string SpliceText(string text, int lineLength)
+        {
+            return Regex.Replace(text, "(.{" + lineLength + "})", "$1" + Environment.NewLine );
+        }
+        private void WriteTextOnImage(PictureBox targetpicturebox, String text)
+        {
+            Bitmap bmp = new Bitmap(600, 600);
+            string tmptext = SpliceText(text, 45);
+            using (Graphics graph = Graphics.FromImage(bmp))
+            {
+                Rectangle ImageSize = new Rectangle(0, 0, 600, 600);
+                graph.FillRectangle(Brushes.Gray, ImageSize);
+                graph.DrawString(tmptext,
+                new Font("Arial", 16),
+                new SolidBrush(Color.Black),
+                50, 200,
+                new System.Drawing.StringFormat());
+            }
+            targetpicturebox.Image = bmp;
+        }
         private bool LoadImage(int targetPanel, string imagePath)
         {
             try
             {
-                using (var bmpTemp = new Bitmap(imagePath))
+                using ( var bmpTemp = new Bitmap(imagePath))
                 {
                     if (targetPanel == 0) { pictureBox_leftpanel.Image = new Bitmap(bmpTemp); }
                     if (targetPanel == 1) { pictureBox_rightpanel.Image = new Bitmap(bmpTemp); }
                     return true;
                 }
             }
-            catch (Exception) {
-                FindAndMoveMsgBox(Cursor.Position.X - 250, Cursor.Position.Y - 120, true, "Attention"); // can't find the dimensions of MessageBox!
-                System.Windows.Forms.MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath, "Attention");
-                return false; }
+            catch (Exception)
+            {
+                //FindAndMoveMsgBox(Cursor.Position.X - 250, Cursor.Position.Y - 120, true, "Attention"); // can't find the dimensions of MessageBox!
+                //System.Windows.Forms.MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath, "Attention");
+                if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
+                if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
+                return false;
+            }
         }
 
         private void LoadRandomImage(int targetPanel)
