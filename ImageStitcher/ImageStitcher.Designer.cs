@@ -34,6 +34,7 @@
             this.splitContainer_bothimages = new System.Windows.Forms.SplitContainer();
             this.label_imageindex_leftpanel = new System.Windows.Forms.Label();
             this.pictureBox_leftpanel = new System.Windows.Forms.PictureBox();
+            this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
             this.checkBox_randomOnClick = new System.Windows.Forms.CheckBox();
@@ -61,7 +62,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -127,6 +127,16 @@
             this.pictureBox_leftpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
             this.pictureBox_leftpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
             this.pictureBox_leftpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Control_MouseClick_copypastemenu);
+            // 
+            // label_imageindex_rightpanel
+            // 
+            this.label_imageindex_rightpanel.AutoSize = true;
+            this.label_imageindex_rightpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 486);
+            this.label_imageindex_rightpanel.Name = "label_imageindex_rightpanel";
+            this.label_imageindex_rightpanel.Size = new System.Drawing.Size(140, 13);
+            this.label_imageindex_rightpanel.TabIndex = 1;
+            this.label_imageindex_rightpanel.Text = "label_imageindex_rightpanel";
             // 
             // pictureBox_rightpanel
             // 
@@ -365,16 +375,6 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
-            // 
-            // label_imageindex_rightpanel
-            // 
-            this.label_imageindex_rightpanel.AutoSize = true;
-            this.label_imageindex_rightpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 486);
-            this.label_imageindex_rightpanel.Name = "label_imageindex_rightpanel";
-            this.label_imageindex_rightpanel.Size = new System.Drawing.Size(140, 13);
-            this.label_imageindex_rightpanel.TabIndex = 1;
-            this.label_imageindex_rightpanel.Text = "label_imageindex_rightpanel";
             // 
             // MainWindow
             // 

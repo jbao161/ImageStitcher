@@ -454,6 +454,18 @@ namespace ImageStitcher
             }
         }
 
+        // https://stackoverflow.com/questions/2077981/cut-files-to-clipboard-in-c-sharp
+        private void PutFilesOnClipboard(StringCollection filesAndFolders, bool moveFilesOnPaste = false)
+        {
+            var dropEffect = moveFilesOnPaste ? DragDropEffects.Move : DragDropEffects.Copy;
+
+            var data = new DataObject();
+            data.SetFileDropList(filesAndFolders);
+            data.SetData("Preferred Dropeffect", new MemoryStream(BitConverter.GetBytes((int)dropEffect)));
+            Clipboard.SetDataObject(data);
+        }
+
+
         // copy image to clipboard from panel
         private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
         {
@@ -463,21 +475,36 @@ namespace ImageStitcher
             {
                 DataObject dobj = new DataObject();
                 dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
-                Clipboard.SetDataObject(dobj, true);
+                Clipboard.SetDataObject(dobj, true); // if no modifier keys are held, store in clipboard as image content
 
-                if (!((Control.ModifierKeys & Keys.Shift) == Keys.Shift))
+                Boolean bool_movefiles = (Control.ModifierKeys & Keys.Control) == Keys.Control; // if control is held at click, store in clipboard as 'cut' instead of 'copy'
+                if (!((Control.ModifierKeys & Keys.Shift) == Keys.Shift)) // if shift is held at click, store in clipboard as filepath
                 {
                     // https://stackoverflow.com/questions/211611/copy-files-to-clipboard-in-c-sharp
                     StringCollection paths = new StringCollection();
-                    if (contextmenufocus == 0 & !(imageFilesLeftPanel is null))
+                    if (contextmenufocus == 0 && !(imageFilesLeftPanel is null) && imageCountLeftPanel != 0)
                     {
+
                         paths.Add(imageFilesLeftPanel[imageIndexLeftPanel]);
-                        Clipboard.SetFileDropList(paths);
+                        PutFilesOnClipboard(paths, bool_movefiles);
+                        if (bool_movefiles)
+                        {
+                            try
+                            {
+
+                                imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
+                                imageCountLeftPanel--;
+                            }
+                            catch (Exception) { throw; }
+                            LoadPreviousImage(contextmenufocus);
+                        }
+                        //Clipboard.SetFileDropList(paths);
                     }
-                    if (contextmenufocus == 1 & !(imageFilesRightPanel is null))
+                    if (contextmenufocus == 1 && !(imageFilesRightPanel is null) && imageCountRightPanel !=0)
                     {
                         paths.Add(imageFilesRightPanel[imageIndexRightPanel]);
-                        Clipboard.SetFileDropList(paths);
+                        PutFilesOnClipboard(paths, bool_movefiles);
+                        //Clipboard.SetFileDropList(paths);
                     }
                 }
             }
@@ -621,13 +648,12 @@ namespace ImageStitcher
 
         private void LoadPreviousImage(int targetPanel)
         {
-            if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
+            if (targetPanel == 0 && pictureBox_leftpanel.Image != null )
             {
-                if (imageFilesLeftPanel != null)
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
                 {
                     int nextImageIndex = imageIndexLeftPanel - 1;
                     if (nextImageIndex < 0) nextImageIndex = imageCountLeftPanel - 1;
-
                     if (LoadImage(targetPanel, imageFilesLeftPanel[nextImageIndex]))
                     {
                         priorimageIndexLeftPanel = imageIndexLeftPanel;
@@ -636,12 +662,12 @@ namespace ImageStitcher
                 }
                 Resize_imagepanels();
             }
-            if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
+            if (targetPanel == 1 && pictureBox_rightpanel.Image != null )
             {
-                if (imageFilesRightPanel != null)
+                if (imageFilesRightPanel != null && imageCountRightPanel!= 0)
                 {
                     int nextImageIndex = imageIndexRightPanel - 1;
-                    if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
+                    if (nextImageIndex < 0) nextImageIndex =  imageCountRightPanel - 1;
 
                     if (LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
                     {
@@ -663,7 +689,7 @@ namespace ImageStitcher
         {
             if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
             {
-                if (imageFilesLeftPanel != null)
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
                 {
                     int nextImageIndex = imageIndexLeftPanel + 1;
                     if (nextImageIndex >= imageCountLeftPanel) nextImageIndex = 0;
@@ -677,7 +703,7 @@ namespace ImageStitcher
             }
             if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
             {
-                if (imageFilesRightPanel != null)
+                if (imageFilesRightPanel != null && imageCountRightPanel !=0)
                 {
                     int nextImageIndex = imageIndexRightPanel + 1;
                     if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
@@ -721,7 +747,7 @@ namespace ImageStitcher
         //https://stackoverflow.com/questions/16022188/open-an-image-with-the-windows-default-editor-in-c-sharp
         private void EditToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (activePanel == 0 && pictureBox_leftpanel.Image != null)
+            if (activePanel == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesLeftPanel[imageIndexLeftPanel])
                 {
@@ -729,7 +755,7 @@ namespace ImageStitcher
                 };
                 Process.Start(startInfo);
             }
-            if (activePanel == 1 && pictureBox_rightpanel.Image != null)
+            if (activePanel == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel])
                 {
@@ -742,11 +768,11 @@ namespace ImageStitcher
         //https://stackoverflow.com/questions/9646114/open-file-location
         private void OpenFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (activePanel == 0 && imageFilesLeftPanel != null && imageFilesLeftPanel != null)
+            if (activePanel == 0 && imageFilesLeftPanel != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
             }
-            if (activePanel == 1 && imageFilesLeftPanel != null && imageFilesRightPanel != null)
+            if (activePanel == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel !=0)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
             }
@@ -757,7 +783,7 @@ namespace ImageStitcher
 
         private void SendToTrash(int targetPanel)
         {
-            if (targetPanel == 0 && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null)
+            if (targetPanel == 0 && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
                 try
                 {
@@ -771,7 +797,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 LoadPreviousImage(targetPanel);
             }
-            if (targetPanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null)
+            if (targetPanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel !=0)
             {
                 try
                 {
@@ -798,7 +824,7 @@ namespace ImageStitcher
 
         private void JumpBack(int targetPanel)
         {
-            if (targetPanel == 0 && imageFilesLeftPanel != null)
+            if (targetPanel == 0 && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
                 if (LoadImage(targetPanel, imageFilesLeftPanel[priorimageIndexLeftPanel]))
                 {
@@ -807,7 +833,7 @@ namespace ImageStitcher
                     priorimageIndexLeftPanel = swapImageIndex;
                 }
             }
-            if (targetPanel == 1 && imageFilesRightPanel != null)
+            if (targetPanel == 1 && imageFilesRightPanel != null && imageCountRightPanel!=0)
             {
                 if (LoadImage(targetPanel, imageFilesRightPanel[priorimageIndexRightPanel]))
                 {
