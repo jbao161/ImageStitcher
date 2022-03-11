@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -457,12 +458,30 @@ namespace ImageStitcher
         private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
         {
             PictureBox thispicturebox = contextmenufocus == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+
             if (!(thispicturebox.Image is null))
             {
                 DataObject dobj = new DataObject();
                 dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
                 Clipboard.SetDataObject(dobj, true);
+
+                if (!((Control.ModifierKeys & Keys.Shift) == Keys.Shift))
+                {
+                    // https://stackoverflow.com/questions/211611/copy-files-to-clipboard-in-c-sharp
+                    StringCollection paths = new StringCollection();
+                    if (contextmenufocus == 0 & !(imageFilesLeftPanel is null))
+                    {
+                        paths.Add(imageFilesLeftPanel[imageIndexLeftPanel]);
+                        Clipboard.SetFileDropList(paths);
+                    }
+                    if (contextmenufocus == 1 & !(imageFilesRightPanel is null))
+                    {
+                        paths.Add(imageFilesRightPanel[imageIndexRightPanel]);
+                        Clipboard.SetFileDropList(paths);
+                    }
+                }
             }
+ 
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
