@@ -474,7 +474,9 @@ namespace ImageStitcher
                     imageCountLeftPanel--;
                 }
                 catch (Exception) { throw; }
+                int restorepriorimageindex = priorimageIndexLeftPanel;
                 LoadPreviousImage(targetpanel);
+                priorimageIndexLeftPanel = restorepriorimageindex;
             }
             if (targetpanel == 1)
             {
@@ -484,7 +486,9 @@ namespace ImageStitcher
                     imageCountRightPanel--;
                 }
                 catch (Exception) { throw; }
+                int restorepriorimageindex = priorimageIndexRightPanel;
                 LoadPreviousImage(targetpanel);
+                priorimageIndexRightPanel = restorepriorimageindex;
             }
         }
         private void Copycut( int targetPanel, bool asfilepath, bool movefiles)
