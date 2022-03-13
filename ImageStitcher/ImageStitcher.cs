@@ -487,30 +487,32 @@ namespace ImageStitcher
                 LoadPreviousImage(targetpanel);
             }
         }
-        private void Copycut( int targetPanel, bool bool_movefiles)
+        private void Copycut( int targetPanel, bool asfilepath, bool movefiles)
         {
             PictureBox thispicturebox = targetPanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
 
             if (!(thispicturebox.Image is null))
             {
                 DataObject dobj = new DataObject();
-                dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
-                Clipboard.SetDataObject(dobj, true); // if shift is held, store in clipboard as image content
 
-                if (!((Control.ModifierKeys & Keys.Shift) == Keys.Shift)) // if shift is not held at click, store in clipboard as filepath
+                if (asfilepath) // store in clipboard as filepath
                 {
                     // https://stackoverflow.com/questions/211611/copy-files-to-clipboard-in-c-sharp
                     StringCollection paths = new StringCollection();
                     if (targetPanel == 0 && !(imageFilesLeftPanel is null) && imageCountLeftPanel != 0)
                     {
                         paths.Add(imageFilesLeftPanel[imageIndexLeftPanel]);
-                        PutFilesOnClipboard(paths, bool_movefiles);
+                        PutFilesOnClipboard(paths, movefiles);
                     }
                     if (targetPanel == 1 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
                     {
                         paths.Add(imageFilesRightPanel[imageIndexRightPanel]);
-                        PutFilesOnClipboard(paths, bool_movefiles);
+                        PutFilesOnClipboard(paths, movefiles);
                     }
+                } else
+                {
+                    dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
+                    Clipboard.SetDataObject(dobj, true); // if shift is held, store in clipboard as image content
                 }
             }
         }
@@ -518,8 +520,10 @@ namespace ImageStitcher
         // copy image to clipboard from panel
         private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
         {
-            bool movefiles = false;
-            Copycut(contextmenufocus, movefiles);
+            bool bool_movefiles = false;
+            bool bool_asfilepath = true;
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) bool_asfilepath = false; // if shift is held down, send image to clipbaord as data 
+            Copycut(contextmenufocus, bool_asfilepath, bool_movefiles);
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
@@ -601,10 +605,19 @@ namespace ImageStitcher
             if ((keyData == Keys.Delete)) { SendToTrash(activePanel); return true; }
 
             // Ctrl + X for cut
-            if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel,true);  return true; }
+            if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel, true, true); return true; }
 
-            // Ctrl + Shift + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Shift | Keys.X)) { Copycut(activePanel, true); Removefromlist(activePanel);  return true; }
+            // Ctrl + Shift + X for cut as data
+            if (keyData == (Keys.Control | Keys.Shift | Keys.X)) { Copycut(activePanel, false, true); return true; }
+
+            // Ctrl + C for copy
+            if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, true, false); return true; }
+
+            // Ctrl + Shift + C for copy as data
+            if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, false, false); return true; }
+
+            // Ctrl + Alt + X for cut and remove from list
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, true, true); Removefromlist(activePanel);  return true; }
 
             // end of hotkeys. ignore the keystroke
             else { return base.ProcessCmdKey(ref msg, keyData); }
@@ -999,8 +1012,10 @@ namespace ImageStitcher
 
         private void CutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool movefiles = true;
-            Copycut(contextmenufocus, movefiles);
+            bool bool_movefiles = true;
+            bool bool_asfilepath = true;
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) bool_asfilepath = false; // if shift is held down, send image to clipbaord as data 
+            Copycut(contextmenufocus, bool_asfilepath, bool_movefiles);
         }
 
         private void removeFromListToolStripMenuItem_Click(object sender, EventArgs e)
