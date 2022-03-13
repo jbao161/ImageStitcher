@@ -1001,5 +1001,10 @@ namespace ImageStitcher
             bool movefiles = true;
             Copycut(movefiles);
         }
+
+        private void removeFromListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Removefromlist(contextmenufocus);
+        }
     } // end MainWindow : Form
 }

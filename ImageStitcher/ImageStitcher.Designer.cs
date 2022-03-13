@@ -267,7 +267,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 358);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 380);
             // 
             // editToolStripMenuItem
             // 
@@ -392,6 +392,7 @@
             this.removeFromListToolStripMenuItem.Name = "removeFromListToolStripMenuItem";
             this.removeFromListToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.removeFromListToolStripMenuItem.Text = "Remove From List";
+            this.removeFromListToolStripMenuItem.Click += new System.EventHandler(this.removeFromListToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
