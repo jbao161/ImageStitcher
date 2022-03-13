@@ -487,9 +487,9 @@ namespace ImageStitcher
                 LoadPreviousImage(targetpanel);
             }
         }
-        private void Copycut( bool bool_movefiles)
+        private void Copycut( int targetPanel, bool bool_movefiles)
         {
-            PictureBox thispicturebox = contextmenufocus == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            PictureBox thispicturebox = targetPanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
 
             if (!(thispicturebox.Image is null))
             {
@@ -501,20 +501,15 @@ namespace ImageStitcher
                 {
                     // https://stackoverflow.com/questions/211611/copy-files-to-clipboard-in-c-sharp
                     StringCollection paths = new StringCollection();
-                    if (contextmenufocus == 0 && !(imageFilesLeftPanel is null) && imageCountLeftPanel != 0)
+                    if (targetPanel == 0 && !(imageFilesLeftPanel is null) && imageCountLeftPanel != 0)
                     {
-
                         paths.Add(imageFilesLeftPanel[imageIndexLeftPanel]);
                         PutFilesOnClipboard(paths, bool_movefiles);
-
-                        //Clipboard.SetFileDropList(paths);
                     }
-                    if (contextmenufocus == 1 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
+                    if (targetPanel == 1 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
                     {
                         paths.Add(imageFilesRightPanel[imageIndexRightPanel]);
                         PutFilesOnClipboard(paths, bool_movefiles);
-
-                        //Clipboard.SetFileDropList(paths);
                     }
                 }
             }
@@ -524,7 +519,7 @@ namespace ImageStitcher
         private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
         {
             bool movefiles = false;
-            Copycut(movefiles);
+            Copycut(contextmenufocus, movefiles);
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
@@ -571,7 +566,7 @@ namespace ImageStitcher
 
         // end section 3
 
-        /*  Section 4: Keyboard arrows change image to next file in folder
+        /*  Section 4: Keyboard shortcuts 
         */
         // Local field to store the files enumerator;
 
@@ -602,8 +597,14 @@ namespace ImageStitcher
             // Alt + C hotkey for jump back both panels
             if (keyData == (Keys.Alt | Keys.C)) { JumpBack(0); JumpBack(1); return true; }
 
-            // Delete hotkey for blur
+            // Delete hotkey for send to recycle
             if ((keyData == Keys.Delete)) { SendToTrash(activePanel); return true; }
+
+            // Ctrl + X for cut
+            if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel,true);  return true; }
+
+            // Ctrl + Shift + X for cut and remove from list
+            if (keyData == (Keys.Control | Keys.Shift | Keys.X)) { Copycut(activePanel, true); Removefromlist(activePanel);  return true; }
 
             // end of hotkeys. ignore the keystroke
             else { return base.ProcessCmdKey(ref msg, keyData); }
@@ -999,7 +1000,7 @@ namespace ImageStitcher
         private void CutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             bool movefiles = true;
-            Copycut(movefiles);
+            Copycut(contextmenufocus, movefiles);
         }
 
         private void removeFromListToolStripMenuItem_Click(object sender, EventArgs e)
