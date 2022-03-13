@@ -62,6 +62,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -249,6 +250,7 @@
             this.openFileLocationToolStripMenuItem,
             this.sendToTrashToolStripMenuItem,
             this.toolStripSeparator1,
+            this.cutToolStripMenuItem,
             this.contextMenu_image_item_copy,
             this.contextMenu_image_item_paste,
             this.toolStripMenuItem1,
@@ -263,7 +265,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 314);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 358);
             // 
             // editToolStripMenuItem
             // 
@@ -376,6 +378,13 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.cutToolStripMenuItem.Text = "Cut";
+            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -439,6 +448,7 @@
         private System.Windows.Forms.ToolStripMenuItem mirrorToolStripMenuItem;
         private System.Windows.Forms.Label label_imageindex_leftpanel;
         private System.Windows.Forms.Label label_imageindex_rightpanel;
+        private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
     }
 }
 

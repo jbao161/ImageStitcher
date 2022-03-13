@@ -465,9 +465,7 @@ namespace ImageStitcher
             Clipboard.SetDataObject(data);
         }
 
-
-        // copy image to clipboard from panel
-        private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
+        private void copycut( bool bool_movefiles)
         {
             PictureBox thispicturebox = contextmenufocus == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
 
@@ -477,7 +475,6 @@ namespace ImageStitcher
                 dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
                 Clipboard.SetDataObject(dobj, true); // if no modifier keys are held, store in clipboard as image content
 
-                Boolean bool_movefiles = (Control.ModifierKeys & Keys.Control) == Keys.Control; // if control is held at click, store in clipboard as 'cut' instead of 'copy'
                 if (!((Control.ModifierKeys & Keys.Shift) == Keys.Shift)) // if shift is held at click, store in clipboard as filepath
                 {
                     // https://stackoverflow.com/questions/211611/copy-files-to-clipboard-in-c-sharp
@@ -491,7 +488,6 @@ namespace ImageStitcher
                         {
                             try
                             {
-
                                 imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
                                 imageCountLeftPanel--;
                             }
@@ -500,7 +496,7 @@ namespace ImageStitcher
                         }
                         //Clipboard.SetFileDropList(paths);
                     }
-                    if (contextmenufocus == 1 && !(imageFilesRightPanel is null) && imageCountRightPanel !=0)
+                    if (contextmenufocus == 1 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
                     {
                         paths.Add(imageFilesRightPanel[imageIndexRightPanel]);
                         PutFilesOnClipboard(paths, bool_movefiles);
@@ -508,7 +504,13 @@ namespace ImageStitcher
                     }
                 }
             }
- 
+        }
+
+        // copy image to clipboard from panel
+        private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
+        {
+            bool movefiles = false;
+            copycut(movefiles);
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
@@ -983,6 +985,12 @@ namespace ImageStitcher
                 img.RotateFlip(RotateFlipType.RotateNoneFlipX);
                 pictureBox_rightpanel.Image = img;
             }
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bool movefiles = true;
+            copycut(movefiles);
         }
     } // end MainWindow : Form
 }
