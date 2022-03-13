@@ -464,8 +464,30 @@ namespace ImageStitcher
             data.SetData("Preferred Dropeffect", new MemoryStream(BitConverter.GetBytes((int)dropEffect)));
             Clipboard.SetDataObject(data);
         }
-
-        private void copycut( bool bool_movefiles)
+        private void Removefromlist(int targetpanel)
+        {
+            if (targetpanel == 0)
+            {
+                try
+                {
+                    imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
+                    imageCountLeftPanel--;
+                }
+                catch (Exception) { throw; }
+                LoadPreviousImage(targetpanel);
+            }
+            if (targetpanel == 1)
+            {
+                try
+                {
+                    imageFilesRightPanel.RemoveAt(imageIndexRightPanel);
+                    imageCountRightPanel--;
+                }
+                catch (Exception) { throw; }
+                LoadPreviousImage(targetpanel);
+            }
+        }
+        private void Copycut( bool bool_movefiles)
         {
             PictureBox thispicturebox = contextmenufocus == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
 
@@ -473,9 +495,9 @@ namespace ImageStitcher
             {
                 DataObject dobj = new DataObject();
                 dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
-                Clipboard.SetDataObject(dobj, true); // if no modifier keys are held, store in clipboard as image content
+                Clipboard.SetDataObject(dobj, true); // if shift is held, store in clipboard as image content
 
-                if (!((Control.ModifierKeys & Keys.Shift) == Keys.Shift)) // if shift is held at click, store in clipboard as filepath
+                if (!((Control.ModifierKeys & Keys.Shift) == Keys.Shift)) // if shift is not held at click, store in clipboard as filepath
                 {
                     // https://stackoverflow.com/questions/211611/copy-files-to-clipboard-in-c-sharp
                     StringCollection paths = new StringCollection();
@@ -484,22 +506,14 @@ namespace ImageStitcher
 
                         paths.Add(imageFilesLeftPanel[imageIndexLeftPanel]);
                         PutFilesOnClipboard(paths, bool_movefiles);
-                        if (bool_movefiles)
-                        {
-                            try
-                            {
-                                imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
-                                imageCountLeftPanel--;
-                            }
-                            catch (Exception) { throw; }
-                            LoadPreviousImage(contextmenufocus);
-                        }
+
                         //Clipboard.SetFileDropList(paths);
                     }
                     if (contextmenufocus == 1 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
                     {
                         paths.Add(imageFilesRightPanel[imageIndexRightPanel]);
                         PutFilesOnClipboard(paths, bool_movefiles);
+
                         //Clipboard.SetFileDropList(paths);
                     }
                 }
@@ -510,7 +524,7 @@ namespace ImageStitcher
         private void ContextMenu_image_item_copy_Click(object sender, EventArgs e)
         {
             bool movefiles = false;
-            copycut(movefiles);
+            Copycut(movefiles);
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
@@ -793,11 +807,8 @@ namespace ImageStitcher
                         Microsoft.VisualBasic.FileIO.UIOption.AllDialogs,
                         Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin,
                         Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
-                    imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
-                    imageCountLeftPanel--;
                 }
                 catch (Exception) { throw; }
-                LoadPreviousImage(targetPanel);
             }
             if (targetPanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel !=0)
             {
@@ -807,15 +818,13 @@ namespace ImageStitcher
                         Microsoft.VisualBasic.FileIO.UIOption.AllDialogs,
                         Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin,
                         Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
-                    imageFilesRightPanel.RemoveAt(imageIndexRightPanel);
-                    imageCountRightPanel--;
                 }
                 catch (Exception)
                 {
                     throw;
                 }
-                LoadPreviousImage(targetPanel);
             }
+            Removefromlist(targetPanel);
             UpdateLabelImageIndex();
         }
 
@@ -987,10 +996,10 @@ namespace ImageStitcher
             }
         }
 
-        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             bool movefiles = true;
-            copycut(movefiles);
+            Copycut(movefiles);
         }
     } // end MainWindow : Form
 }
