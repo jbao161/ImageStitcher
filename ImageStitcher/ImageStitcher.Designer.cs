@@ -48,11 +48,13 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendToTrashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeFromListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_image_item_copy = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.fixCorruptedImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rotateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.blurBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mirrorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,7 +65,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeFromListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBox_reversefileorder = new System.Windows.Forms.CheckBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -156,6 +158,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.checkBox_reversefileorder);
             this.panel_controls.Controls.Add(this.checkBox_randomOnClick);
             this.panel_controls.Controls.Add(this.button_verticalhorizontal);
             this.panel_controls.Controls.Add(this.checkBox_openaftersave);
@@ -256,6 +259,7 @@
             this.contextMenu_image_item_copy,
             this.contextMenu_image_item_paste,
             this.toolStripMenuItem1,
+            this.fixCorruptedImageToolStripMenuItem,
             this.rotateToolStripMenuItem,
             this.blurBToolStripMenuItem,
             this.mirrorToolStripMenuItem,
@@ -267,7 +271,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 358);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 380);
             // 
             // editToolStripMenuItem
             // 
@@ -289,6 +293,13 @@
             this.sendToTrashToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.sendToTrashToolStripMenuItem.Text = "Send to Trash";
             this.sendToTrashToolStripMenuItem.Click += new System.EventHandler(this.SendToTrashToolStripMenuItem_Click);
+            // 
+            // removeFromListToolStripMenuItem
+            // 
+            this.removeFromListToolStripMenuItem.Name = "removeFromListToolStripMenuItem";
+            this.removeFromListToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.removeFromListToolStripMenuItem.Text = "Remove From List";
+            this.removeFromListToolStripMenuItem.Click += new System.EventHandler(this.removeFromListToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -320,6 +331,13 @@
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(182, 6);
+            // 
+            // fixCorruptedImageToolStripMenuItem
+            // 
+            this.fixCorruptedImageToolStripMenuItem.Name = "fixCorruptedImageToolStripMenuItem";
+            this.fixCorruptedImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.fixCorruptedImageToolStripMenuItem.Text = "Fix Corrupted Image";
+            this.fixCorruptedImageToolStripMenuItem.Click += new System.EventHandler(this.fixCorruptedImageToolStripMenuItem_Click);
             // 
             // rotateToolStripMenuItem
             // 
@@ -387,12 +405,17 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
-            // removeFromListToolStripMenuItem
+            // checkBox_reversefileorder
             // 
-            this.removeFromListToolStripMenuItem.Name = "removeFromListToolStripMenuItem";
-            this.removeFromListToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.removeFromListToolStripMenuItem.Text = "Remove From List";
-            this.removeFromListToolStripMenuItem.Click += new System.EventHandler(this.removeFromListToolStripMenuItem_Click);
+            this.checkBox_reversefileorder.AutoSize = true;
+            this.checkBox_reversefileorder.Checked = true;
+            this.checkBox_reversefileorder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_reversefileorder.Location = new System.Drawing.Point(27, 43);
+            this.checkBox_reversefileorder.Name = "checkBox_reversefileorder";
+            this.checkBox_reversefileorder.Size = new System.Drawing.Size(115, 17);
+            this.checkBox_reversefileorder.TabIndex = 10;
+            this.checkBox_reversefileorder.Text = "Reverse FIle Order";
+            this.checkBox_reversefileorder.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 
@@ -459,6 +482,8 @@
         private System.Windows.Forms.Label label_imageindex_rightpanel;
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeFromListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fixCorruptedImageToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkBox_reversefileorder;
     }
 }
 

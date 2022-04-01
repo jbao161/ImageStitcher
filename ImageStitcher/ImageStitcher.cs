@@ -115,6 +115,7 @@ namespace ImageStitcher
                 // then store the position of the loaded image in that list
 
                 imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
+                if (checkBox_reversefileorder.Checked) imageList.Reverse();
                 int imageCount = imageList.Count();
                 int imageIndex = 0;
                 string imagepath = filepaths[0];
@@ -414,17 +415,7 @@ namespace ImageStitcher
 
         private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // how to get active panel for context menu
-            /*
-             if (sender is ToolStripItem menuItem)
-                {
-                    if (menuItem.Owner is ContextMenuStrip owner)
-                    {
-                        ((PictureBox) owner.SourceControl).Image = null;
-                    }
-                 }
-            */
-            ClearPanel(activePanel);
+            ClearPanel(contextmenufocus);
         }// end section 2
 
         /* Section 3: Context menu for copy and paste
@@ -471,11 +462,12 @@ namespace ImageStitcher
                 try
                 {
                     imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
-                    imageCountLeftPanel--;
+                    imageCountLeftPanel-=1;
                 }
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexLeftPanel;
-                LoadPreviousImage(targetpanel);
+                imageIndexLeftPanel-=1;
+                LoadNextImage(targetpanel);
                 priorimageIndexLeftPanel = restorepriorimageindex;
             }
             if (targetpanel == 1)
@@ -487,7 +479,8 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexRightPanel;
-                LoadPreviousImage(targetpanel);
+                imageIndexRightPanel-=1;
+                LoadNextImage(targetpanel);
                 priorimageIndexRightPanel = restorepriorimageindex;
             }
         }
@@ -775,13 +768,13 @@ namespace ImageStitcher
 
         private void BlurBToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Blur(activePanel);
+            Blur(contextmenufocus);
         }
 
         //https://stackoverflow.com/questions/16022188/open-an-image-with-the-windows-default-editor-in-c-sharp
         private void EditToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (activePanel == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
+            if (contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesLeftPanel[imageIndexLeftPanel])
                 {
@@ -789,7 +782,7 @@ namespace ImageStitcher
                 };
                 Process.Start(startInfo);
             }
-            if (activePanel == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
+            if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel])
                 {
@@ -802,11 +795,11 @@ namespace ImageStitcher
         //https://stackoverflow.com/questions/9646114/open-file-location
         private void OpenFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (activePanel == 0 && imageFilesLeftPanel != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+            if (contextmenufocus == 0 && imageFilesLeftPanel != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
             }
-            if (activePanel == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel !=0)
+            if (contextmenufocus == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel !=0)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
             }
@@ -943,8 +936,6 @@ namespace ImageStitcher
             }
             catch (Exception)
             {
-                //FindAndMoveMsgBox(Cursor.Position.X - 250, Cursor.Position.Y - 120, true, "Attention"); // can't find the dimensions of MessageBox!
-                //System.Windows.Forms.MessageBox.Show("Failed to load. Image is corrupt or missing: " + imagePath, "Attention");
                 if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
                 if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
                 return true; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
@@ -1000,13 +991,13 @@ namespace ImageStitcher
 
         private void MirrorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if ((activePanel == 0) && pictureBox_leftpanel.Image != null)
+            if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null)
             {
                 Image img = pictureBox_leftpanel.Image;
                 img.RotateFlip(RotateFlipType.RotateNoneFlipX);
                 pictureBox_leftpanel.Image = img;
             }
-            if ((activePanel == 1) && pictureBox_rightpanel.Image != null)
+            if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null)
             {
                 Image img = pictureBox_rightpanel.Image;
                 img.RotateFlip(RotateFlipType.RotateNoneFlipX);
@@ -1025,6 +1016,95 @@ namespace ImageStitcher
         private void removeFromListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Removefromlist(contextmenufocus);
+        }
+
+
+        //exiftool https://exiftool.org/forum/index.php?topic=11286.0
+
+        bool ExifToolHasBeenLoaded = false;
+        Process pExifTool = new Process();
+        string ExifToolFolderPath = "D:\\_Tools\\";
+
+        private void RunExiftoolWhileStayingOpen(string ImageFileName)
+        {
+            //  Start ExifTool and keep it in memory if that has not been done yet.
+            if (!ExifToolHasBeenLoaded)
+            {
+                string command = "\"" + ExifToolFolderPath + "exiftool.exe\" -stay_open true -@ args.txt";
+
+                pExifTool.StartInfo = new ProcessStartInfo("cmd", String.Format("/c \"{0}\"", @command));
+                pExifTool.StartInfo.RedirectStandardOutput = true;
+
+                //  NOTE:  If you do not implement an asynchronous error handler like in this example, instead simply using pExifTool.StandardError.ReadLine()
+                //         in the following, you risk that your program might stall.  This is because ExifTool sometimes reports failure only through a
+                //         StandardOutput line saying something like "0 output files created" without reporting anything in addition via StandardError, so
+                //         pExifTool.StandardError.ReadLine() would wait indefinitely for an error message that never comes.
+                pExifTool.StartInfo.RedirectStandardError = true;
+                pExifTool.ErrorDataReceived += new DataReceivedEventHandler(ETErrorHandler);
+
+                pExifTool.StartInfo.UseShellExecute = false;
+                pExifTool.StartInfo.CreateNoWindow = true;
+                pExifTool.Start();
+                pExifTool.BeginErrorReadLine();  //  This command starts the error handling, meaning ETErrorHandler() will now be called whenever ExifTool reports an error.
+
+                ExifToolHasBeenLoaded = true;
+            }
+
+            //  Append the args file for Exiftool to start reading and executing the command.
+            //  NOTE:  NEVER use WriteAllLines here - ExifTool expects the args file to be appended continually, not re-written.
+
+            string[] args = new string[] { ImageFileName, "-execute" };  //  This tells ExifTool to read out all of the image's metadata.
+            File.AppendAllLines(ExifToolFolderPath + "args.txt", args);  //  args.txt gets written into the folder where exiftool.exe resides here.
+
+            string line;
+            do
+            {
+                line = pExifTool.StandardOutput.ReadLine();
+
+                //  NOTE:  Depending on the command you issued, line will either contain a progress report of an operation (e.g., "1 output files created"),
+                //         give line-by-line data, such as an image's metadata (e.g. "Orientation                     : Horizontal (normal)"), or
+                //         read "{ready}", which indicates that executing the last command in args.txt has completed.
+
+                //...  do something with the information provided in line...
+        }
+            while (!line.Contains("{ready}"));
+
+            //  At this point, you can issue the next command for ExifTool, following the very same approach.  For instance, this tells ExifTool to
+            //  extract a PreviewImage from a RAW image, using the trick of adding "%0f" at the beginning of the new filename as a way to
+            //  give the PreviewImage a different name from the orginal file ...
+            args = new string[] { "-ICC_PROFILE="+ ImageFileName, "-overwrite_original", "-execute" };
+            File.AppendAllLines(ExifToolFolderPath + "args.txt", args);
+
+           // ...  read and process pExifTool.StandardOutput again as per the above ...
+
+    }
+
+
+        //  Finally, this is the asynchronous error handler
+
+        private void ETErrorHandler(object sendingProcess, DataReceivedEventArgs errLine)
+        {
+            if (!String.IsNullOrEmpty(errLine.Data))
+            {
+                //...  do something with the information provided in errLine.Data...
+        }
+        }
+
+        // end exiftool
+
+        private void fixCorruptedImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+            {
+                RunExiftoolWhileStayingOpen(imageFilesLeftPanel[imageIndexLeftPanel]);
+                LoadImage(0, imageFilesLeftPanel[imageIndexLeftPanel]);
+            }
+            if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+            {
+                RunExiftoolWhileStayingOpen(imageFilesRightPanel[imageIndexRightPanel]);
+                LoadImage(1, imageFilesRightPanel[imageIndexRightPanel]);
+            }
+            
         }
     } // end MainWindow : Form
 }
