@@ -58,5 +58,41 @@ namespace ImageStitcher.Properties {
                 this["SplitContainerSplitterDistance"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RandomizeOnClick {
+            get {
+                return ((bool)(this["RandomizeOnClick"]));
+            }
+            set {
+                this["RandomizeOnClick"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ReverseFileOrder {
+            get {
+                return ((bool)(this["ReverseFileOrder"]));
+            }
+            set {
+                this["ReverseFileOrder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OpenFolderAfterSave {
+            get {
+                return ((bool)(this["OpenFolderAfterSave"]));
+            }
+            set {
+                this["OpenFolderAfterSave"] = value;
+            }
+        }
     }
 }

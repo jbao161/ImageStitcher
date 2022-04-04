@@ -97,7 +97,10 @@ namespace ImageStitcher
                 this.Size = Settings.Default.WindowSize;
             }
 
-                this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
+            this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
+            this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
+            this.checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
+            this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
 
         }
 
@@ -1139,6 +1142,10 @@ namespace ImageStitcher
                 Settings.Default.WindowSize = this.RestoreBounds.Size;
             }
             Settings.Default.SplitContainerSplitterDistance = this.splitContainer_bothimages.SplitterDistance;
+            Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
+            Settings.Default.ReverseFileOrder = this.checkBox_reversefileorder.Checked;
+            Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
+
             // Save settings
             Settings.Default.Save();
         }
