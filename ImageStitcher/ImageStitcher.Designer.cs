@@ -37,6 +37,7 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.checkBox_reversefileorder = new System.Windows.Forms.CheckBox();
             this.checkBox_randomOnClick = new System.Windows.Forms.CheckBox();
             this.button_verticalhorizontal = new System.Windows.Forms.Button();
             this.checkBox_openaftersave = new System.Windows.Forms.CheckBox();
@@ -65,7 +66,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBox_reversefileorder = new System.Windows.Forms.CheckBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -85,7 +85,7 @@
             this.panel_bothimages.Controls.Add(this.splitContainer_bothimages);
             this.panel_bothimages.Location = new System.Drawing.Point(0, 0);
             this.panel_bothimages.Name = "panel_bothimages";
-            this.panel_bothimages.Size = new System.Drawing.Size(978, 499);
+            this.panel_bothimages.Size = new System.Drawing.Size(942, 814);
             this.panel_bothimages.TabIndex = 0;
             // 
             // splitContainer_bothimages
@@ -103,8 +103,8 @@
             // 
             this.splitContainer_bothimages.Panel2.Controls.Add(this.label_imageindex_rightpanel);
             this.splitContainer_bothimages.Panel2.Controls.Add(this.pictureBox_rightpanel);
-            this.splitContainer_bothimages.Size = new System.Drawing.Size(978, 499);
-            this.splitContainer_bothimages.SplitterDistance = 344;
+            this.splitContainer_bothimages.Size = new System.Drawing.Size(942, 814);
+            this.splitContainer_bothimages.SplitterDistance = 907;
             this.splitContainer_bothimages.SplitterWidth = 10;
             this.splitContainer_bothimages.TabIndex = 0;
             // 
@@ -112,7 +112,7 @@
             // 
             this.label_imageindex_leftpanel.AutoSize = true;
             this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 486);
+            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 801);
             this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
             this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
             this.label_imageindex_leftpanel.TabIndex = 1;
@@ -124,7 +124,7 @@
             this.pictureBox_leftpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_leftpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_leftpanel.Name = "pictureBox_leftpanel";
-            this.pictureBox_leftpanel.Size = new System.Drawing.Size(344, 499);
+            this.pictureBox_leftpanel.Size = new System.Drawing.Size(907, 814);
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
@@ -136,7 +136,7 @@
             // 
             this.label_imageindex_rightpanel.AutoSize = true;
             this.label_imageindex_rightpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 486);
+            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 697);
             this.label_imageindex_rightpanel.Name = "label_imageindex_rightpanel";
             this.label_imageindex_rightpanel.Size = new System.Drawing.Size(140, 13);
             this.label_imageindex_rightpanel.TabIndex = 1;
@@ -148,7 +148,7 @@
             this.pictureBox_rightpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_rightpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_rightpanel.Name = "pictureBox_rightpanel";
-            this.pictureBox_rightpanel.Size = new System.Drawing.Size(624, 499);
+            this.pictureBox_rightpanel.Size = new System.Drawing.Size(25, 814);
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
@@ -166,11 +166,23 @@
             this.panel_controls.Controls.Add(this.button_preview);
             this.panel_controls.Controls.Add(this.button_save);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel_controls.Location = new System.Drawing.Point(0, 505);
+            this.panel_controls.Location = new System.Drawing.Point(0, 820);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
             this.panel_controls.Name = "panel_controls";
-            this.panel_controls.Size = new System.Drawing.Size(978, 80);
+            this.panel_controls.Size = new System.Drawing.Size(942, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // checkBox_reversefileorder
+            // 
+            this.checkBox_reversefileorder.AutoSize = true;
+            this.checkBox_reversefileorder.Checked = true;
+            this.checkBox_reversefileorder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_reversefileorder.Location = new System.Drawing.Point(27, 43);
+            this.checkBox_reversefileorder.Name = "checkBox_reversefileorder";
+            this.checkBox_reversefileorder.Size = new System.Drawing.Size(115, 17);
+            this.checkBox_reversefileorder.TabIndex = 10;
+            this.checkBox_reversefileorder.Text = "Reverse FIle Order";
+            this.checkBox_reversefileorder.UseVisualStyleBackColor = true;
             // 
             // checkBox_randomOnClick
             // 
@@ -188,7 +200,7 @@
             // 
             this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(268, 0);
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(232, 0);
             this.button_verticalhorizontal.Name = "button_verticalhorizontal";
             this.button_verticalhorizontal.Size = new System.Drawing.Size(300, 80);
             this.button_verticalhorizontal.TabIndex = 8;
@@ -202,7 +214,7 @@
             this.checkBox_openaftersave.AutoSize = true;
             this.checkBox_openaftersave.Checked = true;
             this.checkBox_openaftersave.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_openaftersave.Location = new System.Drawing.Point(839, 60);
+            this.checkBox_openaftersave.Location = new System.Drawing.Point(803, 60);
             this.checkBox_openaftersave.Name = "checkBox_openaftersave";
             this.checkBox_openaftersave.Size = new System.Drawing.Size(136, 17);
             this.checkBox_openaftersave.TabIndex = 7;
@@ -213,7 +225,7 @@
             // 
             this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_swapimages.Location = new System.Drawing.Point(568, 0);
+            this.button_swapimages.Location = new System.Drawing.Point(532, 0);
             this.button_swapimages.Name = "button_swapimages";
             this.button_swapimages.Size = new System.Drawing.Size(130, 80);
             this.button_swapimages.TabIndex = 5;
@@ -225,7 +237,7 @@
             // 
             this.button_preview.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_preview.Location = new System.Drawing.Point(698, 0);
+            this.button_preview.Location = new System.Drawing.Point(662, 0);
             this.button_preview.Name = "button_preview";
             this.button_preview.Size = new System.Drawing.Size(130, 80);
             this.button_preview.TabIndex = 1;
@@ -238,7 +250,7 @@
             this.button_save.AutoSize = true;
             this.button_save.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_save.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_save.Location = new System.Drawing.Point(828, 0);
+            this.button_save.Location = new System.Drawing.Point(792, 0);
             this.button_save.MinimumSize = new System.Drawing.Size(150, 0);
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(150, 80);
@@ -405,23 +417,11 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
-            // checkBox_reversefileorder
-            // 
-            this.checkBox_reversefileorder.AutoSize = true;
-            this.checkBox_reversefileorder.Checked = true;
-            this.checkBox_reversefileorder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_reversefileorder.Location = new System.Drawing.Point(27, 43);
-            this.checkBox_reversefileorder.Name = "checkBox_reversefileorder";
-            this.checkBox_reversefileorder.Size = new System.Drawing.Size(115, 17);
-            this.checkBox_reversefileorder.TabIndex = 10;
-            this.checkBox_reversefileorder.Text = "Reverse FIle Order";
-            this.checkBox_reversefileorder.UseVisualStyleBackColor = true;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(978, 585);
+            this.ClientSize = new System.Drawing.Size(942, 900);
             this.Controls.Add(this.panel_controls);
             this.Controls.Add(this.panel_bothimages);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -429,6 +429,7 @@
             this.Name = "MainWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Image Stitcher";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.panel_bothimages.ResumeLayout(false);
             this.splitContainer_bothimages.Panel1.ResumeLayout(false);

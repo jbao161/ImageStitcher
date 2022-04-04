@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using ImageStitcher.Properties;
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -83,6 +84,21 @@ namespace ImageStitcher
         {
             pictureBox_rightpanel.AllowDrop = true;
             pictureBox_leftpanel.AllowDrop = true;
+            //https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
+            // Set window location
+            if (Settings.Default.WindowLocation != null)
+            {
+                this.Location = Settings.Default.WindowLocation;
+            }
+
+            // Set window size
+            if (Settings.Default.WindowSize != null)
+            {
+                this.Size = Settings.Default.WindowSize;
+            }
+
+                this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
+
         }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
@@ -1105,6 +1121,26 @@ namespace ImageStitcher
                 LoadImage(1, imageFilesRightPanel[imageIndexRightPanel]);
             }
             
+        }
+        // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Copy window location to app settings
+            Settings.Default.WindowLocation = this.Location;
+
+            // Copy window size to app settings
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Settings.Default.WindowSize = this.Size;
+            }
+            else
+            {
+                Settings.Default.WindowSize = this.RestoreBounds.Size;
+            }
+            Settings.Default.SplitContainerSplitterDistance = this.splitContainer_bothimages.SplitterDistance;
+            // Save settings
+            Settings.Default.Save();
         }
     } // end MainWindow : Form
 }
