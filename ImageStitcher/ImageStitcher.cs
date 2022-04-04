@@ -1149,5 +1149,86 @@ namespace ImageStitcher
             // Save settings
             Settings.Default.Save();
         }
+        private void SaveImage(Image targetimage, string filename, string filepath)
+        {
+
+            if (!(targetimage is null)) try
+                {
+                    // Displays a SaveFileDialog so the user can save the Image
+                    saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
+                    saveFileDialog1.Title = "Save an Image File";
+                    saveFileDialog1.FileName = filename ;                     // feature 1: timestamp
+                    saveFileDialog1.RestoreDirectory = false ;
+                    saveFileDialog1.InitialDirectory = Path.GetDirectoryName(filepath) ;
+                    if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                    {
+                        // Saves the Image via a FileStream created by the OpenFile method.
+                        System.IO.FileStream fs =
+                           (System.IO.FileStream)saveFileDialog1.OpenFile();
+                        // Saves the Image in the appropriate ImageFormat based upon the
+                        // File type selected in the dialog box.
+                        // NOTE that the FilterIndex property is one-based.
+                        switch (saveFileDialog1.FilterIndex)
+                        {
+                            case 1:
+                                targetimage.Save(fs,
+                                   System.Drawing.Imaging.ImageFormat.Jpeg);
+                                break;
+
+                            case 2:
+                                targetimage.Save(fs,
+                                   System.Drawing.Imaging.ImageFormat.Bmp);
+                                break;
+
+                            case 3:
+                                targetimage.Save(fs,
+                                   System.Drawing.Imaging.ImageFormat.Gif);
+                                break;
+
+                            case 4:
+                                targetimage.Save(fs,
+                                   System.Drawing.Imaging.ImageFormat.Png);
+                                break;
+                        }
+
+                        fs.Close();
+                    } // if dialog OK
+                    // Opens Fle Directory if checkbox enabled
+                    if (checkBox_openaftersave.Checked)
+                    {
+                        string args = string.Format("/e, /select, \"{0}\"", System.IO.Path.GetFullPath(saveFileDialog1.FileName));
+
+                        ProcessStartInfo info = new ProcessStartInfo
+                        {
+                            FileName = "explorer",
+                            Arguments = args
+                        };
+                        Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
+                        Process.Start(info);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("{0}", ex);
+
+                }
+        }
+        private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename = "";
+            string filepath = "";
+            if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null)
+            {
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); filepath = imageFilesLeftPanel[imageIndexLeftPanel]; }
+                Image targetimage = pictureBox_leftpanel.Image;
+                SaveImage(targetimage, filename,filepath );
+            }
+            if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null)
+            {
+                Image targetimage = pictureBox_rightpanel.Image;
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); filepath = imageFilesRightPanel[imageIndexRightPanel]; }
+                SaveImage(targetimage, filename, filepath);
+            }
+        }
     } // end MainWindow : Form
 }

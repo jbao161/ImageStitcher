@@ -66,6 +66,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.overwriteImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -271,7 +273,9 @@
             this.contextMenu_image_item_copy,
             this.contextMenu_image_item_paste,
             this.toolStripMenuItem1,
+            this.overwriteImageToolStripMenuItem,
             this.fixCorruptedImageToolStripMenuItem,
+            this.toolStripSeparator4,
             this.rotateToolStripMenuItem,
             this.blurBToolStripMenuItem,
             this.mirrorToolStripMenuItem,
@@ -283,7 +287,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 380);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 408);
             // 
             // editToolStripMenuItem
             // 
@@ -417,6 +421,18 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
+            // overwriteImageToolStripMenuItem
+            // 
+            this.overwriteImageToolStripMenuItem.Name = "overwriteImageToolStripMenuItem";
+            this.overwriteImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.overwriteImageToolStripMenuItem.Text = "Save Image";
+            this.overwriteImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(182, 6);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -485,6 +501,8 @@
         private System.Windows.Forms.ToolStripMenuItem removeFromListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixCorruptedImageToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBox_reversefileorder;
+        private System.Windows.Forms.ToolStripMenuItem overwriteImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
 
