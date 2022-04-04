@@ -1149,10 +1149,10 @@ namespace ImageStitcher
             // Save settings
             Settings.Default.Save();
         }
-        private void SaveImage(Image targetimage, string filename, string filepath)
+        private void SaveImage(Image targetimage, string filename, string filepath, Boolean savedialog)
         {
-
-            if (!(targetimage is null)) try
+            if (!savedialog) targetimage.Save(filepath);
+            if (!(targetimage is null) && savedialog) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
                     saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
@@ -1217,17 +1217,19 @@ namespace ImageStitcher
         {
             string filename = "";
             string filepath = "";
+            bool savedialog = true;
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) savedialog = false;
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); filepath = imageFilesLeftPanel[imageIndexLeftPanel]; }
                 Image targetimage = pictureBox_leftpanel.Image;
-                SaveImage(targetimage, filename,filepath );
+                SaveImage(targetimage, filename,filepath, savedialog );
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null)
             {
                 Image targetimage = pictureBox_rightpanel.Image;
                 if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); filepath = imageFilesRightPanel[imageIndexRightPanel]; }
-                SaveImage(targetimage, filename, filepath);
+                SaveImage(targetimage, filename, filepath, savedialog);
             }
         }
     } // end MainWindow : Form
