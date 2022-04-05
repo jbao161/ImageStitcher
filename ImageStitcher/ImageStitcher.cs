@@ -16,6 +16,8 @@ namespace ImageStitcher
 {
     public partial class MainWindow : Form
     {
+
+
         // begin https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
         [DllImport("user32.dll")]
         private static extern IntPtr FindWindow(IntPtr classname, string title); // extern method: FindWindow
@@ -72,6 +74,13 @@ namespace ImageStitcher
         {
             InitializeComponent();
             UpdateLabelImageIndex();
+        }
+
+        public MainWindow(string filepath)
+        {
+            InitializeComponent();
+            UpdateLabelImageIndex();
+            LoadImage(1, filepath);
         }
 
         private void UpdateLabelImageIndex()
