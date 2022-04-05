@@ -80,7 +80,8 @@ namespace ImageStitcher
         {
             InitializeComponent();
             UpdateLabelImageIndex();
-            LoadImage(1, filepath);
+            DragDropHandler(1, new String[] { filepath });
+
         }
 
         private void UpdateLabelImageIndex()
