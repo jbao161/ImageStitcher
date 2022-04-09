@@ -80,7 +80,7 @@ namespace ImageStitcher
         {
             InitializeComponent();
             UpdateLabelImageIndex();
-            DragDropHandler(1, new String[] { filepath });
+            DragDropHandler(0, new String[] { filepath });
 
         }
 
@@ -108,6 +108,7 @@ namespace ImageStitcher
             }
 
             this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
+            savesplitterdistance = Settings.Default.SplitContainerSplitterDistance;
             this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
             this.checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
             this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
@@ -1151,7 +1152,7 @@ namespace ImageStitcher
             {
                 Settings.Default.WindowSize = this.RestoreBounds.Size;
             }
-            Settings.Default.SplitContainerSplitterDistance = this.splitContainer_bothimages.SplitterDistance;
+            Settings.Default.SplitContainerSplitterDistance = savesplitterdistance;
             Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
             Settings.Default.ReverseFileOrder = this.checkBox_reversefileorder.Checked;
             Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
@@ -1241,6 +1242,13 @@ namespace ImageStitcher
                 if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); filepath = imageFilesRightPanel[imageIndexRightPanel]; }
                 SaveImage(targetimage, filename, filepath, savedialog);
             }
+        }
+
+        private int savesplitterdistance;
+        private void splitContainer_bothimages_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            
+            savesplitterdistance = splitContainer_bothimages.SplitterDistance;
         }
     } // end MainWindow : Form
 }

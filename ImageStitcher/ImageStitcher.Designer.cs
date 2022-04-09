@@ -55,7 +55,9 @@
             this.contextMenu_image_item_copy = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.overwriteImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixCorruptedImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.rotateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.blurBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mirrorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,8 +68,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.overwriteImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -109,6 +109,7 @@
             this.splitContainer_bothimages.SplitterDistance = 907;
             this.splitContainer_bothimages.SplitterWidth = 10;
             this.splitContainer_bothimages.TabIndex = 0;
+            this.splitContainer_bothimages.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_bothimages_SplitterMoved);
             // 
             // label_imageindex_leftpanel
             // 
@@ -348,12 +349,24 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(182, 6);
             // 
+            // overwriteImageToolStripMenuItem
+            // 
+            this.overwriteImageToolStripMenuItem.Name = "overwriteImageToolStripMenuItem";
+            this.overwriteImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.overwriteImageToolStripMenuItem.Text = "Save Image";
+            this.overwriteImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
+            // 
             // fixCorruptedImageToolStripMenuItem
             // 
             this.fixCorruptedImageToolStripMenuItem.Name = "fixCorruptedImageToolStripMenuItem";
             this.fixCorruptedImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.fixCorruptedImageToolStripMenuItem.Text = "Fix Corrupted Image";
             this.fixCorruptedImageToolStripMenuItem.Click += new System.EventHandler(this.fixCorruptedImageToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(182, 6);
             // 
             // rotateToolStripMenuItem
             // 
@@ -420,18 +433,6 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
-            // 
-            // overwriteImageToolStripMenuItem
-            // 
-            this.overwriteImageToolStripMenuItem.Name = "overwriteImageToolStripMenuItem";
-            this.overwriteImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.overwriteImageToolStripMenuItem.Text = "Save Image";
-            this.overwriteImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(182, 6);
             // 
             // MainWindow
             // 
