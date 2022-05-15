@@ -68,6 +68,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openInWindowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -267,6 +269,8 @@
             this.contextMenu_image.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editToolStripMenuItem,
             this.openFileLocationToolStripMenuItem,
+            this.openInWindowsToolStripMenuItem,
+            this.toolStripSeparator5,
             this.sendToTrashToolStripMenuItem,
             this.removeFromListToolStripMenuItem,
             this.toolStripSeparator1,
@@ -288,7 +292,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 408);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
             // 
             // editToolStripMenuItem
             // 
@@ -434,6 +438,18 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
+            // openInWindowsToolStripMenuItem
+            // 
+            this.openInWindowsToolStripMenuItem.Name = "openInWindowsToolStripMenuItem";
+            this.openInWindowsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.openInWindowsToolStripMenuItem.Text = "Open in Windows";
+            this.openInWindowsToolStripMenuItem.Click += new System.EventHandler(this.openInWindowsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(182, 6);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -504,6 +520,8 @@
         private System.Windows.Forms.CheckBox checkBox_reversefileorder;
         private System.Windows.Forms.ToolStripMenuItem overwriteImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem openInWindowsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }
 

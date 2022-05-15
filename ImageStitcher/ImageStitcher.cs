@@ -1250,5 +1250,39 @@ namespace ImageStitcher
             
             savesplitterdistance = splitContainer_bothimages.SplitterDistance;
         }
+
+        private void openInWindowsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // https://stackoverflow.com/questions/6808029/open-image-in-windows-photo-viewer
+            string tempFileName = "";
+            string path = Environment.GetFolderPath(
+                Environment.SpecialFolder.ProgramFiles);
+
+            if (contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
+            {
+                tempFileName = imageFilesLeftPanel[imageIndexLeftPanel];
+            }
+            if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
+            {
+                tempFileName = imageFilesRightPanel[imageIndexRightPanel];
+            }
+            if (!String.Equals("", tempFileName)) {
+                // create our startup process and argument
+                var psi = new ProcessStartInfo(
+                    "rundll32.exe",
+                    String.Format(
+                        "\"{0}{1}\", ImageView_Fullscreen {2}",
+                        Environment.Is64BitOperatingSystem ?
+                            path.Replace(" (x86)", "") :
+                            path
+                            ,
+                        @"\Windows Photo Viewer\PhotoViewer.dll",
+                        tempFileName)
+                    );
+
+                psi.UseShellExecute = false;
+
+                var viewer = Process.Start(psi); }
+        }
     } // end MainWindow : Form
 }
