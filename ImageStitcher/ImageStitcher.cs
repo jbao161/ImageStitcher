@@ -1284,5 +1284,10 @@ namespace ImageStitcher
 
                 var viewer = Process.Start(psi); }
         }
+
+        private void button_trash_Click(object sender, EventArgs e)
+        {
+            SendToTrash(activePanel);
+        }
     } // end MainWindow : Form
 }

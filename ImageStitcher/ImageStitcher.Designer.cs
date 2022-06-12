@@ -37,6 +37,7 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.button_trash = new System.Windows.Forms.Button();
             this.checkBox_reversefileorder = new System.Windows.Forms.CheckBox();
             this.checkBox_randomOnClick = new System.Windows.Forms.CheckBox();
             this.button_verticalhorizontal = new System.Windows.Forms.Button();
@@ -48,6 +49,8 @@
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openInWindowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.sendToTrashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFromListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -68,8 +71,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openInWindowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -163,6 +164,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.button_trash);
             this.panel_controls.Controls.Add(this.checkBox_reversefileorder);
             this.panel_controls.Controls.Add(this.checkBox_randomOnClick);
             this.panel_controls.Controls.Add(this.button_verticalhorizontal);
@@ -176,6 +178,18 @@
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(942, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // button_trash
+            // 
+            this.button_trash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_trash.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_trash.Location = new System.Drawing.Point(238, 0);
+            this.button_trash.Name = "button_trash";
+            this.button_trash.Size = new System.Drawing.Size(75, 80);
+            this.button_trash.TabIndex = 11;
+            this.button_trash.Text = "Send to trash";
+            this.button_trash.UseVisualStyleBackColor = true;
+            this.button_trash.Click += new System.EventHandler(this.button_trash_Click);
             // 
             // checkBox_reversefileorder
             // 
@@ -205,9 +219,9 @@
             // 
             this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(232, 0);
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(313, 0);
             this.button_verticalhorizontal.Name = "button_verticalhorizontal";
-            this.button_verticalhorizontal.Size = new System.Drawing.Size(300, 80);
+            this.button_verticalhorizontal.Size = new System.Drawing.Size(219, 80);
             this.button_verticalhorizontal.TabIndex = 8;
             this.button_verticalhorizontal.Text = "Stack images vertically";
             this.button_verticalhorizontal.UseVisualStyleBackColor = true;
@@ -292,7 +306,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 436);
             // 
             // editToolStripMenuItem
             // 
@@ -307,6 +321,18 @@
             this.openFileLocationToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.openFileLocationToolStripMenuItem.Text = "Open File Location";
             this.openFileLocationToolStripMenuItem.Click += new System.EventHandler(this.OpenFileLocationToolStripMenuItem_Click);
+            // 
+            // openInWindowsToolStripMenuItem
+            // 
+            this.openInWindowsToolStripMenuItem.Name = "openInWindowsToolStripMenuItem";
+            this.openInWindowsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.openInWindowsToolStripMenuItem.Text = "Open in Windows";
+            this.openInWindowsToolStripMenuItem.Click += new System.EventHandler(this.openInWindowsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(182, 6);
             // 
             // sendToTrashToolStripMenuItem
             // 
@@ -438,18 +464,6 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
-            // openInWindowsToolStripMenuItem
-            // 
-            this.openInWindowsToolStripMenuItem.Name = "openInWindowsToolStripMenuItem";
-            this.openInWindowsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.openInWindowsToolStripMenuItem.Text = "Open in Windows";
-            this.openInWindowsToolStripMenuItem.Click += new System.EventHandler(this.openInWindowsToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(182, 6);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -522,6 +536,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem openInWindowsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.Button button_trash;
     }
 }
 
