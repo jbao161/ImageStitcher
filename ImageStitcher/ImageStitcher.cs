@@ -628,8 +628,8 @@ namespace ImageStitcher
             // Alt + C hotkey for jump back both panels
             if (keyData == (Keys.Alt | Keys.C)) { JumpBack(0); JumpBack(1); return true; }
 
-            // Delete hotkey for send to recycle
-            if ((keyData == Keys.Delete)) { SendToTrash(activePanel); return true; }
+            // Delete or Shift + D hotkey for send to recycle
+            if ((keyData == Keys.Delete) || (keyData ==  Keys.D)) { SendToTrash(activePanel); return true; }
 
             // Ctrl + X for cut
             if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel, true, true); return true; }
