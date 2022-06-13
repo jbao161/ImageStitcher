@@ -338,7 +338,7 @@
             // 
             this.sendToTrashToolStripMenuItem.Name = "sendToTrashToolStripMenuItem";
             this.sendToTrashToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.sendToTrashToolStripMenuItem.Text = "Send to Trash";
+            this.sendToTrashToolStripMenuItem.Text = "Send to Trash (D)";
             this.sendToTrashToolStripMenuItem.Click += new System.EventHandler(this.SendToTrashToolStripMenuItem_Click);
             // 
             // removeFromListToolStripMenuItem
