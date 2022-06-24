@@ -1,16 +1,20 @@
 ﻿using ImageStitcher.Properties;
+
 using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
+
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
+
 using System.Windows.Forms;
+
 
 namespace ImageStitcher
 {
@@ -966,8 +970,9 @@ namespace ImageStitcher
             }
             catch (Exception)
             {
-                if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
-                if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, "Failed to load. Image is corrupt or missing: " + imagePath); }
+                string loaderrormsg = "Failed to load image: " + imagePath;
+                if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, loaderrormsg); }
+                if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, loaderrormsg); }
                 return true; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
             }
         }
@@ -1122,19 +1127,41 @@ namespace ImageStitcher
 
         // end exiftool
 
-        private void fixCorruptedImageToolStripMenuItem_Click(object sender, EventArgs e)
+        static void launch(string arg)
         {
+
+        }
+
+        private void fixBrokenImageToolStripMenuItem_ClickAsync(object sender, EventArgs e)
+        {
+            string arg = "";
+            string ofilepath = "";
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                RunExiftoolWhileStayingOpen(imageFilesLeftPanel[imageIndexLeftPanel]);
-                LoadImage(0, imageFilesLeftPanel[imageIndexLeftPanel]);
+                 ofilepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                RunExiftoolWhileStayingOpen(imageFilesRightPanel[imageIndexRightPanel]);
-                LoadImage(1, imageFilesRightPanel[imageIndexRightPanel]);
+                 ofilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
-            
+            string file = Path.GetFileNameWithoutExtension(ofilepath);
+            string tmpfilename = string.Format("tmp{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
+            string tmpImage = ofilepath.Replace(file, tmpfilename);
+            System.IO.File.Move(ofilepath, tmpImage);
+            arg = $"/C ffmpeg.exe -nostdin -i {tmpImage}  \"{ofilepath}\" && del {tmpImage}";
+            Process proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = arg,
+                }
+            };
+
+            proc.Start();
+            proc.WaitForExit();//May need to wait for the process to exit too
+
+            LoadImage(contextmenufocus, ofilepath);
         }
         // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
 

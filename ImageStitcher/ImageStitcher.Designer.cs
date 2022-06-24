@@ -274,7 +274,7 @@
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(150, 80);
             this.button_save.TabIndex = 0;
-            this.button_save.Text = "Save";
+            this.button_save.Text = "Stitch";
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.Button_save_Click);
             // 
@@ -306,7 +306,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 436);
             // 
             // editToolStripMenuItem
             // 
@@ -390,8 +390,8 @@
             // 
             this.fixCorruptedImageToolStripMenuItem.Name = "fixCorruptedImageToolStripMenuItem";
             this.fixCorruptedImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.fixCorruptedImageToolStripMenuItem.Text = "Fix Corrupted Image";
-            this.fixCorruptedImageToolStripMenuItem.Click += new System.EventHandler(this.fixCorruptedImageToolStripMenuItem_Click);
+            this.fixCorruptedImageToolStripMenuItem.Text = "Fix Broken Image";
+            this.fixCorruptedImageToolStripMenuItem.Click += new System.EventHandler(this.fixBrokenImageToolStripMenuItem_ClickAsync);
             // 
             // toolStripSeparator4
             // 
