@@ -229,14 +229,14 @@ namespace ImageStitcher
         public class StitchSizeParams
         {
             public int width, height, rightImagePosition;
-            string orientation;
-            public StitchSizeParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, string orientation)
+            public bool orientation;
+            public StitchSizeParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, bool sidebyside)
             {
-                this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = orientation;
+                this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = sidebyside;
             }
-            public void setParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, string orientation)
+            public void setParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, bool sidebyside)
             {
-                this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = orientation;
+                this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = sidebyside;
             }
             public StitchSizeParams()
             { }
@@ -273,7 +273,7 @@ namespace ImageStitcher
                         g.DrawImage(stitched_leftimg, 0, 0);
                         g.DrawImage(stitched_rightimg, stitched_leftimg.Width, 0);
                     }
-                    stitchSize.setParams(result_width, min_height, stitched_leftimg_width, "sidebyside");
+                    stitchSize.setParams(result_width, min_height, stitched_leftimg_width, true);
                     return stitchedimage;
                 }
 
@@ -296,7 +296,7 @@ namespace ImageStitcher
                         g.DrawImage(stitched_leftimg, 0, 0);
                         g.DrawImage(stitched_rightimg, 0, stitched_leftimg_height);
                     }
-                    stitchSize.setParams(min_width, result_height, stitched_leftimg_height, "topandbottom");
+                    stitchSize.setParams(min_width, result_height, stitched_leftimg_height, false);
                     return stitchedimage;
                 }
                 return null;
@@ -468,16 +468,29 @@ namespace ImageStitcher
             StitchSizeParams dim = new StitchSizeParams();
             _ = Stitch_images(dim);
 
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp";
             string leftimagepath = imageFilesLeftPanel[imageIndexLeftPanel];
             string rightimagepath = imageFilesRightPanel[imageIndexRightPanel];
-            string twidth = (dim.width/2*2).ToString();
+            string twidth = (dim.width / 2 * 2).ToString();
             string theight = (dim.height / 2 * 2).ToString();
-            string lwidth = (dim.rightImagePosition / 2 * 2).ToString();
-            string rwidth = ((dim.width - dim.rightImagePosition) / 2 * 2).ToString();
-            string tmpfilename = string.Format("tmp{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
-            string outputname  = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";
-            string arg = $"/C ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={lwidth}x{theight}[left]; [1:v]setpts=PTS-STARTPTS, scale={rwidth}x{theight}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:x={lwidth}\" -c:v libx264 \"{tmpfilename}.mp4\" && ffmpeg -y -i \"{tmpfilename}.mp4\" \"{fileOutPath}\" && del \"{tmpfilename}.mp4\"";
-            
+            string arg = "";
+            bool sidebyside = true;
+            if (dim.orientation == sidebyside)
+            {
+                string lwidth = (dim.rightImagePosition / 2 * 2).ToString();
+                string rwidth = ((dim.width - dim.rightImagePosition) / 2 * 2).ToString();
+
+                 arg = $"/C ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={lwidth}x{theight}[left]; [1:v]setpts=PTS-STARTPTS, scale={rwidth}x{theight}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:x={lwidth}\" -c:v libx264 \"{tmpfilename}.mp4\" && ffmpeg -y -i \"{tmpfilename}.mp4\" \"{fileOutPath}\" && del \"{tmpfilename}.mp4\"";
+            }
+            if (dim.orientation != sidebyside)
+            {
+                string lheight = (dim.rightImagePosition / 2 * 2).ToString();
+                string rheight = ((dim.height - dim.rightImagePosition) / 2 * 2).ToString();
+
+                 arg = $"/C ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={twidth}x{lheight}[left]; [1:v]setpts=PTS-STARTPTS, scale={twidth}x{rheight}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:x=0:y={lheight}\" -c:v libx264 \"{tmpfilename}.mp4\" && ffmpeg -y -i \"{tmpfilename}.mp4\" \"{fileOutPath}\" && del \"{tmpfilename}.mp4\"";
+            }
+
+
             Process proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -489,7 +502,6 @@ namespace ImageStitcher
 
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
-
         }
         /*  Section 2: Button controls to clear the picture panels
          */
