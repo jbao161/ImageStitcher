@@ -464,6 +464,9 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
+
+
+
         private void StitchAnimatedGif(string fileOutPath)
         {
             StitchSizeParams dim = new StitchSizeParams();
@@ -499,7 +502,19 @@ namespace ImageStitcher
                  rightposition = $"x=0:y={lheight}";
 
             }
-            arg = $"/K ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={leftscale}[left]; [1:v]setpts=PTS-STARTPTS, scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition}\" {videoEncoding} \"{tmpfilepath}\" && ffmpeg -y -i \"{tmpfilepath}\" \"{fileOutPath}\" && del \"{tmpfilepath}\"";
+
+            
+            TimeSpan durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
+            TimeSpan durationr = (TimeSpan)GifExtension.GetGifDuration(pictureBox_rightpanel.Image);
+            String loopthisvideo = "";
+            String leftloop = String.Empty;
+            String rightloop = String.Empty;
+            if (durationl > durationr) rightloop = loopthisvideo;
+            if (durationr > durationl) leftloop = loopthisvideo;
+            String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={leftscale}[left]; [1:v]setpts=PTS-STARTPTS, scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition}\" {videoEncoding} \"{tmpfilepath}\"";
+            String converttogif = $" && ffmpeg -y  -i \"{tmpfilepath}\" -filter_complex \"fps=15,split[x][z]; [z] palettegen[y]; [x][y] paletteuse\" \"{fileOutPath}\"";
+            String deletetempfiles = $" &&  del \"{tmpfilepath}\"";
+            arg = joinasvideo + converttogif + deletetempfiles;
 
             Process proc = new Process
             {

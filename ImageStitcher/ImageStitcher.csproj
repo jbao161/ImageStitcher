@@ -87,6 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GifExtension.cs" />
     <Compile Include="SuperFastBlur.cs" />
     <Compile Include="ImageStitcher.cs">
       <SubType>Form</SubType>
