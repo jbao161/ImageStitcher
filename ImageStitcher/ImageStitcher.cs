@@ -15,7 +15,6 @@ using System.Threading;
 
 using System.Windows.Forms;
 
-
 namespace ImageStitcher
 {
     public partial class MainWindow : Form
@@ -959,12 +958,19 @@ namespace ImageStitcher
         }
         private bool LoadImage(int targetPanel, string imagePath)
         {
+
             try
             {
-                using ( var bmpTemp = new Bitmap(imagePath))
+                PictureBox targetpicturebox = null;
+                using (var bmpTemp = new Bitmap(imagePath))
                 {
-                    if (targetPanel == 0) { pictureBox_leftpanel.Image = new Bitmap(bmpTemp); }
-                    if (targetPanel == 1) { pictureBox_rightpanel.Image = new Bitmap(bmpTemp); }
+                    if (targetPanel == 0) { targetpicturebox = pictureBox_leftpanel; }
+                    if (targetPanel == 1) { targetpicturebox = pictureBox_rightpanel; }
+                    if (Path.GetExtension(imagePath).ToLower().Equals(".gif"))
+                    {
+                        targetpicturebox.ImageLocation = imagePath;
+                    }
+                    targetpicturebox.Image = new Bitmap(bmpTemp);
                     return true;
                 }
             }
@@ -1315,6 +1321,18 @@ namespace ImageStitcher
         private void button_trash_Click(object sender, EventArgs e)
         {
             SendToTrash(activePanel);
+        }
+
+        private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+           // disable 'fix webp image' when not applicable
+            if ((contextmenufocus == 0 && imageCountLeftPanel == 0)  ||
+                (contextmenufocus == 1 && imageCountRightPanel == 0) ||
+            ((contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0) &&
+                Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().EndsWith(".gif")) ||
+            ((contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0) &&
+                Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().EndsWith(".gif"))) 
+            { fixCorruptedImageToolStripMenuItem.Enabled = false; }
         }
     } // end MainWindow : Form
 }

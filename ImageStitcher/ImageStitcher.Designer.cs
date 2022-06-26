@@ -306,7 +306,8 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 436);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
+            this.contextMenu_image.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_image_Opening);
             // 
             // editToolStripMenuItem
             // 
@@ -390,7 +391,7 @@
             // 
             this.fixCorruptedImageToolStripMenuItem.Name = "fixCorruptedImageToolStripMenuItem";
             this.fixCorruptedImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.fixCorruptedImageToolStripMenuItem.Text = "Fix Broken Image";
+            this.fixCorruptedImageToolStripMenuItem.Text = "Fix webp image";
             this.fixCorruptedImageToolStripMenuItem.Click += new System.EventHandler(this.fixBrokenImageToolStripMenuItem_ClickAsync);
             // 
             // toolStripSeparator4
