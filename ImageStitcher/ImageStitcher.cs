@@ -485,8 +485,8 @@ namespace ImageStitcher
             videoEncoding = $"-c:v libx264 -crf 18 -preset veryfast";
             if (dim.orientation == sidebyside)
             {
-                 lwidth = (dim.rightImagePosition / 2 * 2).ToString();
-                 rwidth = ((dim.width - dim.rightImagePosition) / 2 * 2).ToString();
+                 lwidth = (dim.rightImagePosition ).ToString();
+                 rwidth = ((dim.width - dim.rightImagePosition) ).ToString();
 
                  leftscale = $"{lwidth}x{theight}";
                  rightscale = $"{rwidth}x{theight}";
@@ -494,13 +494,12 @@ namespace ImageStitcher
             }
             if (dim.orientation != sidebyside)
             {
-                 lheight = (dim.rightImagePosition / 2 * 2).ToString();
-                 rheight = ((dim.height - dim.rightImagePosition) / 2 * 2).ToString();
+                 lheight = (dim.rightImagePosition ).ToString();
+                 rheight = ((dim.height - dim.rightImagePosition) ).ToString();
 
                  leftscale = $"{twidth}x{lheight}";
                  rightscale = $"{twidth}x{rheight}";
                  rightposition = $"x=0:y={lheight}";
-
             }
 
             
@@ -515,7 +514,7 @@ namespace ImageStitcher
 
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
             String converttogif = $" && ffmpeg -y  -i \"{tmpfilepath}\" -filter_complex \"fps=10,split [o1] [o2];[o1] palettegen=stats_mode=full [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=sierra2_4a\" \"{fileOutPath}\"";
-            String deletetempfiles = $" &&  del \"{tmpfilepath}\"";
+            String deletetempfiles = $" &&   \"{tmpfilepath}\"";
             arg = joinasvideo + converttogif + deletetempfiles;
 
             Process proc = new Process
