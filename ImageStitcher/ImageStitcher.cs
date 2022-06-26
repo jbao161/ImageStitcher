@@ -116,6 +116,7 @@ namespace ImageStitcher
             this.checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
             this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
 
+            tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
         }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
@@ -467,29 +468,38 @@ namespace ImageStitcher
         {
             StitchSizeParams dim = new StitchSizeParams();
             _ = Stitch_images(dim);
-
-            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp";
+            DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp.mp4";
+            var tmpfilepath = tmpAppDataPath+tmpfilename;
             string leftimagepath = imageFilesLeftPanel[imageIndexLeftPanel];
             string rightimagepath = imageFilesRightPanel[imageIndexRightPanel];
             string twidth = (dim.width / 2 * 2).ToString();
             string theight = (dim.height / 2 * 2).ToString();
             string arg = "";
             bool sidebyside = true;
+            string lwidth, rwidth, lheight, rheight, leftscale, rightscale, rightposition, videoEncoding;
+            lwidth = rwidth = lheight = rheight = leftscale = rightscale = rightposition = videoEncoding = String.Empty;
+            videoEncoding = $"-c:v libx264 -crf 18 -preset veryfast";
             if (dim.orientation == sidebyside)
             {
-                string lwidth = (dim.rightImagePosition / 2 * 2).ToString();
-                string rwidth = ((dim.width - dim.rightImagePosition) / 2 * 2).ToString();
+                 lwidth = (dim.rightImagePosition / 2 * 2).ToString();
+                 rwidth = ((dim.width - dim.rightImagePosition) / 2 * 2).ToString();
 
-                 arg = $"/C ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={lwidth}x{theight}[left]; [1:v]setpts=PTS-STARTPTS, scale={rwidth}x{theight}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:x={lwidth}\" -c:v libx264 \"{tmpfilename}.mp4\" && ffmpeg -y -i \"{tmpfilename}.mp4\" \"{fileOutPath}\" && del \"{tmpfilename}.mp4\"";
+                 leftscale = $"{lwidth}x{theight}";
+                 rightscale = $"{rwidth}x{theight}";
+                 rightposition = $"x={lwidth}";
             }
             if (dim.orientation != sidebyside)
             {
-                string lheight = (dim.rightImagePosition / 2 * 2).ToString();
-                string rheight = ((dim.height - dim.rightImagePosition) / 2 * 2).ToString();
+                 lheight = (dim.rightImagePosition / 2 * 2).ToString();
+                 rheight = ((dim.height - dim.rightImagePosition) / 2 * 2).ToString();
 
-                 arg = $"/C ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={twidth}x{lheight}[left]; [1:v]setpts=PTS-STARTPTS, scale={twidth}x{rheight}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:x=0:y={lheight}\" -c:v libx264 \"{tmpfilename}.mp4\" && ffmpeg -y -i \"{tmpfilename}.mp4\" \"{fileOutPath}\" && del \"{tmpfilename}.mp4\"";
+                 leftscale = $"{twidth}x{lheight}";
+                 rightscale = $"{twidth}x{rheight}";
+                 rightposition = $"x=0:y={lheight}";
+
             }
-
+            arg = $"/K ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={leftscale}[left]; [1:v]setpts=PTS-STARTPTS, scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition}\" {videoEncoding} \"{tmpfilepath}\" && ffmpeg -y -i \"{tmpfilepath}\" \"{fileOutPath}\" && del \"{tmpfilepath}\"";
 
             Process proc = new Process
             {
@@ -1215,10 +1225,6 @@ namespace ImageStitcher
 
         // end exiftool
 
-        static void launch(string arg)
-        {
-
-        }
 
         private void fixBrokenImageToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
@@ -1232,11 +1238,12 @@ namespace ImageStitcher
             {
                  ofilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
-            string file = Path.GetFileNameWithoutExtension(ofilepath);
-            string tmpfilename = string.Format("tmp{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
-            string tmpImage = ofilepath.Replace(file, tmpfilename);
+            string fileExt = Path.GetExtension(ofilepath);
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp"+ fileExt;
+            string tmpImage = tmpAppDataPath + tmpfilename;
+            DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
             System.IO.File.Move(ofilepath, tmpImage);
-            arg = $"/C ffmpeg.exe -nostdin -i {tmpImage}  \"{ofilepath}\" && del {tmpImage}";
+            arg = $"/C ffmpeg.exe -nostdin -i \"{tmpImage}\"  \"{ofilepath}\" && del \"{tmpImage}\"";
             Process proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -1253,6 +1260,12 @@ namespace ImageStitcher
         }
         // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
 
+        String tmpAppDataPath;
+        private void clearTmpAppData()
+        {
+            if (File.Exists(tmpAppDataPath))
+            Directory.Delete(tmpAppDataPath, true);
+        }
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Copy window location to app settings
@@ -1274,6 +1287,7 @@ namespace ImageStitcher
 
             // Save settings
             Settings.Default.Save();
+            clearTmpAppData();
         }
         private void SaveImage(Image targetimage, string filename, string filepath, Boolean savedialog)
         {
@@ -1407,14 +1421,13 @@ namespace ImageStitcher
 
         private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-           // disable 'fix webp image' when not applicable
-            if ((contextmenufocus == 0 && imageCountLeftPanel == 0)  ||
+            // disable 'fix webp image' when not applicable
+            fixCorruptedImageToolStripMenuItem.Enabled = !(contextmenufocus == 0 && imageCountLeftPanel == 0) ||
                 (contextmenufocus == 1 && imageCountRightPanel == 0) ||
             ((contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0) &&
                 Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().EndsWith(".gif")) ||
             ((contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0) &&
-                Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().EndsWith(".gif"))) 
-            { fixCorruptedImageToolStripMenuItem.Enabled = false; }
+                Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().EndsWith(".gif"));
         }
     } // end MainWindow : Form
 }
