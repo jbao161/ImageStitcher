@@ -226,8 +226,26 @@ namespace ImageStitcher
 
         /*  Create a new image by stitching the two panel images together
          */
-
+        public class StitchSizeParams
+        {
+            public int width, height, rightImagePosition;
+            string orientation;
+            public StitchSizeParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, string orientation)
+            {
+                this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = orientation;
+            }
+            public void setParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, string orientation)
+            {
+                this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = orientation;
+            }
+            public StitchSizeParams()
+            { }
+        }
         private Bitmap Stitch_images()
+        {
+            return Stitch_images(new StitchSizeParams());
+        }
+            private Bitmap Stitch_images(StitchSizeParams stitchSize)
         {
             if ((pictureBox_leftpanel.Image is null) || (pictureBox_rightpanel.Image is null))
             {
@@ -255,6 +273,7 @@ namespace ImageStitcher
                         g.DrawImage(stitched_leftimg, 0, 0);
                         g.DrawImage(stitched_rightimg, stitched_leftimg.Width, 0);
                     }
+                    stitchSize.setParams(result_width, min_height, stitched_leftimg_width, "sidebyside");
                     return stitchedimage;
                 }
 
@@ -277,10 +296,10 @@ namespace ImageStitcher
                         g.DrawImage(stitched_leftimg, 0, 0);
                         g.DrawImage(stitched_rightimg, 0, stitched_leftimg_height);
                     }
+                    stitchSize.setParams(min_width, result_height, stitched_leftimg_height, "topandbottom");
                     return stitchedimage;
                 }
-
-                return new Bitmap(pictureBox_leftpanel.Image);
+                return null;
             }
         }
 
@@ -362,6 +381,10 @@ namespace ImageStitcher
         private void Button_save_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
+            if (!(stitchedimage is null))
+            {
+
+            }
             if (!(stitchedimage is null)) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
@@ -369,59 +392,105 @@ namespace ImageStitcher
                     saveFileDialog1.Title = "Save an Image File";
                     saveFileDialog1.FileName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";                     // feature 1: timestamp
                     saveFileDialog1.RestoreDirectory = true;
+                    bool isanimatedgif = false;
+                    if (!(imageFilesLeftPanel is null) && imageCountLeftPanel != 0 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
+                    {
+                        if (Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().Equals(".gif")
+                            || Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().Equals(".gif"))
+                        {
+                            isanimatedgif = true;
+                            saveFileDialog1.FilterIndex = 3;
+                        }
+                    }
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
                         // Saves the Image via a FileStream created by the OpenFile method.
                         System.IO.FileStream fs =
                            (System.IO.FileStream)saveFileDialog1.OpenFile();
-                        // Saves the Image in the appropriate ImageFormat based upon the
-                        // File type selected in the dialog box.
-                        // NOTE that the FilterIndex property is one-based.
-                        switch (saveFileDialog1.FilterIndex)
+
+                        if (!isanimatedgif)
                         {
-                            case 1:
-                                stitchedimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Jpeg);
-                                break;
+                            // Saves the Image in the appropriate ImageFormat based upon the
+                            // File type selected in the dialog box.
+                            // NOTE that the FilterIndex property is one-based.
+                            switch (saveFileDialog1.FilterIndex)
+                            {
+                                case 1:
+                                    stitchedimage.Save(fs,
+                                       System.Drawing.Imaging.ImageFormat.Jpeg);
+                                    break;
 
-                            case 2:
-                                stitchedimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Bmp);
-                                break;
+                                case 2:
+                                    stitchedimage.Save(fs,
+                                       System.Drawing.Imaging.ImageFormat.Bmp);
+                                    break;
 
-                            case 3:
-                                stitchedimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Gif);
-                                break;
+                                case 3:
+                                    stitchedimage.Save(fs,
+                                       System.Drawing.Imaging.ImageFormat.Gif);
+                                    break;
 
-                            case 4:
-                                stitchedimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Png);
-                                break;
+                                case 4:
+                                    stitchedimage.Save(fs,
+                                       System.Drawing.Imaging.ImageFormat.Png);
+                                    break;
+                            }
                         }
-
                         fs.Close();
-                    } // if dialog OK
-                    // Opens Fle Directory if checkbox enabled
-                    if (checkBox_openaftersave.Checked)
-                    {
-                        string args = string.Format("/e, /select, \"{0}\"", System.IO.Path.GetFullPath(saveFileDialog1.FileName));
-
-                        ProcessStartInfo info = new ProcessStartInfo
+                        if (isanimatedgif)
                         {
-                            FileName = "explorer",
-                            Arguments = args
-                        };
-                        Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
-                        Process.Start(info);
-                    }
+                            StitchAnimatedGif(System.IO.Path.GetFullPath(saveFileDialog1.FileName));
+                        }
+                        // Opens Fle Directory if checkbox enabled
+                        if (checkBox_openaftersave.Checked)
+                        {
+                            string args = string.Format("/e, /select, \"{0}\"", System.IO.Path.GetFullPath(saveFileDialog1.FileName));
+
+                            ProcessStartInfo info = new ProcessStartInfo
+                            {
+                                FileName = "explorer",
+                                Arguments = args
+                            };
+                            Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
+                            Process.Start(info);
+                        }
+                    } // if dialog OK
+
+  
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("{0}", ex);
                 }
         }
+        private void StitchAnimatedGif(string fileOutPath)
+        {
+            StitchSizeParams dim = new StitchSizeParams();
+            _ = Stitch_images(dim);
 
+            string leftimagepath = imageFilesLeftPanel[imageIndexLeftPanel];
+            string rightimagepath = imageFilesRightPanel[imageIndexRightPanel];
+            string twidth = (dim.width/2*2).ToString();
+            string theight = (dim.height / 2 * 2).ToString();
+            string lwidth = (dim.rightImagePosition / 2 * 2).ToString();
+            string rwidth = ((dim.width - dim.rightImagePosition) / 2 * 2).ToString();
+            string tmpfilename = string.Format("tmp{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
+            string outputname  = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";
+            string arg = $"/C ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={lwidth}x{theight}[left]; [1:v]setpts=PTS-STARTPTS, scale={rwidth}x{theight}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:x={lwidth}\" -c:v libx264 \"{tmpfilename}.mp4\" && ffmpeg -y -i \"{tmpfilename}.mp4\" \"{fileOutPath}\" && del \"{tmpfilename}.mp4\"";
+            
+            Process proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = arg,
+                }
+            };
+
+            proc.Start();
+            proc.WaitForExit();//May need to wait for the process to exit too
+
+        }
         /*  Section 2: Button controls to clear the picture panels
          */
 
@@ -490,6 +559,7 @@ namespace ImageStitcher
         }
         private void Removefromlist(int targetpanel)
         {
+            if (targetpanel == 0 && imageCountLeftPanel == 0 || targetpanel == 1 && imageCountRightPanel == 0) { return; }
             if (targetpanel == 0)
             {
                 try
@@ -557,7 +627,7 @@ namespace ImageStitcher
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
-        private static readonly String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif" };
+        private static readonly String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif", "webp" };
 
         public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
         {
