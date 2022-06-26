@@ -464,6 +464,9 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
+
+
+
         private void StitchAnimatedGif(string fileOutPath)
         {
             StitchSizeParams dim = new StitchSizeParams();
@@ -499,7 +502,21 @@ namespace ImageStitcher
                  rightposition = $"x=0:y={lheight}";
 
             }
-            arg = $"/K ffmpeg -i \"{leftimagepath}\" -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={leftscale}[left]; [1:v]setpts=PTS-STARTPTS, scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition}\" {videoEncoding} \"{tmpfilepath}\" && ffmpeg -y -i \"{tmpfilepath}\" \"{fileOutPath}\" && del \"{tmpfilepath}\"";
+
+            
+            TimeSpan durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
+            TimeSpan durationr = (TimeSpan)GifExtension.GetGifDuration(pictureBox_rightpanel.Image);
+            String loopthisvideo = "-stream_loop -1";
+            String leftloop = String.Empty;
+            String rightloop = String.Empty;
+            if (durationl > durationr) rightloop = loopthisvideo;
+            if (durationr > durationl) leftloop = loopthisvideo;
+            String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"nullsrc=size={twidth}x{theight}[base]; [0:v]setpts=PTS-STARTPTS, scale={leftscale}[left]; [1:v]setpts=PTS-STARTPTS, scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition}\" {videoEncoding} \"{tmpfilepath}\"";
+
+            // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
+            String converttogif = $" && ffmpeg -y  -i \"{tmpfilepath}\" -filter_complex \"fps=10,split [o1] [o2];[o1] palettegen=stats_mode=full [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=sierra2_4a\" \"{fileOutPath}\"";
+            String deletetempfiles = $" &&  del \"{tmpfilepath}\"";
+            arg = joinasvideo + converttogif + deletetempfiles;
 
             Process proc = new Process
             {
