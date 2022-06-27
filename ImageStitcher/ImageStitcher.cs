@@ -472,7 +472,7 @@ namespace ImageStitcher
             StitchSizeParams dim = new StitchSizeParams();
             _ = Stitch_images(dim);
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
-            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp.mov";
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp.mp4";
             var tmpfilepath = tmpAppDataPath+tmpfilename;
             string leftimagepath = imageFilesLeftPanel[imageIndexLeftPanel];
             string rightimagepath = imageFilesRightPanel[imageIndexRightPanel];
@@ -507,16 +507,17 @@ namespace ImageStitcher
             TimeSpan durationr = (TimeSpan)GifExtension.GetGifDuration(pictureBox_rightpanel.Image);
             // the shorter gif slows down in ffmpeg for some reason, so try to speed it back up. keep the longer gif roughly the same speed. and overall the speed for both is slower so speed them up slightly.
             double durratio = Math.Max(0.9,durationl.Milliseconds / (double)durationr.Milliseconds);
-            string leftspeed = String.Format("{0:.##}", 1.0); //String.Format("{0:.##}", Math.Min(0.95,durratio));
-            string rightspeed = String.Format("{0:.##}", 1.0); // String.Format("{0:.##}", Math.Min(0.95, 1.0 / durratio));
+            string leftspeed = String.Format("{0:.##}", Math.Min(0.95,durratio));
+            string rightspeed = String.Format("{0:.##}", Math.Min(0.95, 1.0 / durratio));
+            // inconsistent behavior reverting to default
+            leftspeed = rightspeed = "1.0";
             String loopthisvideo = "-fflags +genpts -stream_loop -1";
             String leftloop = String.Empty;
             String rightloop = String.Empty;
-          
             if (durationl > durationr) rightloop = loopthisvideo;
             if (durationr > durationl) leftloop = loopthisvideo;
   
-            String joinasvideo = $"/K echo ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts= {leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
+            String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts={leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
 
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
             String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=floyd_steinberg \" \"{fileOutPath}\"";
@@ -535,7 +536,7 @@ namespace ImageStitcher
             };
 
             proc.Start();
-            proc.WaitForExit();//May need to wait for the process to exit too
+            //proc.WaitForExit();//May need to wait for the process to exit too
         }
         /*  Section 2: Button controls to clear the picture panels
          */
@@ -964,7 +965,7 @@ namespace ImageStitcher
             {
                 deletefilepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
-            if (targetPanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel !=0)
+            if (targetPanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
                 deletefilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
