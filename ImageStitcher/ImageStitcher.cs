@@ -482,7 +482,7 @@ namespace ImageStitcher
             bool sidebyside = true;
             string lwidth, rwidth, lheight, rheight, leftscale, rightscale, rightposition, videoEncoding;
             lwidth = rwidth = lheight = rheight = leftscale = rightscale = rightposition = videoEncoding = String.Empty;
-            videoEncoding = $"-c:v libx264 -crf 0 -preset slow ";
+            videoEncoding = $"-c:v libx264 -crf 0 -preset fast ";
             if (dim.orientation == sidebyside)
             {
                  lwidth = (dim.rightImagePosition ).ToString();
@@ -518,10 +518,10 @@ namespace ImageStitcher
             if (durationr > durationl) leftloop = loopthisvideo;
   
             String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts={leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
-
+            string scaledwidth= (dim.width / 32 * 32).ToString();
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
-            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=floyd_steinberg \" \"{fileOutPath}\"";
-            String deletetempfiles = $" &&  del \"{tmpfilepath}\"";
+            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale={scaledwidth}:-1:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=floyd_steinberg \" \"{fileOutPath}\"";
+            String deletetempfiles = $" && del  \"{tmpfilepath}\"";
             arg = joinasvideo + converttogif + deletetempfiles;
 
             Process proc = new Process
