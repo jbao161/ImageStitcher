@@ -19,8 +19,6 @@ namespace ImageStitcher
 {
     public partial class MainWindow : Form
     {
-
-
         // begin https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
         [DllImport("user32.dll")]
         private static extern IntPtr FindWindow(IntPtr classname, string title); // extern method: FindWindow
@@ -84,7 +82,6 @@ namespace ImageStitcher
             InitializeComponent();
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath });
-
         }
 
         private void UpdateLabelImageIndex()
@@ -129,8 +126,7 @@ namespace ImageStitcher
                 e.Effect = DragDropEffects.None;
         }
 
-        /*
-         * Drag and drop
+        /* Drag and drop
          * picture files from Windows explorer onto the panel to load the image
          */
         // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
@@ -201,7 +197,6 @@ namespace ImageStitcher
         * multiply this proportion by the width of the viewing window and you get the width the left picture
         * should take up. Put a divider there and the two images in 'Zoom' display will be of same height
         */
-
         private void Resize_imagepanels()
         {
             if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
@@ -242,11 +237,12 @@ namespace ImageStitcher
             public StitchSizeParams()
             { }
         }
+
         private Bitmap Stitch_images()
         {
             return Stitch_images(new StitchSizeParams());
         }
-            private Bitmap Stitch_images(StitchSizeParams stitchSize)
+        private Bitmap Stitch_images(StitchSizeParams stitchSize)
         {
             if ((pictureBox_leftpanel.Image is null) || (pictureBox_rightpanel.Image is null))
             {
@@ -306,7 +302,6 @@ namespace ImageStitcher
 
         /*  Open the stitched image in a viewing window
          */
-
         private void Button_preview_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
@@ -378,13 +373,11 @@ namespace ImageStitcher
         /*  Save the stiched image to a new file
          *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
          */
-
         private void Button_save_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
             if (!(stitchedimage is null))
             {
-
             }
             if (!(stitchedimage is null)) try
                 {
@@ -456,16 +449,12 @@ namespace ImageStitcher
                             Process.Start(info);
                         }
                     } // if dialog OK
-
-  
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("{0}", ex);
                 }
         }
-
-
 
         private void StitchAnimatedGif(string fileOutPath)
         {
@@ -502,7 +491,6 @@ namespace ImageStitcher
                  rightposition = $"x=0:y={lheight}";
             }
 
-            
             TimeSpan durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
             TimeSpan durationr = (TimeSpan)GifExtension.GetGifDuration(pictureBox_rightpanel.Image);
             // the shorter gif slows down in ffmpeg for some reason, so try to speed it back up. keep the longer gif roughly the same speed. and overall the speed for both is slower so speed them up slightly.
@@ -516,7 +504,7 @@ namespace ImageStitcher
             String rightloop = String.Empty;
             if (durationl > durationr) rightloop = loopthisvideo;
             if (durationr > durationl) leftloop = loopthisvideo;
-  
+
             String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts={leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
             string scaledwidth= (dim.width / 32 * 32).ToString();
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
@@ -567,8 +555,25 @@ namespace ImageStitcher
             ClearPanel(contextmenufocus);
         }// end section 2
 
-        /* Section 3: Context menu for copy and paste
+        /* Section 3: Right click context menu commands
          */
+
+        //https://stackoverflow.com/questions/4886327/determine-what-control-the-contextmenustrip-was-used-on
+        private static int contextmenufocus = 0;
+        private void ContextMenuStrip_Opened(object sender, EventArgs e)
+        {
+            contextmenufocus = activePanel;
+        }
+        private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // disable 'fix webp image' when not applicable
+            fixCorruptedImageToolStripMenuItem.Enabled = !(contextmenufocus == 0 && imageCountLeftPanel == 0) ||
+                (contextmenufocus == 1 && imageCountRightPanel == 0) ||
+            ((contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0) &&
+                Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().EndsWith(".gif")) ||
+            ((contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0) &&
+                Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().EndsWith(".gif"));
+        }
 
         // open a copy paste menu at right click mouse location
         private void Control_MouseClick_copypastemenu(object sender, MouseEventArgs e)
@@ -669,7 +674,7 @@ namespace ImageStitcher
         {
             bool bool_movefiles = false;
             bool bool_asfilepath = true;
-            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) bool_asfilepath = false; // if shift is held down, send image to clipbaord as data 
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) bool_asfilepath = false; // if shift is held down, send image to clipbaord as data
             Copycut(contextmenufocus, bool_asfilepath, bool_movefiles);
         }
 
@@ -685,14 +690,6 @@ namespace ImageStitcher
                 filesFound.AddRange(Directory.GetFiles(searchFolder, String.Format("*.{0}", filter), searchOption));
             }
             return filesFound;
-        }
-
-        //https://stackoverflow.com/questions/4886327/determine-what-control-the-contextmenustrip-was-used-on
-        private static int contextmenufocus = 0;
-
-        private void ContextMenuStrip_Opened(object sender, EventArgs e)
-        {
-            contextmenufocus = activePanel;
         }
 
         // paste image to panel from file or clipboard
@@ -713,91 +710,6 @@ namespace ImageStitcher
                 DragDropHandler(contextmenufocus, s);
             }
             Resize_imagepanels();
-        }
-
-        // end section 3
-
-        /*  Section 4: Keyboard shortcuts 
-        */
-        // Local field to store the files enumerator;
-
-        private static List<string> imageFilesLeftPanel;
-        private static List<string> imageFilesRightPanel;
-        private static int imageIndexLeftPanel = 0;
-        private static int imageIndexRightPanel = 0;
-        private static int priorimageIndexLeftPanel = 0;
-        private static int priorimageIndexRightPanel = 0;
-        private static int imageCountLeftPanel = 0;
-        private static int imageCountRightPanel = 0;
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            // left and right arrow keys for changing image
-            if (keyData == Keys.Left) { LoadPreviousImage(activePanel); return true; }
-            if (keyData == Keys.Right) { LoadNextImage(activePanel); return true; }
-
-            // R hotkey for rotations
-            if (keyData == Keys.R) { RotateImage(activePanel); return true; }
-
-            // B hotkey for blur
-            if ((keyData == Keys.B)) { Blur(activePanel); return true; }
-
-            // C hotkey for randomize both panels
-            if (keyData == Keys.C) { LoadRandomImage(0); LoadRandomImage(1); return true; }
-
-            // Alt + C hotkey for jump back both panels
-            if (keyData == (Keys.Alt | Keys.C)) { JumpBack(0); JumpBack(1); return true; }
-
-            // Delete or Shift + D hotkey for send to recycle
-            if ((keyData == Keys.Delete) || (keyData ==  Keys.D)) { SendToTrash(activePanel); return true; }
-
-            // Ctrl + X for cut
-            if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel, true, true); return true; }
-
-            // Ctrl + Shift + X for cut as data
-            if (keyData == (Keys.Control | Keys.Shift | Keys.X)) { Copycut(activePanel, false, true); return true; }
-
-            // Ctrl + C for copy
-            if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, true, false); return true; }
-
-            // Ctrl + Shift + C for copy as data
-            if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, false, false); return true; }
-
-            // Ctrl + Alt + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, true, true); Removefromlist(activePanel);  return true; }
-
-            // end of hotkeys. ignore the keystroke
-            else { return base.ProcessCmdKey(ref msg, keyData); }
-        }
-
-        /*  Section 5: Toggle top/bottom or side/side stitching
-        */
-
-        private void Button_verticalhorizontal_Click(object sender, EventArgs e)
-        {
-            splitContainer_bothimages.Orientation = (splitContainer_bothimages.Orientation == Orientation.Vertical ? Orientation.Horizontal : Orientation.Vertical);
-            button_verticalhorizontal.Text = (splitContainer_bothimages.Orientation == Orientation.Vertical ? "Stack images vertically" : "Put images side by side");
-            Resize_imagepanels();
-        }
-
-        private void Button_swapimages_Click(object sender, EventArgs e)
-        {
-            Bitmap image_tempswap = (pictureBox_leftpanel.Image == null ? null : new Bitmap(pictureBox_leftpanel.Image));
-            pictureBox_leftpanel.Image = (pictureBox_rightpanel.Image == null ? null : new Bitmap(pictureBox_rightpanel.Image));
-            pictureBox_rightpanel.Image = image_tempswap;
-            Resize_imagepanels();
-            var tmp1 = imageFilesLeftPanel;
-            imageFilesLeftPanel = imageFilesRightPanel;
-            imageFilesRightPanel = tmp1;
-            var tmp2 = imageIndexLeftPanel;
-            priorimageIndexLeftPanel = imageIndexLeftPanel;
-            imageIndexLeftPanel = imageIndexRightPanel;
-            priorimageIndexRightPanel = imageIndexRightPanel;
-            imageIndexRightPanel = tmp2;
-            var tmp3 = imageCountLeftPanel;
-            imageCountLeftPanel = imageCountRightPanel;
-            imageCountRightPanel = tmp3;
-            UpdateLabelImageIndex();
         }
 
         private void RotateImage(int targetPanel)
@@ -957,7 +869,6 @@ namespace ImageStitcher
 
         //https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin
         //https://www.c-sharpcorner.com/UploadFile/mahesh/how-to-remove-an-item-from-a-C-Sharp-list/
-
         private void SendToTrash(int targetPanel)
         {
             String deletefilepath = String.Empty;
@@ -1016,9 +927,47 @@ namespace ImageStitcher
             JumpBack(activePanel);
         }
 
+        private void openInWindowsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // https://stackoverflow.com/questions/6808029/open-image-in-windows-photo-viewer
+            string tempFileName = "";
+            string path = Environment.GetFolderPath(
+                Environment.SpecialFolder.ProgramFiles);
+
+            if (contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
+            {
+                tempFileName = imageFilesLeftPanel[imageIndexLeftPanel];
+            }
+            if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
+            {
+                tempFileName = imageFilesRightPanel[imageIndexRightPanel];
+            }
+            if (!String.Equals("", tempFileName)) {
+                // create our startup process and argument
+                var psi = new ProcessStartInfo(
+                    "rundll32.exe",
+                    String.Format(
+                        "\"{0}{1}\", ImageView_Fullscreen {2}",
+                        Environment.Is64BitOperatingSystem ?
+                            path.Replace(" (x86)", "") :
+                            path
+                            ,
+                        @"\Windows Photo Viewer\PhotoViewer.dll",
+                        tempFileName)
+                    );
+
+                psi.UseShellExecute = false;
+
+                var viewer = Process.Start(psi); }
+        }
+
+        private void button_trash_Click(object sender, EventArgs e)
+        {
+            SendToTrash(activePanel);
+        }
+
         //https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
         private static readonly Random getrandom = new Random();
-
         public static int GetRandomNumber(int min, int max)
         {
             lock (getrandom) // synchronize
@@ -1026,73 +975,6 @@ namespace ImageStitcher
                 return getrandom.Next(min, max);
             }
         }
-
-        //https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
-        private void FindAndMoveMsgBox(int x, int y, bool repaint, string title)
-        {
-            Thread thr = new Thread(() => // create a new thread
-            {
-                IntPtr msgBox = IntPtr.Zero;
-                // while there's no MessageBox, FindWindow returns IntPtr.Zero
-                while ((msgBox = FindWindow(IntPtr.Zero, title)) == IntPtr.Zero) ;
-                // after the while loop, msgBox is the handle of your MessageBox
-                Rectangle r = new Rectangle();
-                GetWindowRect(msgBox, out r); // Gets the rectangle of the message box
-                MoveWindow(msgBox /* handle of the message box */, x, y,
-                   r.Width - r.X /* width of originally message box */,
-                   r.Height - r.Y /* height of originally message box */,
-                   repaint /* if true, the message box repaints */);
-            });
-            thr.Start(); // starts the thread
-        }
-
-        public static string SpliceText(string text, int lineLength)
-        {
-            return Regex.Replace(text, "(.{" + lineLength + "})", "$1" + Environment.NewLine );
-        }
-        private void WriteTextOnImage(PictureBox targetpicturebox, String text)
-        {
-            Bitmap bmp = new Bitmap(600, 600);
-            string tmptext = SpliceText(text, 45);
-            using (Graphics graph = Graphics.FromImage(bmp))
-            {
-                Rectangle ImageSize = new Rectangle(0, 0, 600, 600);
-                graph.FillRectangle(Brushes.Gray, ImageSize);
-                graph.DrawString(tmptext,
-                new Font("Arial", 16),
-                new SolidBrush(Color.Black),
-                50, 200,
-                new System.Drawing.StringFormat());
-            }
-            targetpicturebox.Image = bmp;
-        }
-        private bool LoadImage(int targetPanel, string imagePath)
-        {
-
-            try
-            {
-                PictureBox targetpicturebox = null;
-                using (var bmpTemp = new Bitmap(imagePath))
-                {
-                    if (targetPanel == 0) { targetpicturebox = pictureBox_leftpanel; }
-                    if (targetPanel == 1) { targetpicturebox = pictureBox_rightpanel; }
-                    if (Path.GetExtension(imagePath).ToLower().Equals(".gif"))
-                    {
-                        targetpicturebox.ImageLocation = imagePath;
-                    }
-                    targetpicturebox.Image = new Bitmap(bmpTemp);
-                    return true;
-                }
-            }
-            catch (Exception)
-            {
-                string loaderrormsg = "Failed to load image: " + imagePath;
-                if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, loaderrormsg); }
-                if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, loaderrormsg); }
-                return true; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
-            }
-        }
-
         private void LoadRandomImage(int targetPanel)
         {
             if (targetPanel == 0 && imageCountLeftPanel > 1)
@@ -1124,20 +1006,9 @@ namespace ImageStitcher
             Resize_imagepanels();
             UpdateLabelImageIndex();
         }
-
         private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadRandomImage(activePanel);
-        }
-
-        private void Button_releaseleft_MouseClick(object sender, MouseEventArgs e)
-        {
-            ClearPanel(0);
-        }
-
-        private void Button_releaseright_MouseClick(object sender, MouseEventArgs e)
-        {
-            ClearPanel(1);
         }
 
         private void MirrorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1160,7 +1031,7 @@ namespace ImageStitcher
         {
             bool bool_movefiles = true;
             bool bool_asfilepath = true;
-            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) bool_asfilepath = false; // if shift is held down, send image to clipbaord as data 
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) bool_asfilepath = false; // if shift is held down, send image to clipbaord as data
             Copycut(contextmenufocus, bool_asfilepath, bool_movefiles);
         }
 
@@ -1168,81 +1039,6 @@ namespace ImageStitcher
         {
             Removefromlist(contextmenufocus);
         }
-
-
-        //exiftool https://exiftool.org/forum/index.php?topic=11286.0
-
-        bool ExifToolHasBeenLoaded = false;
-        Process pExifTool = new Process();
-        string ExifToolFolderPath = "D:\\_Tools\\";
-
-        private void RunExiftoolWhileStayingOpen(string ImageFileName)
-        {
-            //  Start ExifTool and keep it in memory if that has not been done yet.
-            if (!ExifToolHasBeenLoaded)
-            {
-                string command = "\"" + ExifToolFolderPath + "exiftool.exe\" -stay_open true -@ args.txt";
-
-                pExifTool.StartInfo = new ProcessStartInfo("cmd", String.Format("/c \"{0}\"", @command));
-                pExifTool.StartInfo.RedirectStandardOutput = true;
-
-                //  NOTE:  If you do not implement an asynchronous error handler like in this example, instead simply using pExifTool.StandardError.ReadLine()
-                //         in the following, you risk that your program might stall.  This is because ExifTool sometimes reports failure only through a
-                //         StandardOutput line saying something like "0 output files created" without reporting anything in addition via StandardError, so
-                //         pExifTool.StandardError.ReadLine() would wait indefinitely for an error message that never comes.
-                pExifTool.StartInfo.RedirectStandardError = true;
-                pExifTool.ErrorDataReceived += new DataReceivedEventHandler(ETErrorHandler);
-
-                pExifTool.StartInfo.UseShellExecute = false;
-                pExifTool.StartInfo.CreateNoWindow = true;
-                pExifTool.Start();
-                pExifTool.BeginErrorReadLine();  //  This command starts the error handling, meaning ETErrorHandler() will now be called whenever ExifTool reports an error.
-
-                ExifToolHasBeenLoaded = true;
-            }
-
-            //  Append the args file for Exiftool to start reading and executing the command.
-            //  NOTE:  NEVER use WriteAllLines here - ExifTool expects the args file to be appended continually, not re-written.
-
-            string[] args = new string[] { ImageFileName, "-execute" };  //  This tells ExifTool to read out all of the image's metadata.
-            File.AppendAllLines(ExifToolFolderPath + "args.txt", args);  //  args.txt gets written into the folder where exiftool.exe resides here.
-
-            string line;
-            do
-            {
-                line = pExifTool.StandardOutput.ReadLine();
-
-                //  NOTE:  Depending on the command you issued, line will either contain a progress report of an operation (e.g., "1 output files created"),
-                //         give line-by-line data, such as an image's metadata (e.g. "Orientation                     : Horizontal (normal)"), or
-                //         read "{ready}", which indicates that executing the last command in args.txt has completed.
-
-                //...  do something with the information provided in line...
-        }
-            while (!line.Contains("{ready}"));
-
-            //  At this point, you can issue the next command for ExifTool, following the very same approach.  For instance, this tells ExifTool to
-            //  extract a PreviewImage from a RAW image, using the trick of adding "%0f" at the beginning of the new filename as a way to
-            //  give the PreviewImage a different name from the orginal file ...
-            args = new string[] { "-ICC_PROFILE="+ ImageFileName, "-overwrite_original", "-execute" };
-            File.AppendAllLines(ExifToolFolderPath + "args.txt", args);
-
-           // ...  read and process pExifTool.StandardOutput again as per the above ...
-
-    }
-
-
-        //  Finally, this is the asynchronous error handler
-
-        private void ETErrorHandler(object sendingProcess, DataReceivedEventArgs errLine)
-        {
-            if (!String.IsNullOrEmpty(errLine.Data))
-            {
-                //...  do something with the information provided in errLine.Data...
-        }
-        }
-
-        // end exiftool
-
 
         private void fixBrokenImageToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
@@ -1276,37 +1072,7 @@ namespace ImageStitcher
 
             LoadImage(contextmenufocus, ofilepath);
         }
-        // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
 
-        String tmpAppDataPath;
-        private void clearTmpAppData()
-        {
-            if (File.Exists(tmpAppDataPath))
-            Directory.Delete(tmpAppDataPath, true);
-        }
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // Copy window location to app settings
-            Settings.Default.WindowLocation = this.Location;
-
-            // Copy window size to app settings
-            if (this.WindowState == FormWindowState.Normal)
-            {
-                Settings.Default.WindowSize = this.Size;
-            }
-            else
-            {
-                Settings.Default.WindowSize = this.RestoreBounds.Size;
-            }
-            Settings.Default.SplitContainerSplitterDistance = savesplitterdistance;
-            Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
-            Settings.Default.ReverseFileOrder = this.checkBox_reversefileorder.Checked;
-            Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
-
-            // Save settings
-            Settings.Default.Save();
-            clearTmpAppData();
-        }
         private void SaveImage(Image targetimage, string filename, string filepath, Boolean savedialog)
         {
             if (!savedialog) targetimage.Save(filepath);
@@ -1368,7 +1134,6 @@ namespace ImageStitcher
                 catch (Exception ex)
                 {
                     Console.WriteLine("{0}", ex);
-
                 }
         }
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1391,61 +1156,214 @@ namespace ImageStitcher
             }
         }
 
+        // end section 3
+
+        /*  Section 4: Keyboard shortcuts
+        */
+        // Local field to store the files enumerator;
+
+        private static List<string> imageFilesLeftPanel;
+        private static List<string> imageFilesRightPanel;
+        private static int imageIndexLeftPanel = 0;
+        private static int imageIndexRightPanel = 0;
+        private static int priorimageIndexLeftPanel = 0;
+        private static int priorimageIndexRightPanel = 0;
+        private static int imageCountLeftPanel = 0;
+        private static int imageCountRightPanel = 0;
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // left and right arrow keys for changing image
+            if (keyData == Keys.Left) { LoadPreviousImage(activePanel); return true; }
+            if (keyData == Keys.Right) { LoadNextImage(activePanel); return true; }
+
+            // R hotkey for rotations
+            if (keyData == Keys.R) { RotateImage(activePanel); return true; }
+
+            // B hotkey for blur
+            if ((keyData == Keys.B)) { Blur(activePanel); return true; }
+
+            // C hotkey for randomize both panels
+            if (keyData == Keys.C) { LoadRandomImage(0); LoadRandomImage(1); return true; }
+
+            // Alt + C hotkey for jump back both panels
+            if (keyData == (Keys.Alt | Keys.C)) { JumpBack(0); JumpBack(1); return true; }
+
+            // Delete or Shift + D hotkey for send to recycle
+            if ((keyData == Keys.Delete) || (keyData ==  Keys.D)) { SendToTrash(activePanel); return true; }
+
+            // Ctrl + X for cut
+            if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel, true, true); return true; }
+
+            // Ctrl + Shift + X for cut as data
+            if (keyData == (Keys.Control | Keys.Shift | Keys.X)) { Copycut(activePanel, false, true); return true; }
+
+            // Ctrl + C for copy
+            if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, true, false); return true; }
+
+            // Ctrl + Shift + C for copy as data
+            if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, false, false); return true; }
+
+            // Ctrl + Alt + X for cut and remove from list
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, true, true); Removefromlist(activePanel);  return true; }
+
+            // end of hotkeys. ignore the keystroke
+            else { return base.ProcessCmdKey(ref msg, keyData); }
+        }
+
+        /*  Section 5: Toggle top/bottom or side/side stitching
+        */
+
+        private void Button_verticalhorizontal_Click(object sender, EventArgs e)
+        {
+            splitContainer_bothimages.Orientation = (splitContainer_bothimages.Orientation == Orientation.Vertical ? Orientation.Horizontal : Orientation.Vertical);
+            button_verticalhorizontal.Text = (splitContainer_bothimages.Orientation == Orientation.Vertical ? "Stack images vertically" : "Put images side by side");
+            Resize_imagepanels();
+        }
+
+        private void Button_swapimages_Click(object sender, EventArgs e)
+        {
+            Bitmap image_tempswap = (pictureBox_leftpanel.Image == null ? null : new Bitmap(pictureBox_leftpanel.Image));
+            pictureBox_leftpanel.Image = (pictureBox_rightpanel.Image == null ? null : new Bitmap(pictureBox_rightpanel.Image));
+            pictureBox_rightpanel.Image = image_tempswap;
+            Resize_imagepanels();
+            var tmp1 = imageFilesLeftPanel;
+            imageFilesLeftPanel = imageFilesRightPanel;
+            imageFilesRightPanel = tmp1;
+            var tmp2 = imageIndexLeftPanel;
+            priorimageIndexLeftPanel = imageIndexLeftPanel;
+            imageIndexLeftPanel = imageIndexRightPanel;
+            priorimageIndexRightPanel = imageIndexRightPanel;
+            imageIndexRightPanel = tmp2;
+            var tmp3 = imageCountLeftPanel;
+            imageCountLeftPanel = imageCountRightPanel;
+            imageCountRightPanel = tmp3;
+            UpdateLabelImageIndex();
+        }
+
+        /* Section:|Image display */
+        /* scrollable zoom */
+        // https://outofrangeexception.blogspot.com/2013/03/how-to-zoom-picturebox-with-mouse-in-c.html
+        protected override void OnMouseWheel(MouseEventArgs mea)
+        {
+            PictureBox pictureBox1 = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            // Override OnMouseWheel event, for zooming in/out with the scroll wheel
+            if (pictureBox1.Image != null)
+            {
+                // If the mouse wheel is moved forward (Zoom in)
+                if (mea.Delta > 0)
+                {
+                    // Check if the pictureBox dimensions are in range (15 is the minimum and maximum zoom level)
+                    if ((pictureBox1.Width < (15 * this.Width)) && (pictureBox1.Height < (15 * this.Height)))
+                    {
+                        // Change the size of the picturebox, multiply it by the ZOOMFACTOR
+                        pictureBox1.Width = (int)(pictureBox1.Width * 1.25);
+                        pictureBox1.Height = (int)(pictureBox1.Height * 1.25);
+
+                        // Formula to move the picturebox, to zoom in the point selected by the mouse cursor
+                        pictureBox1.Top = (int)(mea.Y - 1.25 * (mea.Y - pictureBox1.Top));
+                        pictureBox1.Left = (int)(mea.X - 1.25 * (mea.X - pictureBox1.Left));
+                    }
+                }
+                else
+                {
+                    // Check if the pictureBox dimensions are in range (15 is the minimum and maximum zoom level)
+                    if ((pictureBox1.Width > (this.Width / 15)) && (pictureBox1.Height > (this.Height / 15)))
+                    {
+                        // Change the size of the picturebox, divide it by the ZOOMFACTOR
+                        pictureBox1.Width = (int)(pictureBox1.Width / 1.25);
+                        pictureBox1.Height = (int)(pictureBox1.Height / 1.25);
+
+                        // Formula to move the picturebox, to zoom in the point selected by the mouse cursor
+                        pictureBox1.Top = (int)(mea.Y - 0.80 * (mea.Y - pictureBox1.Top));
+                        pictureBox1.Left = (int)(mea.X - 0.80 * (mea.X - pictureBox1.Left));
+                    }
+                }
+            }
+        }
+        /* load image */
+        public static string SpliceText(string text, int lineLength)
+        {
+            return Regex.Replace(text, "(.{" + lineLength + "})", "$1" + Environment.NewLine );
+        }
+        private void WriteTextOnImage(PictureBox targetpicturebox, String text)
+        {
+            Bitmap bmp = new Bitmap(600, 600);
+            string tmptext = SpliceText(text, 45);
+            using (Graphics graph = Graphics.FromImage(bmp))
+            {
+                Rectangle ImageSize = new Rectangle(0, 0, 600, 600);
+                graph.FillRectangle(Brushes.Gray, ImageSize);
+                graph.DrawString(tmptext,
+                new Font("Arial", 16),
+                new SolidBrush(Color.Black),
+                50, 200,
+                new System.Drawing.StringFormat());
+            }
+            targetpicturebox.Image = bmp;
+        }
+        private bool LoadImage(int targetPanel, string imagePath)
+        {
+            try
+            {
+                PictureBox targetpicturebox = null;
+                using (var bmpTemp = new Bitmap(imagePath))
+                {
+                    if (targetPanel == 0) { targetpicturebox = pictureBox_leftpanel; }
+                    if (targetPanel == 1) { targetpicturebox = pictureBox_rightpanel; }
+                    if (Path.GetExtension(imagePath).ToLower().Equals(".gif"))
+                    {
+                        targetpicturebox.ImageLocation = imagePath;
+                    }
+                    targetpicturebox.Image = new Bitmap(bmpTemp);
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                string loaderrormsg = "Failed to load image: " + imagePath;
+                if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, loaderrormsg); }
+                if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, loaderrormsg); }
+                return true; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
+            }
+        }
+
+        /* app closing save settings */
+        // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
+        String tmpAppDataPath;
+        private void clearTmpAppData()
+        {
+            if (File.Exists(tmpAppDataPath))
+            Directory.Delete(tmpAppDataPath, true);
+        }
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Copy window location to app settings
+            Settings.Default.WindowLocation = this.Location;
+
+            // Copy window size to app settings
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Settings.Default.WindowSize = this.Size;
+            }
+            else
+            {
+                Settings.Default.WindowSize = this.RestoreBounds.Size;
+            }
+            Settings.Default.SplitContainerSplitterDistance = savesplitterdistance;
+            Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
+            Settings.Default.ReverseFileOrder = this.checkBox_reversefileorder.Checked;
+            Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
+
+            // Save settings
+            Settings.Default.Save();
+            clearTmpAppData();
+        }
+
         private int savesplitterdistance;
         private void splitContainer_bothimages_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            
             savesplitterdistance = splitContainer_bothimages.SplitterDistance;
-        }
-
-        private void openInWindowsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // https://stackoverflow.com/questions/6808029/open-image-in-windows-photo-viewer
-            string tempFileName = "";
-            string path = Environment.GetFolderPath(
-                Environment.SpecialFolder.ProgramFiles);
-
-            if (contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
-            {
-                tempFileName = imageFilesLeftPanel[imageIndexLeftPanel];
-            }
-            if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
-            {
-                tempFileName = imageFilesRightPanel[imageIndexRightPanel];
-            }
-            if (!String.Equals("", tempFileName)) {
-                // create our startup process and argument
-                var psi = new ProcessStartInfo(
-                    "rundll32.exe",
-                    String.Format(
-                        "\"{0}{1}\", ImageView_Fullscreen {2}",
-                        Environment.Is64BitOperatingSystem ?
-                            path.Replace(" (x86)", "") :
-                            path
-                            ,
-                        @"\Windows Photo Viewer\PhotoViewer.dll",
-                        tempFileName)
-                    );
-
-                psi.UseShellExecute = false;
-
-                var viewer = Process.Start(psi); }
-        }
-
-        private void button_trash_Click(object sender, EventArgs e)
-        {
-            SendToTrash(activePanel);
-        }
-
-        private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            // disable 'fix webp image' when not applicable
-            fixCorruptedImageToolStripMenuItem.Enabled = !(contextmenufocus == 0 && imageCountLeftPanel == 0) ||
-                (contextmenufocus == 1 && imageCountRightPanel == 0) ||
-            ((contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0) &&
-                Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().EndsWith(".gif")) ||
-            ((contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0) &&
-                Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().EndsWith(".gif"));
         }
     } // end MainWindow : Form
 }
