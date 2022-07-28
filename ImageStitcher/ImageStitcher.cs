@@ -70,7 +70,19 @@ namespace ImageStitcher
                 return FindControlAtPoint(form, form.PointToClient(pos));
             return null;
         } // end Section 1
-
+        private void FocusPanelAtCursor(Form form)
+        {
+            if (FindControlAtCursor(form) is PictureBox box)
+            {
+                if (box == pictureBox_leftpanel) { activePanel = 0; }
+                if (box == pictureBox_rightpanel) { activePanel = 1; }
+            }
+            if (FindControlAtCursor(form) is Panel panel)
+            {
+                if (panel == splitContainer_bothimages.Panel1) activePanel = 0;
+                if (panel == splitContainer_bothimages.Panel2) activePanel = 1;
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -1414,6 +1426,7 @@ namespace ImageStitcher
 
         protected override void OnMouseWheel(MouseEventArgs e)
         {
+            FocusPanelAtCursor(this);
             PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
             if (thispicturebox.Image == null) return;
             UndockPicturebox(thispicturebox);
