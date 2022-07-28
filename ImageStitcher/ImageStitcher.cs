@@ -1336,7 +1336,8 @@ namespace ImageStitcher
         private void pictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
-            Panel thispanel = activePanel == 0 ? splitContainer_bothimages.Panel1 : splitContainer_bothimages.Panel2;
+            int dx = e.X - mousePos.X;
+            int dy = e.Y - mousePos.Y;
             if (panning)
             {
                 thispicturebox.Invalidate();
@@ -1347,25 +1348,18 @@ namespace ImageStitcher
                 Control c = sender as Control;
                 if (panning && c != null)
                 {
-                    int dx = e.X - mousePos.X;
-                    int dy = e.Y - mousePos.Y;
-                    int maxX = thispanel.Size.Width - thispicturebox.Size.Width;
-                    int maxY = thispanel.Size.Height - thispicturebox.Size.Height;
-
                     int newposLeft = e.X + c.Left - mousePos.X;
                     int newposTop = e.Y + c.Top - mousePos.Y;
-                    int newposBottom = newposTop + thispicturebox.Size.Height;
-                    int newposRight = newposLeft + thispicturebox.Size.Width;
-
                     c.Top = newposTop;
                     c.Left = newposLeft;
+                    KeepImageInFrame(thispicturebox, dx, dy);
                 }
             }
         }
 
         private void UndockPicturebox(PictureBox targetpicturebox)
         {
-            if (targetpicturebox.Dock == System.Windows.Forms.DockStyle.Fill)
+            if (targetpicturebox.Dock == DockStyle.Fill)
             {
                 int containerwidth = targetpicturebox.Parent.ClientSize.Width;
                 int containerheight = targetpicturebox.Parent.ClientSize.Height;
@@ -1379,14 +1373,54 @@ namespace ImageStitcher
                 targetpicturebox.Size = new Size(picwidth, picheight);
                 targetpicturebox.Image = new Bitmap(targetpicturebox.Image, new Size(picwidth, picheight));
                 // https://stackoverflow.com/questions/9375588/keeping-a-picturebox-centered-inside-a-container
-                targetpicturebox.Dock = System.Windows.Forms.DockStyle.None;
-                targetpicturebox.Anchor = AnchorStyles.None;
-                targetpicturebox.Location = new Point((containerwidth / 2) - (targetpicturebox.Width / 2),
-                                            (containerheight / 2) - (targetpicturebox.Height / 2));
+                targetpicturebox.Dock = DockStyle.None;
+                targetpicturebox.Location = new Point(picX, picY);
                 targetpicturebox.Refresh();
             }
         }
-
+        private void KeepImageInFrame(PictureBox targetpicturebox, int dx, int dy)
+        {
+            int containerwidth = targetpicturebox.Parent.ClientSize.Width;
+            int containerheight = targetpicturebox.Parent.ClientSize.Height;
+            int picturewidth = targetpicturebox.Width;
+            int pictureheight = targetpicturebox.Height;
+            int boundaryTop = 0;
+            int boundaryBottom = containerheight;
+            int boundaryLeft = 0;
+            int boundaryRight = containerwidth;
+            // for zoom control
+            if (dx ==0 && dy == 0){
+                double imageproportion = (double)picturewidth / (double)pictureheight;
+                if (picturewidth < containerwidth && pictureheight < containerheight)
+                {
+                    float ratio = Math.Min((float)containerwidth / (float)picturewidth, (float)containerheight / (float)pictureheight);
+                    targetpicturebox.Width = (int)(containerwidth * ratio);
+                    targetpicturebox.Height = (int)(containerheight * ratio);
+                    targetpicturebox.Location = new Point((containerwidth / 2) - (targetpicturebox.Width / 2), (containerheight / 2) - (targetpicturebox.Height / 2));
+                }
+                return;
+            }
+            // for pan control
+            if (pictureheight > containerheight)
+            { // when zoomed in
+                if (targetpicturebox.Top > boundaryTop && dy > 0) targetpicturebox.Top = boundaryTop;
+                if (targetpicturebox.Top + pictureheight < boundaryBottom && dy < 0) targetpicturebox.Top = boundaryBottom - pictureheight;
+            } else
+            { // when zoomed out
+                if (targetpicturebox.Top < boundaryTop) targetpicturebox.Top = boundaryTop;
+                if (targetpicturebox.Top + pictureheight > boundaryBottom) targetpicturebox.Top = boundaryBottom - pictureheight;
+            }
+            if (picturewidth > containerwidth)
+            {
+                if (targetpicturebox.Left > boundaryLeft && dx > 0) targetpicturebox.Left = boundaryLeft;
+                if (targetpicturebox.Left + picturewidth < boundaryRight && dx < 0) targetpicturebox.Left = boundaryRight - picturewidth;
+            }
+            else
+            {
+                if (targetpicturebox.Left < boundaryLeft) targetpicturebox.Left = boundaryLeft;
+                if (targetpicturebox.Left + picturewidth > boundaryRight) targetpicturebox.Left = boundaryRight - picturewidth;
+            }
+        }
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
@@ -1417,11 +1451,9 @@ namespace ImageStitcher
                 newY = (int)(e.Y - (1 - 1.0 / zoomfactor) * (e.Y - thispicturebox.Top));
             }
 
-
             thispicturebox.Size = new Size(newWidth, newHeight);
             thispicturebox.Location = new Point(newX, newY);
-
-            //MessageBox.Show("locationxy " + thispicturebox.Location.X + " " + thispicturebox.Location.Y + "\ntopleft " + thispicturebox.Top + " " + thispicturebox.Left);
+            KeepImageInFrame(thispicturebox,0,0);
         }
 
         /* load image */
