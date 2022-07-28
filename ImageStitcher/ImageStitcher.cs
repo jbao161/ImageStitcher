@@ -1415,6 +1415,7 @@ namespace ImageStitcher
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            if (thispicturebox.Image == null) return;
             UndockPicturebox(thispicturebox);
             int newWidth = thispicturebox.Image.Width, newHeight = thispicturebox.Image.Height, newX = thispicturebox.Location.X, newY = thispicturebox.Location.Y;
             double zoomfactor = -0.042 * e.Delta; // add or subtract 1/zoomfactor of the original width and height
@@ -1431,18 +1432,20 @@ namespace ImageStitcher
                 return;
             }
 
-            // zoom on center of panel
+            // zoom on cursor position
             int centerx = thispicturebox.Parent.ClientSize.Width / 2;
             int centery = thispicturebox.Parent.ClientSize.Height / 2;
-            newX = (int)(e.X - (1 - 1.0 / zoomfactor) * (e.X - thispicturebox.Left));
-            newY = (int)(e.Y - (1 - 1.0 / zoomfactor) * (e.Y - thispicturebox.Top));
+            int rposX = e.X - thispicturebox.Parent.Left;
+            int rposY = e.Y - thispicturebox.Parent.Top;
+            newX = (int)(rposX - (1 - 1.0 / zoomfactor) * (rposX - thispicturebox.Left));
+            newY = (int)(rposY - (1 - 1.0 / zoomfactor) * (rposY - thispicturebox.Top));
             // zoom on center of image
             if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 newX = thispicturebox.Location.X + (int)((thispicturebox.Size.Width / zoomfactor) / 2);
                 newY = thispicturebox.Location.Y + (int)((thispicturebox.Size.Height / zoomfactor) / 2);
             }
-            // zoom on cursor position
+            // zoom on center of panel
             else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
             {
                 newX = (int)(centerx - (1 - 1.0 / zoomfactor) * (centerx - thispicturebox.Left));
@@ -1450,6 +1453,7 @@ namespace ImageStitcher
             }
             thispicturebox.Size = new Size(newWidth, newHeight);
             thispicturebox.Location = new Point(newX, newY);
+            //MessageBox.Show("mousepos " + e.X + "," + e.Y + "\nparent " + thispicturebox.Parent.Name + " " + thispicturebox.Parent.Left + "," + thispicturebox.Parent.Top +"\npicturebox "+thispicturebox.Left +","+thispicturebox.Top+ "\ncenter of panel " + centerx + "," + centery+"\ncenter of picturebox "+ (thispicturebox.Location.X + (int)((thispicturebox.Size.Width / zoomfactor) / 2))+","+ (thispicturebox.Location.Y + (int)((thispicturebox.Size.Height / zoomfactor) / 2)));
         }
 
         /* load image */

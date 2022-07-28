@@ -37,6 +37,7 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.checkBox_screengrab = new System.Windows.Forms.CheckBox();
             this.button_trash = new System.Windows.Forms.Button();
             this.checkBox_reversefileorder = new System.Windows.Forms.CheckBox();
             this.checkBox_randomOnClick = new System.Windows.Forms.CheckBox();
@@ -71,7 +72,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBox_screengrab = new System.Windows.Forms.CheckBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -192,6 +192,17 @@
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(879, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // checkBox_screengrab
+            // 
+            this.checkBox_screengrab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBox_screengrab.AutoSize = true;
+            this.checkBox_screengrab.Location = new System.Drawing.Point(795, 3);
+            this.checkBox_screengrab.Name = "checkBox_screengrab";
+            this.checkBox_screengrab.Size = new System.Drawing.Size(81, 17);
+            this.checkBox_screengrab.TabIndex = 12;
+            this.checkBox_screengrab.Text = "Screengrab";
+            this.checkBox_screengrab.UseVisualStyleBackColor = true;
             // 
             // button_trash
             // 
@@ -478,17 +489,6 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
-            // 
-            // checkBox_screengrab
-            // 
-            this.checkBox_screengrab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkBox_screengrab.AutoSize = true;
-            this.checkBox_screengrab.Location = new System.Drawing.Point(795, 3);
-            this.checkBox_screengrab.Name = "checkBox_screengrab";
-            this.checkBox_screengrab.Size = new System.Drawing.Size(81, 17);
-            this.checkBox_screengrab.TabIndex = 12;
-            this.checkBox_screengrab.Text = "Screengrab";
-            this.checkBox_screengrab.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 
