@@ -254,8 +254,14 @@ namespace ImageStitcher
             }
             else
             {
+
                 if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
                 {
+                    if (checkBox_screengrab.Checked)
+                    {
+                        stitchSize.setParams(splitContainer_bothimages.Panel1.Width + splitContainer_bothimages.Panel2.Width, splitContainer_bothimages.Panel1.Height, splitContainer_bothimages.Panel1.Width, true);
+                        return Screen_stitch();
+                    }
                     // scale the taller image to the height of the shorter image, and keep aspect ratio
                     int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
                     int stitched_leftimg_width = (int)(min_height * pictureBox_leftpanel.Image.Width / (double)pictureBox_leftpanel.Image.Height);
@@ -279,6 +285,11 @@ namespace ImageStitcher
 
                 if (this.splitContainer_bothimages.Orientation == Orientation.Horizontal) // left image becomes the one on top
                 {
+                    if (checkBox_screengrab.Checked)
+                    {
+                        stitchSize.setParams(splitContainer_bothimages.Panel1.Width, splitContainer_bothimages.Panel1.Height + splitContainer_bothimages.Panel2.Height, splitContainer_bothimages.Panel1.Height, false);
+                        return Screen_stitch();
+                    }
                     // scale the wider image down to width of the thinner image, and keep aspect ratio
                     int min_width = Math.Min(pictureBox_leftpanel.Image.Width, pictureBox_rightpanel.Image.Width);
                     int stitched_leftimg_height = (int)(min_width * pictureBox_leftpanel.Image.Height / (double)pictureBox_leftpanel.Image.Width);
@@ -459,6 +470,36 @@ namespace ImageStitcher
                 }
         }
 
+        private Bitmap Screen_stitch()
+        {
+            Panel leftpanel = splitContainer_bothimages.Panel1;
+            Panel rightpanel = splitContainer_bothimages.Panel2;
+            Bitmap bmp1 = new Bitmap(leftpanel.Width, leftpanel.Height);
+            splitContainer_bothimages.Panel1.DrawToBitmap(bmp1, new Rectangle(0, 0, leftpanel.Width, leftpanel.Height));
+            Bitmap bmp2 = new Bitmap(rightpanel.Width, rightpanel.Height);
+            splitContainer_bothimages.Panel2.DrawToBitmap(bmp2, new Rectangle(0, 0, rightpanel.Width, rightpanel.Height));
+            if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
+            {
+                Bitmap stitchedimage = new Bitmap(bmp1.Width + bmp2.Width, bmp1.Height);
+                using (Graphics g = Graphics.FromImage(stitchedimage))
+                {
+                    g.DrawImage(bmp1, 0, 0);
+                    g.DrawImage(bmp2, bmp1.Width, 0);
+                }
+                return stitchedimage;
+            }
+            if (this.splitContainer_bothimages.Orientation == Orientation.Horizontal) // left image becomes the one on top
+            {
+                Bitmap stitchedimage = new Bitmap(bmp1.Width, bmp1.Height + bmp2.Height);
+                using (Graphics g = Graphics.FromImage(stitchedimage))
+                {
+                    g.DrawImage(bmp1, 0, 0);
+                    g.DrawImage(bmp2, 0, bmp1.Height);
+                }
+                return stitchedimage;
+            }
+            return null;
+        }
         private void StitchAnimatedGif(string fileOutPath)
         {
             StitchSizeParams dim = new StitchSizeParams();
@@ -1076,17 +1117,17 @@ namespace ImageStitcher
             LoadImage(contextmenufocus, ofilepath);
         }
 
-        private void SaveImage(Image targetimage, string filename, string filepath, Boolean savedialog)
+        private void SaveImage(Image targetimage, string filename, string directorypath, Boolean savedialog)
         {
-            if (!savedialog) targetimage.Save(filepath);
+            if (!savedialog) targetimage.Save(directorypath);
             if (!(targetimage is null) && savedialog) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
                     saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
                     saveFileDialog1.Title = "Save an Image File";
-                    saveFileDialog1.FileName = filename ;                     // feature 1: timestamp
+                    saveFileDialog1.FileName = filename ;                    
                     saveFileDialog1.RestoreDirectory = false ;
-                    saveFileDialog1.InitialDirectory = Path.GetDirectoryName(filepath) ;
+                    saveFileDialog1.InitialDirectory = directorypath;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
                         // Saves the Image via a FileStream created by the OpenFile method.
@@ -1141,21 +1182,29 @@ namespace ImageStitcher
         }
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string filename = "";
-            string filepath = "";
+            string filename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " image";
+            string directorypath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             bool savedialog = true;
             if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) savedialog = false;
+            if (checkBox_screengrab.Checked)
+            {
+                Panel thispanel = activePanel == 0 ? splitContainer_bothimages.Panel1 : splitContainer_bothimages.Panel2;
+                Bitmap bmp1 = new Bitmap(thispanel.Width, thispanel.Height);
+                thispanel.DrawToBitmap(bmp1, new Rectangle(0, 0, thispanel.Width, thispanel.Height));
+                SaveImage((Image)bmp1, filename, directorypath, savedialog);
+                return;
+            }
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null)
             {
-                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); filepath = imageFilesLeftPanel[imageIndexLeftPanel]; }
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); directorypath = Path.GetDirectoryName(imageFilesLeftPanel[imageIndexLeftPanel]); }
                 Image targetimage = pictureBox_leftpanel.Image;
-                SaveImage(targetimage, filename,filepath, savedialog );
+                SaveImage(targetimage, filename, directorypath, savedialog );
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null)
             {
                 Image targetimage = pictureBox_rightpanel.Image;
-                if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); filepath = imageFilesRightPanel[imageIndexRightPanel]; }
-                SaveImage(targetimage, filename, filepath, savedialog);
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); directorypath = Path.GetDirectoryName(imageFilesRightPanel[imageIndexRightPanel]); }
+                SaveImage(targetimage, filename, directorypath, savedialog);
             }
         }
 

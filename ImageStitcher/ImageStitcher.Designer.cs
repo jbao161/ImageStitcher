@@ -71,6 +71,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBox_screengrab = new System.Windows.Forms.CheckBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -90,7 +91,7 @@
             this.panel_bothimages.Controls.Add(this.splitContainer_bothimages);
             this.panel_bothimages.Location = new System.Drawing.Point(0, 0);
             this.panel_bothimages.Name = "panel_bothimages";
-            this.panel_bothimages.Size = new System.Drawing.Size(942, 814);
+            this.panel_bothimages.Size = new System.Drawing.Size(879, 397);
             this.panel_bothimages.TabIndex = 0;
             // 
             // splitContainer_bothimages
@@ -114,8 +115,8 @@
             this.splitContainer_bothimages.Panel2.Controls.Add(this.pictureBox_rightpanel);
             this.splitContainer_bothimages.Panel2.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
             this.splitContainer_bothimages.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
-            this.splitContainer_bothimages.Size = new System.Drawing.Size(942, 814);
-            this.splitContainer_bothimages.SplitterDistance = 907;
+            this.splitContainer_bothimages.Size = new System.Drawing.Size(879, 397);
+            this.splitContainer_bothimages.SplitterDistance = 844;
             this.splitContainer_bothimages.SplitterWidth = 10;
             this.splitContainer_bothimages.TabIndex = 0;
             this.splitContainer_bothimages.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_bothimages_SplitterMoved);
@@ -124,7 +125,7 @@
             // 
             this.label_imageindex_leftpanel.AutoSize = true;
             this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 801);
+            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 384);
             this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
             this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
             this.label_imageindex_leftpanel.TabIndex = 1;
@@ -136,7 +137,7 @@
             this.pictureBox_leftpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_leftpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_leftpanel.Name = "pictureBox_leftpanel";
-            this.pictureBox_leftpanel.Size = new System.Drawing.Size(907, 814);
+            this.pictureBox_leftpanel.Size = new System.Drawing.Size(844, 397);
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
@@ -151,7 +152,7 @@
             // 
             this.label_imageindex_rightpanel.AutoSize = true;
             this.label_imageindex_rightpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 697);
+            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 280);
             this.label_imageindex_rightpanel.Name = "label_imageindex_rightpanel";
             this.label_imageindex_rightpanel.Size = new System.Drawing.Size(140, 13);
             this.label_imageindex_rightpanel.TabIndex = 1;
@@ -163,7 +164,7 @@
             this.pictureBox_rightpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_rightpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_rightpanel.Name = "pictureBox_rightpanel";
-            this.pictureBox_rightpanel.Size = new System.Drawing.Size(25, 814);
+            this.pictureBox_rightpanel.Size = new System.Drawing.Size(25, 397);
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
@@ -176,6 +177,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.checkBox_screengrab);
             this.panel_controls.Controls.Add(this.button_trash);
             this.panel_controls.Controls.Add(this.checkBox_reversefileorder);
             this.panel_controls.Controls.Add(this.checkBox_randomOnClick);
@@ -185,17 +187,17 @@
             this.panel_controls.Controls.Add(this.button_preview);
             this.panel_controls.Controls.Add(this.button_save);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel_controls.Location = new System.Drawing.Point(0, 820);
+            this.panel_controls.Location = new System.Drawing.Point(0, 403);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
             this.panel_controls.Name = "panel_controls";
-            this.panel_controls.Size = new System.Drawing.Size(942, 80);
+            this.panel_controls.Size = new System.Drawing.Size(879, 80);
             this.panel_controls.TabIndex = 7;
             // 
             // button_trash
             // 
             this.button_trash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_trash.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_trash.Location = new System.Drawing.Point(238, 0);
+            this.button_trash.Location = new System.Drawing.Point(175, 0);
             this.button_trash.Name = "button_trash";
             this.button_trash.Size = new System.Drawing.Size(75, 80);
             this.button_trash.TabIndex = 11;
@@ -231,7 +233,7 @@
             // 
             this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(313, 0);
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(250, 0);
             this.button_verticalhorizontal.Name = "button_verticalhorizontal";
             this.button_verticalhorizontal.Size = new System.Drawing.Size(219, 80);
             this.button_verticalhorizontal.TabIndex = 8;
@@ -245,7 +247,7 @@
             this.checkBox_openaftersave.AutoSize = true;
             this.checkBox_openaftersave.Checked = true;
             this.checkBox_openaftersave.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_openaftersave.Location = new System.Drawing.Point(803, 60);
+            this.checkBox_openaftersave.Location = new System.Drawing.Point(740, 60);
             this.checkBox_openaftersave.Name = "checkBox_openaftersave";
             this.checkBox_openaftersave.Size = new System.Drawing.Size(136, 17);
             this.checkBox_openaftersave.TabIndex = 7;
@@ -256,7 +258,7 @@
             // 
             this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_swapimages.Location = new System.Drawing.Point(532, 0);
+            this.button_swapimages.Location = new System.Drawing.Point(469, 0);
             this.button_swapimages.Name = "button_swapimages";
             this.button_swapimages.Size = new System.Drawing.Size(130, 80);
             this.button_swapimages.TabIndex = 5;
@@ -268,7 +270,7 @@
             // 
             this.button_preview.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_preview.Location = new System.Drawing.Point(662, 0);
+            this.button_preview.Location = new System.Drawing.Point(599, 0);
             this.button_preview.Name = "button_preview";
             this.button_preview.Size = new System.Drawing.Size(130, 80);
             this.button_preview.TabIndex = 1;
@@ -281,7 +283,7 @@
             this.button_save.AutoSize = true;
             this.button_save.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_save.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_save.Location = new System.Drawing.Point(792, 0);
+            this.button_save.Location = new System.Drawing.Point(729, 0);
             this.button_save.MinimumSize = new System.Drawing.Size(150, 0);
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(150, 80);
@@ -477,11 +479,22 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
+            // checkBox_screengrab
+            // 
+            this.checkBox_screengrab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBox_screengrab.AutoSize = true;
+            this.checkBox_screengrab.Location = new System.Drawing.Point(795, 3);
+            this.checkBox_screengrab.Name = "checkBox_screengrab";
+            this.checkBox_screengrab.Size = new System.Drawing.Size(81, 17);
+            this.checkBox_screengrab.TabIndex = 12;
+            this.checkBox_screengrab.Text = "Screengrab";
+            this.checkBox_screengrab.UseVisualStyleBackColor = true;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(942, 900);
+            this.ClientSize = new System.Drawing.Size(879, 483);
             this.Controls.Add(this.panel_controls);
             this.Controls.Add(this.panel_bothimages);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -550,6 +563,7 @@
         private System.Windows.Forms.ToolStripMenuItem openInWindowsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.Button button_trash;
+        private System.Windows.Forms.CheckBox checkBox_screengrab;
     }
 }
 
