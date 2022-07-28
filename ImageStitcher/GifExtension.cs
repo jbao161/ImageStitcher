@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageStitcher
 {
     public static class GifExtension
     {//https://stackoverflow.com/questions/47343230/how-do-you-get-the-duration-of-a-gif-file-in-c
-
         public static TimeSpan? GetGifDuration(this Image image, int fps = 60)
         {
             var minimumFrameDelay = (1000.0 / fps);

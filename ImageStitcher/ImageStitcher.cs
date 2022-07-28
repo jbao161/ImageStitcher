@@ -185,7 +185,8 @@ namespace ImageStitcher
             if (FindControlAtCursor(this) is PictureBox box) { activePictureBox = box; }
             if (activePictureBox == pictureBox_leftpanel) { activePanel = 0; }
             if (activePictureBox == pictureBox_rightpanel) { activePanel = 1; }
-            if (FindControlAtCursor(this) is Panel panel) { 
+            if (FindControlAtCursor(this) is Panel panel)
+            {
                 if (panel == splitContainer_bothimages.Panel1) activePanel = 0;
                 if (panel == splitContainer_bothimages.Panel2) activePanel = 1;
             }
@@ -200,6 +201,7 @@ namespace ImageStitcher
         * multiply this proportion by the width of the viewing window and you get the width the left picture
         * should take up. Put a divider there and the two images in 'Zoom' display will be of same height
         */
+
         private void Resize_imagepanels()
         {
             if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
@@ -225,18 +227,22 @@ namespace ImageStitcher
 
         /*  Create a new image by stitching the two panel images together
          */
+
         public class StitchSizeParams
         {
             public int width, height, rightImagePosition;
             public bool orientation;
+
             public StitchSizeParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, bool sidebyside)
             {
                 this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = sidebyside;
             }
+
             public void setParams(int stitchedWidth, int stitchedHeight, int rightImagePosition, bool sidebyside)
             {
                 this.width = stitchedWidth; this.height = stitchedHeight; this.rightImagePosition = rightImagePosition; this.orientation = sidebyside;
             }
+
             public StitchSizeParams()
             { }
         }
@@ -245,6 +251,7 @@ namespace ImageStitcher
         {
             return Stitch_images(new StitchSizeParams());
         }
+
         private Bitmap Stitch_images(StitchSizeParams stitchSize)
         {
             if ((pictureBox_leftpanel.Image is null) || (pictureBox_rightpanel.Image is null))
@@ -254,7 +261,6 @@ namespace ImageStitcher
             }
             else
             {
-
                 if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
                 {
                     if (checkBox_screengrab.Checked)
@@ -316,6 +322,7 @@ namespace ImageStitcher
 
         /*  Open the stitched image in a viewing window
          */
+
         private void Button_preview_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
@@ -387,6 +394,7 @@ namespace ImageStitcher
         /*  Save the stiched image to a new file
          *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
          */
+
         private void Button_save_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
@@ -500,13 +508,14 @@ namespace ImageStitcher
             }
             return null;
         }
+
         private void StitchAnimatedGif(string fileOutPath)
         {
             StitchSizeParams dim = new StitchSizeParams();
             _ = Stitch_images(dim);
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
             string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp.mp4";
-            var tmpfilepath = tmpAppDataPath+tmpfilename;
+            var tmpfilepath = tmpAppDataPath + tmpfilename;
             string leftimagepath = imageFilesLeftPanel[imageIndexLeftPanel];
             string rightimagepath = imageFilesRightPanel[imageIndexRightPanel];
             string twidth = (dim.width / 2 * 2).ToString();
@@ -518,28 +527,28 @@ namespace ImageStitcher
             videoEncoding = $"-c:v libx264 -crf 0 -preset fast ";
             if (dim.orientation == sidebyside)
             {
-                 lwidth = (dim.rightImagePosition ).ToString();
-                 rwidth = ((dim.width - dim.rightImagePosition) ).ToString();
+                lwidth = (dim.rightImagePosition).ToString();
+                rwidth = ((dim.width - dim.rightImagePosition)).ToString();
 
-                 leftscale = $"{lwidth}x{theight}";
-                 rightscale = $"{rwidth}x{theight}";
-                 rightposition = $"x={lwidth}";
+                leftscale = $"{lwidth}x{theight}";
+                rightscale = $"{rwidth}x{theight}";
+                rightposition = $"x={lwidth}";
             }
             if (dim.orientation != sidebyside)
             {
-                 lheight = (dim.rightImagePosition ).ToString();
-                 rheight = ((dim.height - dim.rightImagePosition) ).ToString();
+                lheight = (dim.rightImagePosition).ToString();
+                rheight = ((dim.height - dim.rightImagePosition)).ToString();
 
-                 leftscale = $"{twidth}x{lheight}";
-                 rightscale = $"{twidth}x{rheight}";
-                 rightposition = $"x=0:y={lheight}";
+                leftscale = $"{twidth}x{lheight}";
+                rightscale = $"{twidth}x{rheight}";
+                rightposition = $"x=0:y={lheight}";
             }
 
             TimeSpan durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
             TimeSpan durationr = (TimeSpan)GifExtension.GetGifDuration(pictureBox_rightpanel.Image);
             // the shorter gif slows down in ffmpeg for some reason, so try to speed it back up. keep the longer gif roughly the same speed. and overall the speed for both is slower so speed them up slightly.
-            double durratio = Math.Max(0.9,durationl.Milliseconds / (double)durationr.Milliseconds);
-            string leftspeed = String.Format("{0:.##}", Math.Min(0.95,durratio));
+            double durratio = Math.Max(0.9, durationl.Milliseconds / (double)durationr.Milliseconds);
+            string leftspeed = String.Format("{0:.##}", Math.Min(0.95, durratio));
             string rightspeed = String.Format("{0:.##}", Math.Min(0.95, 1.0 / durratio));
             // inconsistent behavior reverting to default
             leftspeed = rightspeed = "1.0";
@@ -550,7 +559,7 @@ namespace ImageStitcher
             if (durationr > durationl) leftloop = loopthisvideo;
 
             String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts={leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
-            string scaledwidth= (dim.width / 32 * 32).ToString();
+            string scaledwidth = (dim.width / 32 * 32).ToString();
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
             String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale={scaledwidth}:-1:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=floyd_steinberg \" \"{fileOutPath}\"";
             String deletetempfiles = $" && del  \"{tmpfilepath}\"";
@@ -570,6 +579,7 @@ namespace ImageStitcher
             proc.Start();
             //proc.WaitForExit();//May need to wait for the process to exit too
         }
+
         /*  Section 2: Button controls to clear the picture panels
          */
 
@@ -604,10 +614,12 @@ namespace ImageStitcher
 
         //https://stackoverflow.com/questions/4886327/determine-what-control-the-contextmenustrip-was-used-on
         private static int contextmenufocus = 0;
+
         private void ContextMenuStrip_Opened(object sender, EventArgs e)
         {
             contextmenufocus = activePanel;
         }
+
         private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // disable 'fix webp image' when not applicable
@@ -653,6 +665,7 @@ namespace ImageStitcher
             data.SetData("Preferred Dropeffect", new MemoryStream(BitConverter.GetBytes((int)dropEffect)));
             Clipboard.SetDataObject(data);
         }
+
         private void Removefromlist(int targetpanel)
         {
             if (targetpanel == 0 && imageCountLeftPanel == 0 || targetpanel == 1 && imageCountRightPanel == 0) { return; }
@@ -661,11 +674,11 @@ namespace ImageStitcher
                 try
                 {
                     imageFilesLeftPanel.RemoveAt(imageIndexLeftPanel);
-                    imageCountLeftPanel-=1;
+                    imageCountLeftPanel -= 1;
                 }
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexLeftPanel;
-                imageIndexLeftPanel-=1;
+                imageIndexLeftPanel -= 1;
                 LoadNextImage(targetpanel);
                 priorimageIndexLeftPanel = restorepriorimageindex;
             }
@@ -678,12 +691,13 @@ namespace ImageStitcher
                 }
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexRightPanel;
-                imageIndexRightPanel-=1;
+                imageIndexRightPanel -= 1;
                 LoadNextImage(targetpanel);
                 priorimageIndexRightPanel = restorepriorimageindex;
             }
         }
-        private void Copycut( int targetPanel, bool asfilepath, bool movefiles)
+
+        private void Copycut(int targetPanel, bool asfilepath, bool movefiles)
         {
             PictureBox thispicturebox = targetPanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
 
@@ -705,7 +719,8 @@ namespace ImageStitcher
                         paths.Add(imageFilesRightPanel[imageIndexRightPanel]);
                         PutFilesOnClipboard(paths, movefiles);
                     }
-                } else
+                }
+                else
                 {
                     dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
                     Clipboard.SetDataObject(dobj, true); // if shift is held, store in clipboard as image content
@@ -781,7 +796,7 @@ namespace ImageStitcher
 
         private void LoadPreviousImage(int targetPanel)
         {
-            if (targetPanel == 0 && pictureBox_leftpanel.Image != null )
+            if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
                 {
@@ -795,12 +810,12 @@ namespace ImageStitcher
                 }
                 Resize_imagepanels();
             }
-            if (targetPanel == 1 && pictureBox_rightpanel.Image != null )
+            if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
             {
-                if (imageFilesRightPanel != null && imageCountRightPanel!= 0)
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0)
                 {
                     int nextImageIndex = imageIndexRightPanel - 1;
-                    if (nextImageIndex < 0) nextImageIndex =  imageCountRightPanel - 1;
+                    if (nextImageIndex < 0) nextImageIndex = imageCountRightPanel - 1;
 
                     if (LoadImage(targetPanel, imageFilesRightPanel[nextImageIndex]))
                     {
@@ -836,7 +851,7 @@ namespace ImageStitcher
             }
             if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
             {
-                if (imageFilesRightPanel != null && imageCountRightPanel !=0)
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0)
                 {
                     int nextImageIndex = imageIndexRightPanel + 1;
                     if (nextImageIndex >= imageCountRightPanel) nextImageIndex = 0;
@@ -905,7 +920,7 @@ namespace ImageStitcher
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
             }
-            if (contextmenufocus == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel !=0)
+            if (contextmenufocus == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
                 Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
             }
@@ -953,7 +968,7 @@ namespace ImageStitcher
                     priorimageIndexLeftPanel = swapImageIndex;
                 }
             }
-            if (targetPanel == 1 && imageFilesRightPanel != null && imageCountRightPanel!=0)
+            if (targetPanel == 1 && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
                 if (LoadImage(targetPanel, imageFilesRightPanel[priorimageIndexRightPanel]))
                 {
@@ -986,7 +1001,8 @@ namespace ImageStitcher
             {
                 tempFileName = imageFilesRightPanel[imageIndexRightPanel];
             }
-            if (!String.Equals("", tempFileName)) {
+            if (!String.Equals("", tempFileName))
+            {
                 // create our startup process and argument
                 var psi = new ProcessStartInfo(
                     "rundll32.exe",
@@ -1002,7 +1018,8 @@ namespace ImageStitcher
 
                 psi.UseShellExecute = false;
 
-                var viewer = Process.Start(psi); }
+                var viewer = Process.Start(psi);
+            }
         }
 
         private void button_trash_Click(object sender, EventArgs e)
@@ -1012,6 +1029,7 @@ namespace ImageStitcher
 
         //https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
         private static readonly Random getrandom = new Random();
+
         public static int GetRandomNumber(int min, int max)
         {
             lock (getrandom) // synchronize
@@ -1019,6 +1037,7 @@ namespace ImageStitcher
                 return getrandom.Next(min, max);
             }
         }
+
         private void LoadRandomImage(int targetPanel)
         {
             if (targetPanel == 0 && imageCountLeftPanel > 1)
@@ -1050,6 +1069,7 @@ namespace ImageStitcher
             Resize_imagepanels();
             UpdateLabelImageIndex();
         }
+
         private void RandomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadRandomImage(activePanel);
@@ -1090,14 +1110,14 @@ namespace ImageStitcher
             string ofilepath = "";
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                 ofilepath = imageFilesLeftPanel[imageIndexLeftPanel];
+                ofilepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                 ofilepath = imageFilesRightPanel[imageIndexRightPanel];
+                ofilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
             string fileExt = Path.GetExtension(ofilepath);
-            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp"+ fileExt;
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
             string tmpImage = tmpAppDataPath + tmpfilename;
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
             System.IO.File.Move(ofilepath, tmpImage);
@@ -1125,8 +1145,8 @@ namespace ImageStitcher
                     // Displays a SaveFileDialog so the user can save the Image
                     saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
                     saveFileDialog1.Title = "Save an Image File";
-                    saveFileDialog1.FileName = filename ;                    
-                    saveFileDialog1.RestoreDirectory = false ;
+                    saveFileDialog1.FileName = filename;
+                    saveFileDialog1.RestoreDirectory = false;
                     saveFileDialog1.InitialDirectory = directorypath;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
@@ -1180,6 +1200,7 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
+
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " image";
@@ -1198,7 +1219,7 @@ namespace ImageStitcher
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); directorypath = Path.GetDirectoryName(imageFilesLeftPanel[imageIndexLeftPanel]); }
                 Image targetimage = pictureBox_leftpanel.Image;
-                SaveImage(targetimage, filename, directorypath, savedialog );
+                SaveImage(targetimage, filename, directorypath, savedialog);
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null)
             {
@@ -1242,7 +1263,7 @@ namespace ImageStitcher
             if (keyData == (Keys.Alt | Keys.C)) { JumpBack(0); JumpBack(1); return true; }
 
             // Delete or Shift + D hotkey for send to recycle
-            if ((keyData == Keys.Delete) || (keyData ==  Keys.D)) { SendToTrash(activePanel); return true; }
+            if ((keyData == Keys.Delete) || (keyData == Keys.D)) { SendToTrash(activePanel); return true; }
 
             // Ctrl + X for cut
             if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel, true, true); return true; }
@@ -1257,7 +1278,7 @@ namespace ImageStitcher
             if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, false, false); return true; }
 
             // Ctrl + Alt + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, true, true); Removefromlist(activePanel);  return true; }
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, true, true); Removefromlist(activePanel); return true; }
 
             // end of hotkeys. ignore the keystroke
             else { return base.ProcessCmdKey(ref msg, keyData); }
@@ -1295,14 +1316,16 @@ namespace ImageStitcher
 
         /* Section:|Image display */
         /* scrollable zoom */
+
         // https://outofrangeexception.blogspot.com/2013/03/how-to-zoom-picturebox-with-mouse-in-c.html
         private bool panning = false;
-        void pictureBox_MouseUp(object sender, MouseEventArgs e)
+
+        private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
             panning = false;
         }
 
-        Point mousePos;
+        private Point mousePos;
 
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
         {
@@ -1320,27 +1343,7 @@ namespace ImageStitcher
             }
             if (e.Button == MouseButtons.Left)
             {
-
-                if (thispicturebox.Dock == System.Windows.Forms.DockStyle.Fill)
-                {
-                    int boxwidth = thispicturebox.DisplayRectangle.Width;
-                    int boxheight = thispicturebox.DisplayRectangle.Height;
-                    Rectangle dims = ImageRectangleFromSizeMode(thispicturebox.SizeMode);
-                    int picwidth = dims.Width;
-                    int picheight = dims.Height;
-                    int borderwidth = boxwidth - picwidth;
-                    int borderheight = boxheight - picheight;
-                    int ptop = thispicturebox.Top;
-                    int pleft = thispicturebox.Left;
-                    thispicturebox.Dock = System.Windows.Forms.DockStyle.None;
-
-                    thispicturebox.Size = new Size(picwidth, picheight);
-                    thispicturebox.Image = new Bitmap(thispicturebox.Image, new Size(picwidth, picheight));
-                    thispicturebox.Top = (ptop + boxheight) / 2;
-                    thispicturebox.Left = (pleft + boxwidth) / 2;
-                }
-
-
+                UndockPicturebox(thispicturebox);
                 Control c = sender as Control;
                 if (panning && c != null)
                 {
@@ -1356,87 +1359,78 @@ namespace ImageStitcher
 
                     c.Top = newposTop;
                     c.Left = newposLeft;
-
                 }
             }
         }
 
-        private Rectangle ImageRectangleFromSizeMode(PictureBoxSizeMode mode)
+        private void UndockPicturebox(PictureBox targetpicturebox)
         {
-            PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
-            Rectangle result = ClientRectangle;
-            Image image = thispicturebox.Image;
-            if (thispicturebox.Image != null)
+            if (targetpicturebox.Dock == System.Windows.Forms.DockStyle.Fill)
             {
-                switch (mode)
-                {
-                    case PictureBoxSizeMode.Normal:
-                    case PictureBoxSizeMode.AutoSize:
-                        // Use image's size rather than client size.
-                        result.Size = image.Size;
-                        break;
+                int containerwidth = targetpicturebox.Parent.ClientSize.Width;
+                int containerheight = targetpicturebox.Parent.ClientSize.Height;
+                Size imageSize = targetpicturebox.Image.Size;
+                float ratio = Math.Min((float)containerwidth / (float)imageSize.Width, (float)containerheight / (float)imageSize.Height);
+                int picwidth = (int)(imageSize.Width * ratio);
+                int picheight = (int)(imageSize.Height * ratio);
+                int picX = (containerwidth - picwidth) / 2;
+                int picY = (containerheight - picheight) / 2;
 
-                    case PictureBoxSizeMode.StretchImage:
-                        // Do nothing, was initialized to the available dimensions.
-                        break;
-
-                    case PictureBoxSizeMode.CenterImage:
-                        // Center within the available space.
-                        result.X += (result.Width - image.Width) / 2;
-                        result.Y += (result.Height - image.Height) / 2;
-                        result.Size = image.Size;
-                        break;
-
-                    case PictureBoxSizeMode.Zoom:
-                        Size imageSize = image.Size;
-                        float ratio = Math.Min((float)ClientRectangle.Width / (float)imageSize.Width, (float)ClientRectangle.Height / (float)imageSize.Height);
-                        result.Width = (int)(imageSize.Width * ratio);
-                        result.Height = (int)(imageSize.Height * ratio);
-                        result.X = (ClientRectangle.Width - result.Width) / 2;
-                        result.Y = (ClientRectangle.Height - result.Height) / 2;
-                        break;
-
-                    default:
-                        break;
-                }
+                targetpicturebox.Size = new Size(picwidth, picheight);
+                targetpicturebox.Image = new Bitmap(targetpicturebox.Image, new Size(picwidth, picheight));
+                // https://stackoverflow.com/questions/9375588/keeping-a-picturebox-centered-inside-a-container
+                targetpicturebox.Dock = System.Windows.Forms.DockStyle.None;
+                targetpicturebox.Anchor = AnchorStyles.None;
+                targetpicturebox.Location = new Point((containerwidth / 2) - (targetpicturebox.Width / 2),
+                                            (containerheight / 2) - (targetpicturebox.Height / 2));
+                targetpicturebox.Refresh();
             }
-
-            return result;
         }
-        Point mouseDown;
-
 
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
-            Image img = thispicturebox.Image;
-            thispicturebox.Dock = DockStyle.None;
-            int newWidth = img.Width, newHeight = img.Height, newX = thispicturebox.Location.X, newY = thispicturebox.Location.Y;
-            double zoomfactor = 7;
+            UndockPicturebox(thispicturebox);
+            int newWidth = thispicturebox.Image.Width, newHeight = thispicturebox.Image.Height, newX = thispicturebox.Location.X, newY = thispicturebox.Location.Y;
+            double zoomfactor = 7; // add or subtract 1/zoomfactor of the original width and height
             if (e.Delta > 0)
             {
-                newWidth = thispicturebox.Size.Width + (int)(thispicturebox.Size.Width / zoomfactor);
-                newHeight = thispicturebox.Size.Height + (int)(thispicturebox.Size.Height / zoomfactor);
-                newX = thispicturebox.Location.X - (int)((thispicturebox.Size.Width / zoomfactor) / 2);
-                newY = thispicturebox.Location.Y - (int)((thispicturebox.Size.Height / zoomfactor) / 2);
+                zoomfactor *= -1;
             }
-
-            else if (e.Delta < 0)
+            newWidth = thispicturebox.Size.Width - (int)(thispicturebox.Size.Width / zoomfactor);
+            newHeight = thispicturebox.Size.Height - (int)(thispicturebox.Size.Height / zoomfactor);
+            // zoom on center of panel
+            int centerx = thispicturebox.Parent.ClientSize.Width/2;
+            int centery = thispicturebox.Parent.ClientSize.Height/2;
+            newX = (int)(centerx - (1 - 1.0 / zoomfactor) * (centerx - thispicturebox.Left));
+            newY = (int)(centery - (1 - 1.0 / zoomfactor) * (centery - thispicturebox.Top));
+            // zoom on center of image
+            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
-                newWidth = thispicturebox.Size.Width - (int)(thispicturebox.Size.Width / zoomfactor);
-                newHeight = thispicturebox.Size.Height - (int)(thispicturebox.Size.Height / zoomfactor);
                 newX = thispicturebox.Location.X + (int)((thispicturebox.Size.Width / zoomfactor) / 2);
                 newY = thispicturebox.Location.Y + (int)((thispicturebox.Size.Height / zoomfactor) / 2);
-
             }
+            // zoom on cursor position
+            else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            {
+                newX = (int)(e.X - (1 - 1.0 / zoomfactor) * (e.X - thispicturebox.Left));
+                newY = (int)(e.Y - (1 - 1.0 / zoomfactor) * (e.Y - thispicturebox.Top));
+            }
+
+
             thispicturebox.Size = new Size(newWidth, newHeight);
             thispicturebox.Location = new Point(newX, newY);
+
+            //MessageBox.Show("locationxy " + thispicturebox.Location.X + " " + thispicturebox.Location.Y + "\ntopleft " + thispicturebox.Top + " " + thispicturebox.Left);
         }
+
         /* load image */
+
         public static string SpliceText(string text, int lineLength)
         {
-            return Regex.Replace(text, "(.{" + lineLength + "})", "$1" + Environment.NewLine );
+            return Regex.Replace(text, "(.{" + lineLength + "})", "$1" + Environment.NewLine);
         }
+
         private void WriteTextOnImage(PictureBox targetpicturebox, String text)
         {
             Bitmap bmp = new Bitmap(600, 600);
@@ -1453,6 +1447,7 @@ namespace ImageStitcher
             }
             targetpicturebox.Image = bmp;
         }
+
         private bool LoadImage(int targetPanel, string imagePath)
         {
             try
@@ -1482,13 +1477,16 @@ namespace ImageStitcher
         }
 
         /* app closing save settings */
+
         // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
-        String tmpAppDataPath;
+        private String tmpAppDataPath;
+
         private void clearTmpAppData()
         {
             if (File.Exists(tmpAppDataPath))
-            Directory.Delete(tmpAppDataPath, true);
+                Directory.Delete(tmpAppDataPath, true);
         }
+
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Copy window location to app settings
@@ -1514,6 +1512,7 @@ namespace ImageStitcher
         }
 
         private int savesplitterdistance;
+
         private void splitContainer_bothimages_SplitterMoved(object sender, SplitterEventArgs e)
         {
             savesplitterdistance = splitContainer_bothimages.SplitterDistance;

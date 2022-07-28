@@ -25,7 +25,6 @@ namespace ImageStitcher
                 MainWindow mainWindow = new MainWindow();
                 Application.Run(mainWindow);
             }
-
         }
     }
 }
