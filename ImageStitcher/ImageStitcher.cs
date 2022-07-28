@@ -1344,15 +1344,48 @@ namespace ImageStitcher
             }
             if (e.Button == MouseButtons.Left)
             {
-                UndockPicturebox(thispicturebox);
+                //UndockPicturebox(thispicturebox);
                 Control c = sender as Control;
-                if (panning && c != null)
+                if (panning && c != null && thispicturebox.Dock == DockStyle.None)
                 {
                     int newposLeft = e.X + c.Left - mousePos.X;
                     int newposTop = e.Y + c.Top - mousePos.Y;
-                    c.Top = newposTop;
-                    c.Left = newposLeft;
-                    KeepImageInFrame(thispicturebox, dx, dy);
+
+                    int containerwidth = thispicturebox.Parent.ClientSize.Width;
+                    int containerheight = thispicturebox.Parent.ClientSize.Height;
+                    int picturewidth = thispicturebox.Width;
+                    int pictureheight = thispicturebox.Height;
+                    int boundaryTop = 0;
+                    int boundaryBottom = containerheight;
+                    int boundaryLeft = 0;
+                    int boundaryRight = containerwidth;
+
+                    int finalposLeft = newposLeft;
+                    int finalposTop = newposTop;
+                    // for pan control
+                    if (pictureheight > containerheight)
+                    { // when zoomed in
+                        if (newposTop > boundaryTop && dy > 0) finalposTop = boundaryTop;
+                        if (newposTop + pictureheight < boundaryBottom && dy < 0) finalposTop = boundaryBottom - pictureheight;
+                    }
+                    else
+                    { // when zoomed out
+                        if (newposTop < boundaryTop) finalposTop = boundaryTop;
+                        if (newposTop + pictureheight > boundaryBottom) finalposTop = boundaryBottom - pictureheight;
+                    }
+                    if (picturewidth > containerwidth)
+                    {
+                        if (newposLeft > boundaryLeft && dx > 0) finalposLeft = boundaryLeft;
+                        if (newposLeft + picturewidth < boundaryRight && dx < 0) finalposLeft = boundaryRight - picturewidth;
+                    }
+                    else
+                    {
+                        if (newposLeft < boundaryLeft) finalposLeft = boundaryLeft;
+                        if (newposLeft + picturewidth > boundaryRight) finalposLeft = boundaryRight - picturewidth;
+                    }
+
+                    c.Top = finalposTop;
+                    c.Left = finalposLeft;
                 }
             }
         }
@@ -1378,66 +1411,21 @@ namespace ImageStitcher
                 targetpicturebox.Refresh();
             }
         }
-        private void KeepImageInFrame(PictureBox targetpicturebox, int dx, int dy)
-        {
-            int containerwidth = targetpicturebox.Parent.ClientSize.Width;
-            int containerheight = targetpicturebox.Parent.ClientSize.Height;
-            int picturewidth = targetpicturebox.Width;
-            int pictureheight = targetpicturebox.Height;
-            int boundaryTop = 0;
-            int boundaryBottom = containerheight;
-            int boundaryLeft = 0;
-            int boundaryRight = containerwidth;
-            // for zoom control
-            if (dx ==0 && dy == 0){
-                double imageproportion = (double)picturewidth / (double)pictureheight;
-                if (picturewidth < containerwidth && pictureheight < containerheight)
-                {
-                    float ratio = Math.Min((float)containerwidth / (float)picturewidth, (float)containerheight / (float)pictureheight);
-                    targetpicturebox.Width = (int)(containerwidth * ratio);
-                    targetpicturebox.Height = (int)(containerheight * ratio);
-                    targetpicturebox.Location = new Point((containerwidth / 2) - (targetpicturebox.Width / 2), (containerheight / 2) - (targetpicturebox.Height / 2));
-                }
-                return;
-            }
-            // for pan control
-            if (pictureheight > containerheight)
-            { // when zoomed in
-                if (targetpicturebox.Top > boundaryTop && dy > 0) targetpicturebox.Top = boundaryTop;
-                if (targetpicturebox.Top + pictureheight < boundaryBottom && dy < 0) targetpicturebox.Top = boundaryBottom - pictureheight;
-            } else
-            { // when zoomed out
-                if (targetpicturebox.Top < boundaryTop) targetpicturebox.Top = boundaryTop;
-                if (targetpicturebox.Top + pictureheight > boundaryBottom) targetpicturebox.Top = boundaryBottom - pictureheight;
-            }
-            if (picturewidth > containerwidth)
-            {
-                if (targetpicturebox.Left > boundaryLeft && dx > 0) targetpicturebox.Left = boundaryLeft;
-                if (targetpicturebox.Left + picturewidth < boundaryRight && dx < 0) targetpicturebox.Left = boundaryRight - picturewidth;
-            }
-            else
-            {
-                if (targetpicturebox.Left < boundaryLeft) targetpicturebox.Left = boundaryLeft;
-                if (targetpicturebox.Left + picturewidth > boundaryRight) targetpicturebox.Left = boundaryRight - picturewidth;
-            }
-        }
+
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
             UndockPicturebox(thispicturebox);
             int newWidth = thispicturebox.Image.Width, newHeight = thispicturebox.Image.Height, newX = thispicturebox.Location.X, newY = thispicturebox.Location.Y;
-            double zoomfactor = 7; // add or subtract 1/zoomfactor of the original width and height
-            if (e.Delta > 0)
-            {
-                zoomfactor *= -1;
-            }
+            double zoomfactor = -0.042*e.Delta; // add or subtract 1/zoomfactor of the original width and height
+ 
             newWidth = thispicturebox.Size.Width - (int)(thispicturebox.Size.Width / zoomfactor);
             newHeight = thispicturebox.Size.Height - (int)(thispicturebox.Size.Height / zoomfactor);
             // zoom on center of panel
             int centerx = thispicturebox.Parent.ClientSize.Width/2;
             int centery = thispicturebox.Parent.ClientSize.Height/2;
-            newX = (int)(centerx - (1 - 1.0 / zoomfactor) * (centerx - thispicturebox.Left));
-            newY = (int)(centery - (1 - 1.0 / zoomfactor) * (centery - thispicturebox.Top));
+            newX = (int)(e.X - (1 - 1.0 / zoomfactor) * (e.X - thispicturebox.Left));
+            newY = (int)(e.Y - (1 - 1.0 / zoomfactor) * (e.Y - thispicturebox.Top));
             // zoom on center of image
             if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
@@ -1447,13 +1435,23 @@ namespace ImageStitcher
             // zoom on cursor position
             else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
             {
-                newX = (int)(e.X - (1 - 1.0 / zoomfactor) * (e.X - thispicturebox.Left));
-                newY = (int)(e.Y - (1 - 1.0 / zoomfactor) * (e.Y - thispicturebox.Top));
+
+                newX = (int)(centerx - (1 - 1.0 / zoomfactor) * (centerx - thispicturebox.Left));
+                newY = (int)(centery - (1 - 1.0 / zoomfactor) * (centery - thispicturebox.Top));
             }
 
             thispicturebox.Size = new Size(newWidth, newHeight);
             thispicturebox.Location = new Point(newX, newY);
-            KeepImageInFrame(thispicturebox,0,0);
+            int containerwidth = thispicturebox.Parent.ClientSize.Width;
+            int containerheight = thispicturebox.Parent.ClientSize.Height;
+            int picturewidth = thispicturebox.Width;
+            int pictureheight = thispicturebox.Height;
+            // for zoom control
+                if (picturewidth < containerwidth && pictureheight < containerheight)
+                {
+                thispicturebox.Dock = DockStyle.Fill;
+                }
+                return;
         }
 
         /* load image */
