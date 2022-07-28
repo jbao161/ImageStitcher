@@ -183,9 +183,12 @@ namespace ImageStitcher
         {
             PictureBox activePictureBox = null;
             if (FindControlAtCursor(this) is PictureBox box) { activePictureBox = box; }
-
             if (activePictureBox == pictureBox_leftpanel) { activePanel = 0; }
             if (activePictureBox == pictureBox_rightpanel) { activePanel = 1; }
+            if (FindControlAtCursor(this) is Panel panel) { 
+                if (panel == splitContainer_bothimages.Panel1) activePanel = 0;
+                if (panel == splitContainer_bothimages.Panel2) activePanel = 1;
+            }
             string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             DragDropHandler(activePanel, s);
         }
@@ -1244,42 +1247,141 @@ namespace ImageStitcher
         /* Section:|Image display */
         /* scrollable zoom */
         // https://outofrangeexception.blogspot.com/2013/03/how-to-zoom-picturebox-with-mouse-in-c.html
-        protected override void OnMouseWheel(MouseEventArgs mea)
+        private bool panning = false;
+        void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            PictureBox pictureBox1 = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
-            // Override OnMouseWheel event, for zooming in/out with the scroll wheel
-            if (pictureBox1.Image != null)
+            panning = false;
+        }
+
+        Point mousePos;
+
+        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            panning = true;
+            mousePos = e.Location;
+        }
+
+        private void pictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            Panel thispanel = activePanel == 0 ? splitContainer_bothimages.Panel1 : splitContainer_bothimages.Panel2;
+            if (panning)
             {
-                // If the mouse wheel is moved forward (Zoom in)
-                if (mea.Delta > 0)
-                {
-                    // Check if the pictureBox dimensions are in range (15 is the minimum and maximum zoom level)
-                    if ((pictureBox1.Width < (15 * this.Width)) && (pictureBox1.Height < (15 * this.Height)))
-                    {
-                        // Change the size of the picturebox, multiply it by the ZOOMFACTOR
-                        pictureBox1.Width = (int)(pictureBox1.Width * 1.25);
-                        pictureBox1.Height = (int)(pictureBox1.Height * 1.25);
+                thispicturebox.Invalidate();
+            }
+            if (e.Button == MouseButtons.Left)
+            {
 
-                        // Formula to move the picturebox, to zoom in the point selected by the mouse cursor
-                        pictureBox1.Top = (int)(mea.Y - 1.25 * (mea.Y - pictureBox1.Top));
-                        pictureBox1.Left = (int)(mea.X - 1.25 * (mea.X - pictureBox1.Left));
-                    }
+                if (thispicturebox.Dock == System.Windows.Forms.DockStyle.Fill)
+                {
+                    int boxwidth = thispicturebox.DisplayRectangle.Width;
+                    int boxheight = thispicturebox.DisplayRectangle.Height;
+                    Rectangle dims = ImageRectangleFromSizeMode(thispicturebox.SizeMode);
+                    int picwidth = dims.Width;
+                    int picheight = dims.Height;
+                    int borderwidth = boxwidth - picwidth;
+                    int borderheight = boxheight - picheight;
+                    int ptop = thispicturebox.Top;
+                    int pleft = thispicturebox.Left;
+                    thispicturebox.Dock = System.Windows.Forms.DockStyle.None;
+
+                    thispicturebox.Size = new Size(picwidth, picheight);
+                    thispicturebox.Image = new Bitmap(thispicturebox.Image, new Size(picwidth, picheight));
+                    thispicturebox.Top = (ptop + boxheight) / 2;
+                    thispicturebox.Left = (pleft + boxwidth) / 2;
                 }
-                else
-                {
-                    // Check if the pictureBox dimensions are in range (15 is the minimum and maximum zoom level)
-                    if ((pictureBox1.Width > (this.Width / 15)) && (pictureBox1.Height > (this.Height / 15)))
-                    {
-                        // Change the size of the picturebox, divide it by the ZOOMFACTOR
-                        pictureBox1.Width = (int)(pictureBox1.Width / 1.25);
-                        pictureBox1.Height = (int)(pictureBox1.Height / 1.25);
 
-                        // Formula to move the picturebox, to zoom in the point selected by the mouse cursor
-                        pictureBox1.Top = (int)(mea.Y - 0.80 * (mea.Y - pictureBox1.Top));
-                        pictureBox1.Left = (int)(mea.X - 0.80 * (mea.X - pictureBox1.Left));
-                    }
+
+                Control c = sender as Control;
+                if (panning && c != null)
+                {
+                    int dx = e.X - mousePos.X;
+                    int dy = e.Y - mousePos.Y;
+                    int maxX = thispanel.Size.Width - thispicturebox.Size.Width;
+                    int maxY = thispanel.Size.Height - thispicturebox.Size.Height;
+
+                    int newposLeft = e.X + c.Left - mousePos.X;
+                    int newposTop = e.Y + c.Top - mousePos.Y;
+                    int newposBottom = newposTop + thispicturebox.Size.Height;
+                    int newposRight = newposLeft + thispicturebox.Size.Width;
+
+                    c.Top = newposTop;
+                    c.Left = newposLeft;
+
                 }
             }
+        }
+
+        private Rectangle ImageRectangleFromSizeMode(PictureBoxSizeMode mode)
+        {
+            PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            Rectangle result = ClientRectangle;
+            Image image = thispicturebox.Image;
+            if (thispicturebox.Image != null)
+            {
+                switch (mode)
+                {
+                    case PictureBoxSizeMode.Normal:
+                    case PictureBoxSizeMode.AutoSize:
+                        // Use image's size rather than client size.
+                        result.Size = image.Size;
+                        break;
+
+                    case PictureBoxSizeMode.StretchImage:
+                        // Do nothing, was initialized to the available dimensions.
+                        break;
+
+                    case PictureBoxSizeMode.CenterImage:
+                        // Center within the available space.
+                        result.X += (result.Width - image.Width) / 2;
+                        result.Y += (result.Height - image.Height) / 2;
+                        result.Size = image.Size;
+                        break;
+
+                    case PictureBoxSizeMode.Zoom:
+                        Size imageSize = image.Size;
+                        float ratio = Math.Min((float)ClientRectangle.Width / (float)imageSize.Width, (float)ClientRectangle.Height / (float)imageSize.Height);
+                        result.Width = (int)(imageSize.Width * ratio);
+                        result.Height = (int)(imageSize.Height * ratio);
+                        result.X = (ClientRectangle.Width - result.Width) / 2;
+                        result.Y = (ClientRectangle.Height - result.Height) / 2;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+        Point mouseDown;
+
+
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            Image img = thispicturebox.Image;
+            thispicturebox.Dock = DockStyle.None;
+            int newWidth = img.Width, newHeight = img.Height, newX = thispicturebox.Location.X, newY = thispicturebox.Location.Y;
+            double zoomfactor = 7;
+            if (e.Delta > 0)
+            {
+                newWidth = thispicturebox.Size.Width + (int)(thispicturebox.Size.Width / zoomfactor);
+                newHeight = thispicturebox.Size.Height + (int)(thispicturebox.Size.Height / zoomfactor);
+                newX = thispicturebox.Location.X - (int)((thispicturebox.Size.Width / zoomfactor) / 2);
+                newY = thispicturebox.Location.Y - (int)((thispicturebox.Size.Height / zoomfactor) / 2);
+            }
+
+            else if (e.Delta < 0)
+            {
+                newWidth = thispicturebox.Size.Width - (int)(thispicturebox.Size.Width / zoomfactor);
+                newHeight = thispicturebox.Size.Height - (int)(thispicturebox.Size.Height / zoomfactor);
+                newX = thispicturebox.Location.X + (int)((thispicturebox.Size.Width / zoomfactor) / 2);
+                newY = thispicturebox.Location.Y + (int)((thispicturebox.Size.Height / zoomfactor) / 2);
+
+            }
+            thispicturebox.Size = new Size(newWidth, newHeight);
+            thispicturebox.Location = new Point(newX, newY);
         }
         /* load image */
         public static string SpliceText(string text, int lineLength)
@@ -1315,7 +1417,9 @@ namespace ImageStitcher
                     {
                         targetpicturebox.ImageLocation = imagePath;
                     }
+                    targetpicturebox.Size = new Size(bmpTemp.Width, bmpTemp.Height);
                     targetpicturebox.Image = new Bitmap(bmpTemp);
+                    targetpicturebox.Dock = System.Windows.Forms.DockStyle.Fill;
                     return true;
                 }
             }

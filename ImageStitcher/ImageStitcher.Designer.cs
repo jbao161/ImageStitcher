@@ -101,13 +101,19 @@
             // 
             // splitContainer_bothimages.Panel1
             // 
+            this.splitContainer_bothimages.Panel1.AllowDrop = true;
             this.splitContainer_bothimages.Panel1.Controls.Add(this.label_imageindex_leftpanel);
             this.splitContainer_bothimages.Panel1.Controls.Add(this.pictureBox_leftpanel);
+            this.splitContainer_bothimages.Panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
+            this.splitContainer_bothimages.Panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
             // 
             // splitContainer_bothimages.Panel2
             // 
+            this.splitContainer_bothimages.Panel2.AllowDrop = true;
             this.splitContainer_bothimages.Panel2.Controls.Add(this.label_imageindex_rightpanel);
             this.splitContainer_bothimages.Panel2.Controls.Add(this.pictureBox_rightpanel);
+            this.splitContainer_bothimages.Panel2.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
+            this.splitContainer_bothimages.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
             this.splitContainer_bothimages.Size = new System.Drawing.Size(942, 814);
             this.splitContainer_bothimages.SplitterDistance = 907;
             this.splitContainer_bothimages.SplitterWidth = 10;
@@ -137,6 +143,9 @@
             this.pictureBox_leftpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
             this.pictureBox_leftpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
             this.pictureBox_leftpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Control_MouseClick_copypastemenu);
+            this.pictureBox_leftpanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
+            this.pictureBox_leftpanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
+            this.pictureBox_leftpanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
             // 
             // label_imageindex_rightpanel
             // 
@@ -161,6 +170,9 @@
             this.pictureBox_rightpanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
             this.pictureBox_rightpanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
             this.pictureBox_rightpanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Control_MouseClick_copypastemenu);
+            this.pictureBox_rightpanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
+            this.pictureBox_rightpanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
+            this.pictureBox_rightpanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
             // 
             // panel_controls
             // 
