@@ -1417,13 +1417,23 @@ namespace ImageStitcher
             PictureBox thispicturebox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
             UndockPicturebox(thispicturebox);
             int newWidth = thispicturebox.Image.Width, newHeight = thispicturebox.Image.Height, newX = thispicturebox.Location.X, newY = thispicturebox.Location.Y;
-            double zoomfactor = -0.042*e.Delta; // add or subtract 1/zoomfactor of the original width and height
- 
+            double zoomfactor = -0.042 * e.Delta; // add or subtract 1/zoomfactor of the original width and height
+
             newWidth = thispicturebox.Size.Width - (int)(thispicturebox.Size.Width / zoomfactor);
             newHeight = thispicturebox.Size.Height - (int)(thispicturebox.Size.Height / zoomfactor);
+
+            // keep image inside frame
+            int containerwidth = thispicturebox.Parent.ClientSize.Width;
+            int containerheight = thispicturebox.Parent.ClientSize.Height;
+            if (newWidth < containerwidth && newHeight < containerheight)
+            {
+                thispicturebox.Dock = DockStyle.Fill;
+                return;
+            }
+
             // zoom on center of panel
-            int centerx = thispicturebox.Parent.ClientSize.Width/2;
-            int centery = thispicturebox.Parent.ClientSize.Height/2;
+            int centerx = thispicturebox.Parent.ClientSize.Width / 2;
+            int centery = thispicturebox.Parent.ClientSize.Height / 2;
             newX = (int)(e.X - (1 - 1.0 / zoomfactor) * (e.X - thispicturebox.Left));
             newY = (int)(e.Y - (1 - 1.0 / zoomfactor) * (e.Y - thispicturebox.Top));
             // zoom on center of image
@@ -1435,23 +1445,11 @@ namespace ImageStitcher
             // zoom on cursor position
             else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
             {
-
                 newX = (int)(centerx - (1 - 1.0 / zoomfactor) * (centerx - thispicturebox.Left));
                 newY = (int)(centery - (1 - 1.0 / zoomfactor) * (centery - thispicturebox.Top));
             }
-
             thispicturebox.Size = new Size(newWidth, newHeight);
             thispicturebox.Location = new Point(newX, newY);
-            int containerwidth = thispicturebox.Parent.ClientSize.Width;
-            int containerheight = thispicturebox.Parent.ClientSize.Height;
-            int picturewidth = thispicturebox.Width;
-            int pictureheight = thispicturebox.Height;
-            // for zoom control
-                if (picturewidth < containerwidth && pictureheight < containerheight)
-                {
-                thispicturebox.Dock = DockStyle.Fill;
-                }
-                return;
         }
 
         /* load image */
