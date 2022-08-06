@@ -4,6 +4,7 @@ using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 
@@ -106,6 +107,35 @@ namespace ImageStitcher
         {
             pictureBox_rightpanel.AllowDrop = true;
             pictureBox_leftpanel.AllowDrop = true;
+
+            string configPathBackup; //https://stackoverflow.com/questions/42708868/user-config-corruption
+            try
+            {
+                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
+                configPathBackup = config.FilePath + ".bak";
+                config.SaveAs(configPathBackup, ConfigurationSaveMode.Full, true);
+            }
+            catch (ConfigurationErrorsException ex)
+            {
+                string filename = ex.Filename;
+                configPathBackup = filename + ".bak";
+                //_logger.Error(ex, "Cannot open config file");
+
+                if (File.Exists(filename) == true)
+                {
+                    //_logger.Error("Config file {0} content:\n{1}", filename, File.ReadAllText(filename));
+                    File.Delete(filename);
+
+                    if (!string.IsNullOrEmpty(configPathBackup) && File.Exists(configPathBackup))
+                    {
+                        File.Copy(configPathBackup, filename, true);
+                    }
+
+                }
+                Properties.Settings.Default.Reload();
+                //_logger.Error("Config file {0} does not exist", filename);
+            }
+
             //https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
             // Set window location
             if (Settings.Default.WindowLocation != null)
@@ -1534,6 +1564,19 @@ namespace ImageStitcher
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            try //https://stackoverflow.com/questions/42708868/user-config-corruption
+            {
+                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
+            }
+            catch (ConfigurationErrorsException exception)
+            {
+                Console.WriteLine("Settings are Corrupt!!");
+                // handle error or tell user
+                // to manually delete the file, you can do the following:
+                File.Delete(exception.Filename); // this can throw an exception too, so be wary!
+                Settings.Default.Reload();
+            }
+
             // Copy window location to app settings
             Settings.Default.WindowLocation = this.Location;
 
