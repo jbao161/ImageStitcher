@@ -20,5 +20,14 @@
     <Setting Name="OpenFolderAfterSave" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="SlideLmode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ordered</Value>
+    </Setting>
+    <Setting Name="SlideRmode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ordered</Value>
+    </Setting>
+    <Setting Name="SlideTimeInterval" Type="System.String" Scope="User">
+      <Value Profile="(Default)">5 s</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

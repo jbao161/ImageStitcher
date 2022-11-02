@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace ImageStitcher
 {
@@ -87,6 +88,8 @@ namespace ImageStitcher
         public MainWindow()
         {
             InitializeComponent();
+            default_slideshowbot = new slideshow_bot("ordered", "ordered", new DispatcherTimer());
+            default_slideshowbot.slideshow_timer.Tick += Tick;
             UpdateLabelImageIndex();
         }
 
@@ -756,7 +759,7 @@ namespace ImageStitcher
                         if (targetPanel == 0 && !(imageFilesLeftPanel is null) && imageCountLeftPanel != 0)
                         {
                             string filepath = imageFilesLeftPanel[imageIndexLeftPanel];
-                            if (datatype.Equals ("filepath")) Clipboard.SetText(filepath);
+                            if (datatype.Equals("filepath")) Clipboard.SetText(filepath);
                             if (datatype.Equals("file"))
                             {
                                 paths.Add(filepath);
@@ -1620,6 +1623,59 @@ namespace ImageStitcher
         private void splitContainer_bothimages_SplitterMoved(object sender, SplitterEventArgs e)
         {
             savesplitterdistance = splitContainer_bothimages.SplitterDistance;
+        }
+
+        private void button_slideshow_Click(object sender, EventArgs e)
+        {
+            form_slideshow slideshow_settings = new form_slideshow(this);
+            Point location = button_slideshow.PointToScreen(Point.Empty);
+            location.X += button_slideshow.Width / 2;
+            slideshow_settings.pntLocation = location;
+            slideshow_settings.Show();
+        }
+
+        public class slideshow_bot
+        {
+            public string slideshow_leftshufflemode;
+            public string slideshow_rightshufflemode;
+            public DispatcherTimer slideshow_timer;
+            public slideshow_bot(string slideshow_leftshufflemode, string slideshow_rightshufflemode, DispatcherTimer slideshow_timer)
+            {
+                this.slideshow_leftshufflemode = slideshow_leftshufflemode;
+                this.slideshow_rightshufflemode = slideshow_rightshufflemode;
+                this.slideshow_timer = slideshow_timer;
+            }   
+        }
+        public slideshow_bot default_slideshowbot;
+        public void slideshow_start(int timeinterval_sec, string leftmode, string rightmode)
+        {
+            DispatcherTimer timer = default_slideshowbot.slideshow_timer;
+            default_slideshowbot = new slideshow_bot(leftmode, rightmode, timer);
+            timer.Interval = TimeSpan.FromSeconds(timeinterval_sec);
+            timer.Tick += Tick;
+            timer.Start();
+        }
+
+        public void slideshow_stop()
+        {
+            default_slideshowbot.slideshow_timer.Stop();
+            default_slideshowbot.slideshow_timer.Tick -= Tick;
+        }
+
+        private void Tick(object sender, EventArgs e)
+        {
+            slideshow_advance(0, default_slideshowbot.slideshow_leftshufflemode);
+            slideshow_advance(1, default_slideshowbot.slideshow_leftshufflemode);
+        }
+        
+        private void slideshow_advance(int targetpicturebox, string shufflemode)
+        {
+            if(String.Equals(shufflemode, "random")){
+                LoadRandomImage(targetpicturebox);
+            }
+            if (String.Equals(shufflemode, "ordered")){
+                LoadNextImage(targetpicturebox);
+            }
         }
     } // end MainWindow : Form
 }

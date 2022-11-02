@@ -86,8 +86,15 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="form_slideshow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="form_slideshow.Designer.cs">
+      <DependentUpon>form_slideshow.cs</DependentUpon>
+    </Compile>
     <Compile Include="GifExtension.cs" />
     <Compile Include="SuperFastBlur.cs" />
     <Compile Include="ImageStitcher.cs">
@@ -98,6 +105,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="form_slideshow.resx">
+      <DependentUpon>form_slideshow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ImageStitcher.resx">
       <DependentUpon>ImageStitcher.cs</DependentUpon>
       <SubType>Designer</SubType>
