@@ -438,7 +438,22 @@ namespace ImageStitcher
         /*  Save the stiched image to a new file
          *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
          */
-
+        private bool check_if_animated_gif(string imagepath)
+        {
+            using (Image image = Image.FromFile(imagepath))
+            {
+                if (ImageAnimator.CanAnimate(image))
+                {
+                    // GIF is animated
+                    return true;
+                }
+                else
+                {
+                    // GIF is not animated
+                    return false;
+                }
+            }
+        }
         private void Button_save_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
@@ -455,8 +470,9 @@ namespace ImageStitcher
                     bool isanimatedgif = false;
                     if (!(imageFilesLeftPanel is null) && imageCountLeftPanel != 0 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
                     {
-                        if (Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().Equals(".gif")
-                            || Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().Equals(".gif"))
+
+                        if (check_if_animated_gif(imageFilesLeftPanel[imageIndexLeftPanel])
+                            && check_if_animated_gif(imageFilesRightPanel[imageIndexRightPanel]))
                         {
                             isanimatedgif = true;
                             saveFileDialog1.FilterIndex = 3;
