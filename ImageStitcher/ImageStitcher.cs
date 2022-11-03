@@ -88,8 +88,7 @@ namespace ImageStitcher
         public MainWindow()
         {
             InitializeComponent();
-            default_slideshowbot = new slideshow_bot("ordered", "ordered", new DispatcherTimer());
-            default_slideshowbot.slideshow_timer.Tick += Tick;
+
             UpdateLabelImageIndex();
         }
 
@@ -606,7 +605,8 @@ namespace ImageStitcher
             String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts={leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
             string scaledwidth = (dim.width / 32 * 32).ToString();
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
-            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale={scaledwidth}:-1:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=floyd_steinberg \" \"{fileOutPath}\"";
+
+            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale=iw:ih:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=floyd_steinberg \" \"{fileOutPath}\"";
             String deletetempfiles = $" && del  \"{tmpfilepath}\"";
             arg = joinasvideo + converttogif + deletetempfiles;
 
@@ -1627,6 +1627,12 @@ namespace ImageStitcher
 
         private void button_slideshow_Click(object sender, EventArgs e)
         {
+            if (default_slideshowbot == null)
+            {
+                default_slideshowbot = new slideshow_bot("ordered", "ordered", new DispatcherTimer());
+                default_slideshowbot.slideshow_timer.Tick += Tick;
+            }
+
             form_slideshow slideshow_settings = new form_slideshow(this);
             Point location = button_slideshow.PointToScreen(Point.Empty);
             location.X += button_slideshow.Width / 2;
