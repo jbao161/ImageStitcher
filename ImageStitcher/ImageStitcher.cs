@@ -438,22 +438,7 @@ namespace ImageStitcher
         /*  Save the stiched image to a new file
          *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
          */
-        private bool check_if_animated_gif(string imagepath)
-        {
-            using (Image image = Image.FromFile(imagepath))
-            {
-                if (ImageAnimator.CanAnimate(image))
-                {
-                    // GIF is animated
-                    return true;
-                }
-                else
-                {
-                    // GIF is not animated
-                    return false;
-                }
-            }
-        }
+
         private void Button_save_Click(object sender, EventArgs e)
         {
             Bitmap stitchedimage = Stitch_images();
@@ -472,7 +457,7 @@ namespace ImageStitcher
                     {
 
                         if (check_if_animated_gif(imageFilesLeftPanel[imageIndexLeftPanel])
-                            && check_if_animated_gif(imageFilesRightPanel[imageIndexRightPanel]))
+                            || check_if_animated_gif(imageFilesRightPanel[imageIndexRightPanel]))
                         {
                             isanimatedgif = true;
                             saveFileDialog1.FilterIndex = 3;
@@ -537,9 +522,26 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
+        private bool check_if_animated_gif(string imagepath)
+        {
+            // https://stackoverflow.com/questions/2848689/c-sharp-tell-static-gifs-apart-from-animated-ones
+            using (Image image = Image.FromFile(imagepath))
+            {
+                if (ImageAnimator.CanAnimate(image))
+                {
+                    // GIF is animated
+                    return true;
+                }
+                else
+                {
+                    // GIF is not animated
+                    return false;
+                }
+            }
+        }
 
         private Bitmap Screen_stitch()
-        {
+        { // stitches a screenshot of the images as displayed in the viewer (i.e. with zoom, unsaved edit effects)
             Panel leftpanel = splitContainer_bothimages.Panel1;
             Panel rightpanel = splitContainer_bothimages.Panel2;
             Bitmap bmp1 = new Bitmap(leftpanel.Width, leftpanel.Height);
@@ -576,11 +578,13 @@ namespace ImageStitcher
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
             string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp.mp4";
             var tmpfilepath = tmpAppDataPath + tmpfilename;
+            String deletetempfiles = $" && del  \"{tmpfilepath}\"";
+
             string leftimagepath = imageFilesLeftPanel[imageIndexLeftPanel];
             string rightimagepath = imageFilesRightPanel[imageIndexRightPanel];
             string twidth = (dim.width / 2 * 2).ToString();
             string theight = (dim.height / 2 * 2).ToString();
-            string arg = "";
+
             bool sidebyside = true;
             string lwidth, rwidth, lheight, rheight, leftscale, rightscale, rightposition, videoEncoding;
             lwidth = rwidth = lheight = rheight = leftscale = rightscale = rightposition = videoEncoding = String.Empty;
@@ -604,27 +608,61 @@ namespace ImageStitcher
                 rightposition = $"x=0:y={lheight}";
             }
 
-            TimeSpan durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
-            TimeSpan durationr = (TimeSpan)GifExtension.GetGifDuration(pictureBox_rightpanel.Image);
-            // the shorter gif slows down in ffmpeg for some reason, so try to speed it back up. keep the longer gif roughly the same speed. and overall the speed for both is slower so speed them up slightly.
-            double durratio = Math.Max(0.9, durationl.Milliseconds / (double)durationr.Milliseconds);
-            string leftspeed = String.Format("{0:.##}", Math.Min(0.95, durratio));
-            string rightspeed = String.Format("{0:.##}", Math.Min(0.95, 1.0 / durratio));
-            // inconsistent behavior reverting to default
-            leftspeed = rightspeed = "1.0";
-            String loopthisvideo = "-fflags +genpts -stream_loop -1";
-            String leftloop = String.Empty;
-            String rightloop = String.Empty;
+            TimeSpan durationl = TimeSpan.Zero;
+            if (check_if_animated_gif(leftimagepath))
+            {
+                 durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
+            }
+            TimeSpan durationr = TimeSpan.Zero;
+            if (check_if_animated_gif(rightimagepath))
+            {
+                durationr = (TimeSpan)GifExtension.GetGifDuration(pictureBox_rightpanel.Image);
+            }
+
+            string leftspeed = "1.0";
+            string rightspeed = "1.0";
+            string loopthisvideo = "-fflags +genpts -stream_loop -1";
+            string leftloop = String.Empty;
+            string rightloop = String.Empty;
             if (durationl > durationr) rightloop = loopthisvideo;
             if (durationr > durationl) leftloop = loopthisvideo;
 
-            String joinasvideo = $"/C ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts={leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
-            string scaledwidth = (dim.width / 32 * 32).ToString();
+
+            // If there is a still image, first convert it to a video with nonzero duration
+            String stillimagepath = "";
+            string tmpfilenamestill = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpstill.mp4";
+            var tmpfilepathstill = tmpAppDataPath + tmpfilenamestill;
+
+            string stillduration = "";
+            string ifstillimagepresent = "";
+            if (durationl == TimeSpan.Zero)
+            {
+                stillimagepath = leftimagepath;
+                leftimagepath = tmpfilepathstill;
+                stillduration = durationr.TotalSeconds.ToString();
+            }
+            if (durationr == TimeSpan.Zero)
+            {
+                stillimagepath = rightimagepath;
+                rightimagepath = tmpfilepathstill;
+                stillduration = durationl.TotalSeconds.ToString();
+            }
+            if (durationl == TimeSpan.Zero || durationr == TimeSpan.Zero)
+            {
+                string stillimagecommand = $"ffmpeg -loop 1 -i \"{stillimagepath}\" -c:v libx264 -crf 18 -vf \"pad=ceil(iw/2)*2:ceil(ih/2)*2\" -r 30 -y -an -t {stillduration} -pix_fmt yuv420p \"{tmpfilepathstill}\" && ";
+                ifstillimagepresent = stillimagecommand;
+                deletetempfiles += $" && del  \"{tmpfilepathstill}\"";
+            }
+            // end still image section
+
+            String joinasvideo = $"ffmpeg {leftloop} -i \"{leftimagepath}\" {rightloop} -i \"{rightimagepath}\" -filter_complex \"color=s={twidth}x{theight}:c=black:rate=60[base]; [0:v] setpts={leftspeed}*(PTS-STARTPTS), scale={leftscale}[left]; [1:v] setpts={rightspeed}*(PTS-STARTPTS), scale={rightscale}[right]; [base][left]overlay=shortest=1[tmp1]; [tmp1][right]overlay=shortest=1:{rightposition} \" {videoEncoding} \"{tmpfilepath}\"";
+
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
 
             String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale=iw:ih:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=floyd_steinberg \" \"{fileOutPath}\"";
-            String deletetempfiles = $" && del  \"{tmpfilepath}\"";
-            arg = joinasvideo + converttogif + deletetempfiles;
+            string outputvisibility = "/C ";
+            // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
+            string arg = outputvisibility + ifstillimagepresent + joinasvideo + converttogif + deletetempfiles;
 
             Process proc = new Process
             {
@@ -633,11 +671,12 @@ namespace ImageStitcher
                     FileName = "cmd.exe",
                     Arguments = arg,
                     UseShellExecute = false,
-                    CreateNoWindow = true
+                    CreateNoWindow = false
                 }
             };
 
             proc.Start();
+
             //proc.WaitForExit();//May need to wait for the process to exit too
         }
 
@@ -1373,10 +1412,7 @@ namespace ImageStitcher
 
         private void Button_swapimages_Click(object sender, EventArgs e)
         {
-            Bitmap image_tempswap = (pictureBox_leftpanel.Image == null ? null : new Bitmap(pictureBox_leftpanel.Image));
-            pictureBox_leftpanel.Image = (pictureBox_rightpanel.Image == null ? null : new Bitmap(pictureBox_rightpanel.Image));
-            pictureBox_rightpanel.Image = image_tempswap;
-            Resize_imagepanels();
+
             var tmp1 = imageFilesLeftPanel;
             imageFilesLeftPanel = imageFilesRightPanel;
             imageFilesRightPanel = tmp1;
@@ -1389,6 +1425,19 @@ namespace ImageStitcher
             imageCountLeftPanel = imageCountRightPanel;
             imageCountRightPanel = tmp3;
             UpdateLabelImageIndex();
+
+            Bitmap image_tempswap = (pictureBox_leftpanel.Image == null ? null : new Bitmap(pictureBox_leftpanel.Image));
+            if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+            {
+                LoadImage(0, imageFilesLeftPanel[imageIndexLeftPanel]);
+            }
+            else pictureBox_leftpanel.Image = (pictureBox_rightpanel.Image == null ? null : new Bitmap(pictureBox_rightpanel.Image));
+            if (imageFilesRightPanel != null && imageCountRightPanel != 0)
+            {
+                LoadImage(1, imageFilesRightPanel[imageIndexRightPanel]);
+            }
+            else pictureBox_rightpanel.Image = image_tempswap;
+            Resize_imagepanels();
         }
 
         /* Section:|Image display */
