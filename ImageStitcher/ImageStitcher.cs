@@ -17,6 +17,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
+
 namespace ImageStitcher
 {
     public partial class MainWindow : Form
@@ -88,7 +89,7 @@ namespace ImageStitcher
         public MainWindow()
         {
             InitializeComponent();
-
+            
             UpdateLabelImageIndex();
         }
 
@@ -1786,6 +1787,41 @@ namespace ImageStitcher
             if (String.Equals(shufflemode, "ordered")){
                 LoadNextImage(targetpicturebox);
             }
+        }
+        ControlCrop.ControlCrop ControlrectPanel;
+        ControlCrop.ControlCrop ControlrectPicturebox;
+        private void InitializeCrop()
+        {
+            //Set crop control for each picturebox
+            ControlrectPanel = new ControlCrop.ControlCrop(pictureBox_leftpanel);
+            ControlrectPanel.SetControl(this.pictureBox_leftpanel);
+
+            ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox_rightpanel);
+            ControlrectPicturebox.SetControl(this.pictureBox_rightpanel);
+
+        }
+        private void button_crop_Click(object sender, EventArgs e)
+        {
+
+            Image targetimage = activePanel == 0 ? pictureBox_leftpanel.Image : pictureBox_rightpanel.Image;
+
+            Form_Crop crop_window = new Form_Crop(this);
+            Point location = button_crop.PointToScreen(Point.Empty);
+            location.X += button_crop.Width / 2;
+            crop_window.pntLocation = location;
+            crop_window.source_image = targetimage;
+            crop_window.Show();
+        }
+        
+        private void CancelCrop()
+        {
+            //Set crop control for each picturebox
+            ControlrectPanel = new ControlCrop.ControlCrop(pictureBox_leftpanel);
+            ControlrectPanel.SetControl(this.pictureBox_leftpanel);
+
+            ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox_rightpanel);
+            ControlrectPicturebox.SetControl(this.pictureBox_rightpanel);
+
         }
     } // end MainWindow : Form
 }

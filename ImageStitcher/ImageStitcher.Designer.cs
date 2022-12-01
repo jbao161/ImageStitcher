@@ -37,6 +37,7 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.button_crop = new System.Windows.Forms.Button();
             this.button_trash = new System.Windows.Forms.Button();
             this.button_verticalhorizontal = new System.Windows.Forms.Button();
             this.button_swapimages = new System.Windows.Forms.Button();
@@ -92,7 +93,7 @@
             this.panel_bothimages.Controls.Add(this.splitContainer_bothimages);
             this.panel_bothimages.Location = new System.Drawing.Point(0, 0);
             this.panel_bothimages.Name = "panel_bothimages";
-            this.panel_bothimages.Size = new System.Drawing.Size(736, 375);
+            this.panel_bothimages.Size = new System.Drawing.Size(802, 396);
             this.panel_bothimages.TabIndex = 0;
             // 
             // splitContainer_bothimages
@@ -116,8 +117,8 @@
             this.splitContainer_bothimages.Panel2.Controls.Add(this.pictureBox_rightpanel);
             this.splitContainer_bothimages.Panel2.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
             this.splitContainer_bothimages.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
-            this.splitContainer_bothimages.Size = new System.Drawing.Size(736, 375);
-            this.splitContainer_bothimages.SplitterDistance = 701;
+            this.splitContainer_bothimages.Size = new System.Drawing.Size(802, 396);
+            this.splitContainer_bothimages.SplitterDistance = 763;
             this.splitContainer_bothimages.SplitterWidth = 10;
             this.splitContainer_bothimages.TabIndex = 0;
             this.splitContainer_bothimages.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_bothimages_SplitterMoved);
@@ -126,7 +127,7 @@
             // 
             this.label_imageindex_leftpanel.AutoSize = true;
             this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 362);
+            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 383);
             this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
             this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
             this.label_imageindex_leftpanel.TabIndex = 1;
@@ -138,7 +139,7 @@
             this.pictureBox_leftpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_leftpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_leftpanel.Name = "pictureBox_leftpanel";
-            this.pictureBox_leftpanel.Size = new System.Drawing.Size(701, 375);
+            this.pictureBox_leftpanel.Size = new System.Drawing.Size(763, 396);
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
@@ -153,7 +154,7 @@
             // 
             this.label_imageindex_rightpanel.AutoSize = true;
             this.label_imageindex_rightpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 258);
+            this.label_imageindex_rightpanel.Location = new System.Drawing.Point(0, 305);
             this.label_imageindex_rightpanel.Name = "label_imageindex_rightpanel";
             this.label_imageindex_rightpanel.Size = new System.Drawing.Size(140, 13);
             this.label_imageindex_rightpanel.TabIndex = 1;
@@ -165,7 +166,7 @@
             this.pictureBox_rightpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_rightpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_rightpanel.Name = "pictureBox_rightpanel";
-            this.pictureBox_rightpanel.Size = new System.Drawing.Size(25, 375);
+            this.pictureBox_rightpanel.Size = new System.Drawing.Size(29, 396);
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
@@ -178,6 +179,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.button_crop);
             this.panel_controls.Controls.Add(this.button_trash);
             this.panel_controls.Controls.Add(this.button_verticalhorizontal);
             this.panel_controls.Controls.Add(this.button_swapimages);
@@ -189,11 +191,22 @@
             this.panel_controls.Controls.Add(this.button_preview);
             this.panel_controls.Controls.Add(this.button_save);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel_controls.Location = new System.Drawing.Point(0, 381);
+            this.panel_controls.Location = new System.Drawing.Point(0, 402);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
             this.panel_controls.Name = "panel_controls";
-            this.panel_controls.Size = new System.Drawing.Size(736, 80);
+            this.panel_controls.Size = new System.Drawing.Size(802, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // button_crop
+            // 
+            this.button_crop.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_crop.Location = new System.Drawing.Point(242, 0);
+            this.button_crop.Name = "button_crop";
+            this.button_crop.Size = new System.Drawing.Size(70, 80);
+            this.button_crop.TabIndex = 2;
+            this.button_crop.Text = "Crop";
+            this.button_crop.UseVisualStyleBackColor = true;
+            this.button_crop.Click += new System.EventHandler(this.button_crop_Click);
             // 
             // button_trash
             // 
@@ -204,9 +217,9 @@
             this.button_trash.Dock = System.Windows.Forms.DockStyle.Right;
             this.button_trash.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_trash.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button_trash.Location = new System.Drawing.Point(210, 0);
+            this.button_trash.Location = new System.Drawing.Point(312, 0);
             this.button_trash.Name = "button_trash";
-            this.button_trash.Size = new System.Drawing.Size(75, 80);
+            this.button_trash.Size = new System.Drawing.Size(70, 80);
             this.button_trash.TabIndex = 11;
             this.button_trash.Text = "Send to trash";
             this.button_trash.UseVisualStyleBackColor = false;
@@ -220,9 +233,9 @@
             this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
             this.button_verticalhorizontal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_verticalhorizontal.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(285, 0);
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(382, 0);
             this.button_verticalhorizontal.Name = "button_verticalhorizontal";
-            this.button_verticalhorizontal.Size = new System.Drawing.Size(83, 80);
+            this.button_verticalhorizontal.Size = new System.Drawing.Size(70, 80);
             this.button_verticalhorizontal.TabIndex = 8;
             this.button_verticalhorizontal.Text = "Stack images vertically";
             this.button_verticalhorizontal.UseVisualStyleBackColor = true;
@@ -234,9 +247,9 @@
             this.button_swapimages.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_swapimages.BackgroundImage")));
             this.button_swapimages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_swapimages.Location = new System.Drawing.Point(368, 0);
+            this.button_swapimages.Location = new System.Drawing.Point(452, 0);
             this.button_swapimages.Name = "button_swapimages";
-            this.button_swapimages.Size = new System.Drawing.Size(82, 80);
+            this.button_swapimages.Size = new System.Drawing.Size(70, 80);
             this.button_swapimages.TabIndex = 5;
             this.button_swapimages.Text = "Swap Images";
             this.button_swapimages.UseVisualStyleBackColor = true;
@@ -247,9 +260,9 @@
             this.button_slideshow.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_slideshow.BackgroundImage")));
             this.button_slideshow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_slideshow.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_slideshow.Location = new System.Drawing.Point(450, 0);
+            this.button_slideshow.Location = new System.Drawing.Point(522, 0);
             this.button_slideshow.Name = "button_slideshow";
-            this.button_slideshow.Size = new System.Drawing.Size(75, 80);
+            this.button_slideshow.Size = new System.Drawing.Size(70, 80);
             this.button_slideshow.TabIndex = 13;
             this.button_slideshow.Text = "Slideshow";
             this.button_slideshow.UseVisualStyleBackColor = true;
@@ -259,7 +272,7 @@
             // 
             this.checkBox_screengrab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_screengrab.AutoSize = true;
-            this.checkBox_screengrab.Location = new System.Drawing.Point(652, 3);
+            this.checkBox_screengrab.Location = new System.Drawing.Point(718, 3);
             this.checkBox_screengrab.Name = "checkBox_screengrab";
             this.checkBox_screengrab.Size = new System.Drawing.Size(81, 17);
             this.checkBox_screengrab.TabIndex = 12;
@@ -296,7 +309,7 @@
             this.checkBox_openaftersave.AutoSize = true;
             this.checkBox_openaftersave.Checked = true;
             this.checkBox_openaftersave.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_openaftersave.Location = new System.Drawing.Point(597, 60);
+            this.checkBox_openaftersave.Location = new System.Drawing.Point(663, 60);
             this.checkBox_openaftersave.Name = "checkBox_openaftersave";
             this.checkBox_openaftersave.Size = new System.Drawing.Size(136, 17);
             this.checkBox_openaftersave.TabIndex = 7;
@@ -309,9 +322,9 @@
             this.button_preview.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_preview.BackgroundImage")));
             this.button_preview.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_preview.Location = new System.Drawing.Point(525, 0);
+            this.button_preview.Location = new System.Drawing.Point(592, 0);
             this.button_preview.Name = "button_preview";
-            this.button_preview.Size = new System.Drawing.Size(61, 80);
+            this.button_preview.Size = new System.Drawing.Size(60, 80);
             this.button_preview.TabIndex = 1;
             this.button_preview.Text = "Preview";
             this.button_preview.UseVisualStyleBackColor = true;
@@ -319,7 +332,6 @@
             // 
             // button_save
             // 
-            this.button_save.AutoSize = true;
             this.button_save.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_save.BackColor = System.Drawing.SystemColors.Control;
             this.button_save.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_save.BackgroundImage")));
@@ -327,7 +339,7 @@
             this.button_save.Dock = System.Windows.Forms.DockStyle.Right;
             this.button_save.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_save.ForeColor = System.Drawing.Color.Green;
-            this.button_save.Location = new System.Drawing.Point(586, 0);
+            this.button_save.Location = new System.Drawing.Point(652, 0);
             this.button_save.MinimumSize = new System.Drawing.Size(150, 0);
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(150, 80);
@@ -527,7 +539,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(736, 461);
+            this.ClientSize = new System.Drawing.Size(802, 482);
             this.Controls.Add(this.panel_controls);
             this.Controls.Add(this.panel_bothimages);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -599,6 +611,7 @@
         private System.Windows.Forms.Button button_trash;
         private System.Windows.Forms.CheckBox checkBox_screengrab;
         private System.Windows.Forms.Button button_slideshow;
+        private System.Windows.Forms.Button button_crop;
     }
 }
 

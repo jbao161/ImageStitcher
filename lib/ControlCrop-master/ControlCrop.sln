@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32630.192
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32901.82
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageStitcher", "ImageStitcher\ImageStitcher.csproj", "{4635EB40-2CEE-4F31-B176-55C2A2EFF2BB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlCrop", "lib\ControlCrop-master\ControlCrop.csproj", "{4689141F-D6E7-460A-A440-5FABE689A9EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlCrop", "ControlCrop.csproj", "{4689141F-D6E7-460A-A440-5FABE689A9EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4635EB40-2CEE-4F31-B176-55C2A2EFF2BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4635EB40-2CEE-4F31-B176-55C2A2EFF2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4635EB40-2CEE-4F31-B176-55C2A2EFF2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4635EB40-2CEE-4F31-B176-55C2A2EFF2BB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4689141F-D6E7-460A-A440-5FABE689A9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4689141F-D6E7-460A-A440-5FABE689A9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4689141F-D6E7-460A-A440-5FABE689A9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -26,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1C3FCCE6-7C30-4C4C-89F1-3A1640E5481B}
+		SolutionGuid = {E5F551A6-D7B8-47E1-AF6C-89F77125E9D0}
 	EndGlobalSection
 EndGlobal
