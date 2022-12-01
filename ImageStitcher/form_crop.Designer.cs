@@ -38,39 +38,41 @@ namespace ImageStitcher
         /// </summary>
         private void InitializeComponent()
         {
-            this.button_crop_yes = new System.Windows.Forms.Button();
+            this.button_crop = new System.Windows.Forms.Button();
             this.button_crop_no = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.button_revert = new System.Windows.Forms.Button();
+            this.button_accept = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button_crop_yes
+            // button_crop
             // 
-            this.button_crop_yes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_crop_yes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.button_crop_yes.Location = new System.Drawing.Point(564, 15);
-            this.button_crop_yes.Name = "button_crop_yes";
-            this.button_crop_yes.Size = new System.Drawing.Size(50, 50);
-            this.button_crop_yes.TabIndex = 0;
-            this.button_crop_yes.Text = "Crop";
-            this.button_crop_yes.UseVisualStyleBackColor = false;
-            this.button_crop_yes.Click += new System.EventHandler(this.Button_Crop_Yes_Click);
+            this.button_crop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_crop.BackColor = System.Drawing.Color.Orange;
+            this.button_crop.Location = new System.Drawing.Point(508, 15);
+            this.button_crop.Name = "button_crop";
+            this.button_crop.Size = new System.Drawing.Size(50, 50);
+            this.button_crop.TabIndex = 0;
+            this.button_crop.Text = "Crop";
+            this.button_crop.UseVisualStyleBackColor = false;
+            this.button_crop.Click += new System.EventHandler(this.Button_Crop_Yes_Click);
             // 
             // button_crop_no
             // 
             this.button_crop_no.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_crop_no.BackColor = System.Drawing.Color.Red;
-            this.button_crop_no.Location = new System.Drawing.Point(508, 15);
+            this.button_crop_no.Location = new System.Drawing.Point(396, 15);
             this.button_crop_no.Name = "button_crop_no";
             this.button_crop_no.Size = new System.Drawing.Size(50, 50);
             this.button_crop_no.TabIndex = 1;
             this.button_crop_no.Text = "Cancel";
             this.button_crop_no.UseVisualStyleBackColor = false;
-            this.button_crop_no.Click += new System.EventHandler(this.button_crop_no_Click);
+            this.button_crop_no.Click += new System.EventHandler(this.button_crop_cancel_Click);
             // 
             // pictureBox1
             // 
@@ -78,13 +80,16 @@ namespace ImageStitcher
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(617, 503);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button_accept);
+            this.panel1.Controls.Add(this.button_revert);
             this.panel1.Controls.Add(this.button_crop_no);
-            this.panel1.Controls.Add(this.button_crop_yes);
+            this.panel1.Controls.Add(this.button_crop);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 503);
             this.panel1.Name = "panel1";
@@ -101,6 +106,29 @@ namespace ImageStitcher
             this.panel2.Size = new System.Drawing.Size(617, 503);
             this.panel2.TabIndex = 4;
             // 
+            // button_revert
+            // 
+            this.button_revert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_revert.BackColor = System.Drawing.Color.Yellow;
+            this.button_revert.Location = new System.Drawing.Point(452, 15);
+            this.button_revert.Name = "button_revert";
+            this.button_revert.Size = new System.Drawing.Size(50, 50);
+            this.button_revert.TabIndex = 3;
+            this.button_revert.Text = "Reset";
+            this.button_revert.UseVisualStyleBackColor = false;
+            this.button_revert.Click += new System.EventHandler(this.button_revert_Click);
+            // 
+            // button_accept
+            // 
+            this.button_accept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_accept.BackColor = System.Drawing.Color.LimeGreen;
+            this.button_accept.Location = new System.Drawing.Point(564, 15);
+            this.button_accept.Name = "button_accept";
+            this.button_accept.Size = new System.Drawing.Size(50, 50);
+            this.button_accept.TabIndex = 4;
+            this.button_accept.Text = "Accept";
+            this.button_accept.UseVisualStyleBackColor = false;
+            // 
             // Form_Crop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -108,9 +136,9 @@ namespace ImageStitcher
             this.ClientSize = new System.Drawing.Size(617, 580);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Form_Crop";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.form_crop_load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
@@ -120,10 +148,12 @@ namespace ImageStitcher
 
         #endregion
 
-        private System.Windows.Forms.Button button_crop_yes;
+        private System.Windows.Forms.Button button_crop;
         private System.Windows.Forms.Button button_crop_no;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button button_accept;
+        private System.Windows.Forms.Button button_revert;
     }
 }

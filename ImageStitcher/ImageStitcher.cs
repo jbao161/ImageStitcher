@@ -1823,5 +1823,11 @@ namespace ImageStitcher
             ControlrectPicturebox.SetControl(this.pictureBox_rightpanel);
 
         }
+
+        public void LoadActiveImage (Image targetimage)
+        {
+            PictureBox targetpictureBox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            targetpictureBox.Image = targetimage;
+        }
     } // end MainWindow : Form
 }

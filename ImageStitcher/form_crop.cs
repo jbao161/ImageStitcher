@@ -17,18 +17,26 @@ namespace ImageStitcher
         {
             InitializeComponent();
             //Set crop control for each picturebox
-            ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox1);
-            ControlrectPicturebox.SetControl(this.pictureBox1);
-            pictureBox1.Image = source_image;
+
         }
         public Form_Crop(Image img)
         {
             source_image = img;
             InitializeComponent();
+
+  
+        }
+        private void form_crop_load(object sender, EventArgs e)
+        {
+            pntLocation.X -= this.Size.Width / 2;
+            pntLocation.Y -= this.Size.Height;
+            this.Location = pntLocation;
+
+            pictureBox1.Image = source_image;
+
             //Set crop control for each picturebox
             ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox1);
             ControlrectPicturebox.SetControl(this.pictureBox1);
-            pictureBox1.Image = source_image;
         }
 
         ControlCrop.ControlCrop ControlrectPicturebox;
@@ -38,6 +46,7 @@ namespace ImageStitcher
             try
             {
                 PictureBox targetpicturebox = pictureBox1;
+
                 //Process Picturebox
                 Rectangle rectPicturebox = new Rectangle(ControlrectPicturebox.rect.X, ControlrectPicturebox.rect.Y, ControlrectPicturebox.rect.Width,
                 ControlrectPicturebox.rect.Height);
@@ -55,7 +64,8 @@ namespace ImageStitcher
                     gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                     ////set image attributes
                     gr.DrawImage(OriginalPictureboxImage, 0, 0, rectPicturebox, GraphicsUnit.Pixel);
-                    targetpicturebox.Image = _pboximg;
+                    mainForm.LoadActiveImage(_pboximg);
+                    //targetpicturebox.Image = _pboximg;
                 }
 
             }
@@ -65,9 +75,15 @@ namespace ImageStitcher
             }
         }
 
-        private void button_crop_no_Click(object sender, EventArgs e)
+        private void button_crop_cancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void button_revert_Click(object sender, EventArgs e)
+        {
+            form_crop_load(sender, e);
+
         }
     }
 }
