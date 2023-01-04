@@ -89,13 +89,14 @@ namespace ImageStitcher
         public MainWindow()
         {
             InitializeComponent();
-            
+
             UpdateLabelImageIndex();
         }
 
         public MainWindow(string filepath)
         {
             InitializeComponent();
+
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath });
         }
@@ -104,92 +105,28 @@ namespace ImageStitcher
         {
             label_imageindex_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : ((imageIndexLeftPanel + 1) + "/" + imageCountLeftPanel);
             label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel + 1) + "/" + imageCountRightPanel);
+            if (checkBox_showfilename.Checked)
+            {
+                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " "+(Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]));
+                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " "+(Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]));
+            }
+            else
+            {
+                label_filename_leftpanel.Text = "";
+                label_filename_rightpanel.Text = "";
+            }
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            pictureBox_rightpanel.AllowDrop = true;
-            pictureBox_leftpanel.AllowDrop = true;
-
-            string configPathBackup; //https://stackoverflow.com/questions/42708868/user-config-corruption
-        /*    try
-            {
-                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
-                configPathBackup = config.FilePath + ".bak";
-                config.SaveAs(configPathBackup, ConfigurationSaveMode.Full, true);
-            }
-            catch (ConfigurationErrorsException ex)
-            {
-                string filename = ex.Filename;
-                configPathBackup = filename + ".bak";
-                //_logger.Error(ex, "Cannot open config file");
-
-                if (File.Exists(filename) == true)
-                {
-                    //_logger.Error("Config file {0} content:\n{1}", filename, File.ReadAllText(filename));
-                    File.Delete(filename);
-
-                    if (!string.IsNullOrEmpty(configPathBackup) && File.Exists(configPathBackup))
-                    {
-                        File.Copy(configPathBackup, filename, true);
-                    }
-
-                }
-                Properties.Settings.Default.Reload();
-                //_logger.Error("Config file {0} does not exist", filename);
-            }*/
-            try
-            {// https://www.codeproject.com/Articles/30216/Handling-Corrupt-user-config-Settings
-                Settings.Default.Reload();
-
-
-            //https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
-            // Set window location
-            if (Settings.Default.WindowLocation != null)
-            {
-                this.Location = Settings.Default.WindowLocation;
-            }
-
-            // Set window size
-            if (Settings.Default.WindowSize != null)
-            {
-                this.Size = Settings.Default.WindowSize;
-            }
-
-            this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
-            savesplitterdistance = Settings.Default.SplitContainerSplitterDistance;
-            this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
-            this.checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
-            this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
-
-            tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
-            }
-            catch (ConfigurationErrorsException ex)
-            { //(requires System.Configuration)
-                string filename = ((ConfigurationErrorsException)ex.InnerException).Filename;
-
-                if (System.Windows.MessageBox.Show("<ProgramName> has detected that your" +
-                                      " user settings file has become corrupted. " +
-                                      "This may be due to a crash or improper exiting" +
-                                      " of the program. <ProgramName> must reset your " +
-                                      "user settings in order to continue.\n\nClick" +
-                                      " Yes to reset your user settings and continue.\n\n" +
-                                      "Click No if you wish to attempt manual repair" +
-                                      " or to rescue information before proceeding.",
-                                      "Corrupt user settings",
-                                      System.Windows.MessageBoxButton.YesNo,
-                                      System.Windows.MessageBoxImage.Error) == System.Windows.MessageBoxResult.Yes)
-                {
-                    File.Delete(filename);
-                    Settings.Default.Reload();
-                    // you could optionally restart the app instead
-
-                    Application.Restart();
-                }
-                else
-                    Process.GetCurrentProcess().Kill();
-                // avoid the inevitable crash
-            }
+            label_filename_leftpanel.Location = pictureBox_leftpanel.PointToClient(label_filename_leftpanel.Parent.PointToScreen(label_filename_leftpanel.Location));
+            label_filename_leftpanel.Parent = pictureBox_leftpanel;
+            label_filename_leftpanel.Text = "";
+            //label_filename_leftpanel.BackColor = System.Drawing.Color.Transparent;
+            label_filename_rightpanel.Location = pictureBox_rightpanel.PointToClient(label_filename_rightpanel.Parent.PointToScreen(label_filename_rightpanel.Location));
+            label_filename_rightpanel.Parent = pictureBox_rightpanel;
+            //label_filename_rightpanel.BackColor = System.Drawing.Color.Transparent;
+            label_filename_rightpanel.Text = "";
         }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
@@ -1398,17 +1335,20 @@ namespace ImageStitcher
             if (keyData == Keys.Left) { LoadPreviousImage(activePanel); return true; }
             if (keyData == Keys.Right) { LoadNextImage(activePanel); return true; }
 
-            // R hotkey for rotations
-            if (keyData == Keys.R) { RotateImage(activePanel); return true; }
+            // O hotkey for rotations
+            if (keyData == Keys.O) { RotateImage(activePanel); return true; }
 
-            // B hotkey for blur
-            if ((keyData == Keys.B)) { Blur(activePanel); return true; }
+            // L hotkey for blur
+            if ((keyData == Keys.L)) { Blur(activePanel); return true; }
 
-            // C hotkey for randomize both panels
-            if (keyData == Keys.C) { LoadRandomImage(0); LoadRandomImage(1); return true; }
+            // Alt + R hotkey for randomize both panels
+            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
 
-            // Alt + C hotkey for jump back both panels
-            if (keyData == (Keys.Alt | Keys.C)) { JumpBack(0); JumpBack(1); return true; }
+            // R hotkey for active panel
+            if (keyData == Keys.R) { LoadRandomImage(activePanel); return true; }
+
+            // Alt + U hotkey for jump back both panels
+            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(0); JumpBack(1); return true; }
 
             // Delete or Shift + D hotkey for send to recycle
             if ((keyData == Keys.Delete) || (keyData == Keys.D)) { SendToTrash(activePanel); return true; }
@@ -1828,6 +1768,11 @@ namespace ImageStitcher
         {
             PictureBox targetpictureBox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
             targetpictureBox.Image = targetimage;
+        }
+
+        private void checkBox_showfilename_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateLabelImageIndex();
         }
     } // end MainWindow : Form
 }
