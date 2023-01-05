@@ -119,6 +119,9 @@ namespace ImageStitcher
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
+            pictureBox_rightpanel.AllowDrop = true;
+            pictureBox_leftpanel.AllowDrop = true;
+
             label_filename_leftpanel.Location = pictureBox_leftpanel.PointToClient(label_filename_leftpanel.Parent.PointToScreen(label_filename_leftpanel.Location));
             label_filename_leftpanel.Parent = pictureBox_leftpanel;
             label_filename_leftpanel.Text = "";
@@ -127,6 +130,61 @@ namespace ImageStitcher
             label_filename_rightpanel.Parent = pictureBox_rightpanel;
             //label_filename_rightpanel.BackColor = System.Drawing.Color.Transparent;
             label_filename_rightpanel.Text = "";
+
+            string configPathBackup; //https://stackoverflow.com/questions/42708868/user-config-corruption
+
+            try
+            {// https://www.codeproject.com/Articles/30216/Handling-Corrupt-user-config-Settings
+                Settings.Default.Reload();
+
+
+                //https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
+                // Set window location
+                if (Settings.Default.WindowLocation != null)
+                {
+                    this.Location = Settings.Default.WindowLocation;
+                }
+
+                // Set window size
+                if (Settings.Default.WindowSize != null)
+                {
+                    this.Size = Settings.Default.WindowSize;
+                }
+
+                this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
+                savesplitterdistance = Settings.Default.SplitContainerSplitterDistance;
+                this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
+                this.checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
+                this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
+
+                tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
+            }
+            catch (ConfigurationErrorsException ex)
+            { //(requires System.Configuration)
+                string filename = ((ConfigurationErrorsException)ex.InnerException).Filename;
+
+                if (System.Windows.MessageBox.Show("<ProgramName> has detected that your" +
+                                      " user settings file has become corrupted. " +
+                                      "This may be due to a crash or improper exiting" +
+                                      " of the program. <ProgramName> must reset your " +
+                                      "user settings in order to continue.\n\nClick" +
+                                      " Yes to reset your user settings and continue.\n\n" +
+                                      "Click No if you wish to attempt manual repair" +
+                                      " or to rescue information before proceeding.",
+                                      "Corrupt user settings",
+                                      System.Windows.MessageBoxButton.YesNo,
+                                      System.Windows.MessageBoxImage.Error) == System.Windows.MessageBoxResult.Yes)
+                {
+                    File.Delete(filename);
+                    Settings.Default.Reload();
+                    // you could optionally restart the app instead
+
+                    Application.Restart();
+                }
+                else
+                    Process.GetCurrentProcess().Kill();
+                // avoid the inevitable crash
+            }
         }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
