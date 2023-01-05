@@ -77,6 +77,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.webpToGifToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -400,6 +401,7 @@
             this.contextMenu_image_item_paste,
             this.toolStripMenuItem1,
             this.overwriteImageToolStripMenuItem,
+            this.webpToGifToolStripMenuItem,
             this.fixCorruptedImageToolStripMenuItem,
             this.toolStripSeparator4,
             this.rotateToolStripMenuItem,
@@ -413,7 +415,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 436);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 480);
             this.contextMenu_image.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_image_Opening);
             // 
             // editToolStripMenuItem
@@ -498,8 +500,8 @@
             // 
             this.fixCorruptedImageToolStripMenuItem.Name = "fixCorruptedImageToolStripMenuItem";
             this.fixCorruptedImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.fixCorruptedImageToolStripMenuItem.Text = "Fix webp image";
-            this.fixCorruptedImageToolStripMenuItem.Click += new System.EventHandler(this.fixBrokenImageToolStripMenuItem_ClickAsync);
+            this.fixCorruptedImageToolStripMenuItem.Text = "Webp to jpg";
+            this.fixCorruptedImageToolStripMenuItem.Click += new System.EventHandler(this.webptojpgToolStripMenuItem_ClickAsync);
             // 
             // toolStripSeparator4
             // 
@@ -571,6 +573,13 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
+            // 
+            // webpToGifToolStripMenuItem
+            // 
+            this.webpToGifToolStripMenuItem.Name = "webpToGifToolStripMenuItem";
+            this.webpToGifToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.webpToGifToolStripMenuItem.Text = "Webp to gif";
+            this.webpToGifToolStripMenuItem.Click += new System.EventHandler(this.webpToGifToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -652,6 +661,7 @@
         private System.Windows.Forms.Label label_filename_leftpanel;
         private System.Windows.Forms.Label label_filename_rightpanel;
         private System.Windows.Forms.CheckBox checkBox_showfilename;
+        private System.Windows.Forms.ToolStripMenuItem webpToGifToolStripMenuItem;
     }
 }
 

@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 
 using System.Windows.Forms;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 
@@ -32,7 +33,7 @@ namespace ImageStitcher
 
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect
-            (IntPtr hwnd, out Rectangle rect); // extern method: GetWindowRect
+            (IntPtr hwnd, out System.Windows.Shapes.Rectangle rect); // extern method: GetWindowRect
 
         // end https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
 
@@ -107,8 +108,8 @@ namespace ImageStitcher
             label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel + 1) + "/" + imageCountRightPanel);
             if (checkBox_showfilename.Checked)
             {
-                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " "+(Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]));
-                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " "+(Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]));
+                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " "+(System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]));
+                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " "+(System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]));
             }
             else
             {
@@ -206,7 +207,7 @@ namespace ImageStitcher
         {
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
             bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
-            string folderPath = Path.GetDirectoryName(filepaths[0]);
+            string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
             if (isFolder) { folderPath = filepaths[0]; }
             List<string> imageList = null;
             if (isFolder | isImage)
@@ -572,9 +573,9 @@ namespace ImageStitcher
             Panel leftpanel = splitContainer_bothimages.Panel1;
             Panel rightpanel = splitContainer_bothimages.Panel2;
             Bitmap bmp1 = new Bitmap(leftpanel.Width, leftpanel.Height);
-            splitContainer_bothimages.Panel1.DrawToBitmap(bmp1, new Rectangle(0, 0, leftpanel.Width, leftpanel.Height));
+            splitContainer_bothimages.Panel1.DrawToBitmap(bmp1, new System.Drawing.Rectangle(0, 0, leftpanel.Width, leftpanel.Height));
             Bitmap bmp2 = new Bitmap(rightpanel.Width, rightpanel.Height);
-            splitContainer_bothimages.Panel2.DrawToBitmap(bmp2, new Rectangle(0, 0, rightpanel.Width, rightpanel.Height));
+            splitContainer_bothimages.Panel2.DrawToBitmap(bmp2, new System.Drawing.Rectangle(0, 0, rightpanel.Width, rightpanel.Height));
             if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
             {
                 Bitmap stitchedimage = new Bitmap(bmp1.Width + bmp2.Width, bmp1.Height);
@@ -753,9 +754,9 @@ namespace ImageStitcher
             fixCorruptedImageToolStripMenuItem.Enabled = !(contextmenufocus == 0 && imageCountLeftPanel == 0) ||
                 (contextmenufocus == 1 && imageCountRightPanel == 0) ||
             ((contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0) &&
-                Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().EndsWith(".gif")) ||
+                System.IO.Path.GetExtension(imageFilesLeftPanel[imageIndexLeftPanel]).ToLower().EndsWith(".gif")) ||
             ((contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0) &&
-                Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().EndsWith(".gif"));
+                System.IO.Path.GetExtension(imageFilesRightPanel[imageIndexRightPanel]).ToLower().EndsWith(".gif"));
         }
 
         // open a copy paste menu at right click mouse location
@@ -1247,7 +1248,7 @@ namespace ImageStitcher
             Removefromlist(contextmenufocus);
         }
 
-        private void fixBrokenImageToolStripMenuItem_ClickAsync(object sender, EventArgs e)
+        private void webptojpgToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
             string arg = "";
             string ofilepath = "";
@@ -1259,7 +1260,7 @@ namespace ImageStitcher
             {
                 ofilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
-            string fileExt = Path.GetExtension(ofilepath);
+            string fileExt = System.IO.Path.GetExtension(ofilepath);
             string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
             string tmpImage = tmpAppDataPath + tmpfilename;
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
@@ -1354,20 +1355,20 @@ namespace ImageStitcher
             {
                 Panel thispanel = activePanel == 0 ? splitContainer_bothimages.Panel1 : splitContainer_bothimages.Panel2;
                 Bitmap bmp1 = new Bitmap(thispanel.Width, thispanel.Height);
-                thispanel.DrawToBitmap(bmp1, new Rectangle(0, 0, thispanel.Width, thispanel.Height));
+                thispanel.DrawToBitmap(bmp1, new System.Drawing.Rectangle(0, 0, thispanel.Width, thispanel.Height));
                 SaveImage((Image)bmp1, filename, directorypath, savedialog);
                 return;
             }
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null)
             {
-                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); directorypath = Path.GetDirectoryName(imageFilesLeftPanel[imageIndexLeftPanel]); }
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesLeftPanel[imageIndexLeftPanel]); }
                 Image targetimage = pictureBox_leftpanel.Image;
                 SaveImage(targetimage, filename, directorypath, savedialog);
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null)
             {
                 Image targetimage = pictureBox_rightpanel.Image;
-                if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); directorypath = Path.GetDirectoryName(imageFilesRightPanel[imageIndexRightPanel]); }
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesRightPanel[imageIndexRightPanel]); }
                 SaveImage(targetimage, filename, directorypath, savedialog);
             }
         }
@@ -1626,7 +1627,7 @@ namespace ImageStitcher
             string tmptext = SpliceText(text, 45);
             using (Graphics graph = Graphics.FromImage(bmp))
             {
-                Rectangle ImageSize = new Rectangle(0, 0, 600, 600);
+                System.Drawing.Rectangle ImageSize = new System.Drawing.Rectangle(0, 0, 600, 600);
                 graph.FillRectangle(Brushes.Gray, ImageSize);
                 graph.DrawString(tmptext,
                 new Font("Arial", 16),
@@ -1646,7 +1647,7 @@ namespace ImageStitcher
                 {
                     if (targetPanel == 0) { targetpicturebox = pictureBox_leftpanel; }
                     if (targetPanel == 1) { targetpicturebox = pictureBox_rightpanel; }
-                    if (Path.GetExtension(imagePath).ToLower().Equals(".gif"))
+                    if (System.IO.Path.GetExtension(imagePath).ToLower().Equals(".gif"))
                     {
                         targetpicturebox.ImageLocation = imagePath;
                     }
@@ -1831,6 +1832,58 @@ namespace ImageStitcher
         private void checkBox_showfilename_CheckedChanged(object sender, EventArgs e)
         {
             UpdateLabelImageIndex();
+        }
+
+        private void webpToGifToolStripMenuItem_Click(object sender, EventArgs e)
+        { // requires Python, Pillow installed, and script set in path https://gist.github.com/nimatrueway/0e743d92056e2c5f995e25b848a1bdcd
+            // in the script, rename Python3 to Python if not found
+            string ofilepath = "";
+            if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+            {
+                ofilepath = imageFilesLeftPanel[imageIndexLeftPanel];
+            }
+            if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+            {
+                ofilepath = imageFilesRightPanel[imageIndexRightPanel];
+            }
+            string fileExt = System.IO.Path.GetExtension(ofilepath);
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
+            string tmpImage = tmpAppDataPath + tmpfilename;
+            DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
+
+
+
+            String cmd_webptogif = $"python_pillow_webp2gif.py \"{ofilepath}\"";
+            string outputvisibility = "/C ";
+            // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
+            string arg = outputvisibility + cmd_webptogif;
+
+            Process proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = arg,
+                    UseShellExecute = false,
+                    CreateNoWindow = false
+                }
+            };
+
+            proc.Start();
+            proc.WaitForExit();//May need to wait for the process to exit too
+
+            System.IO.File.Move(ofilepath, tmpImage);
+            string gifimagepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ofilepath), System.IO.Path.GetFileNameWithoutExtension(ofilepath))+".gif";
+                
+            LoadImage(contextmenufocus, gifimagepath);
+            if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+            {
+                imageFilesLeftPanel[imageIndexLeftPanel] = gifimagepath;
+            }
+            if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+            {
+                imageFilesRightPanel[imageIndexRightPanel] = gifimagepath;
+            }
         }
     } // end MainWindow : Form
 }
