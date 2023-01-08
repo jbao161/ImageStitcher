@@ -1837,23 +1837,25 @@ namespace ImageStitcher
         private void webpToGifToolStripMenuItem_Click(object sender, EventArgs e)
         { // requires Python, Pillow installed, and script set in path https://gist.github.com/nimatrueway/0e743d92056e2c5f995e25b848a1bdcd
             // in the script, rename Python3 to Python if not found
-            string ofilepath = "";
+            string inputfilepath = "";
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                ofilepath = imageFilesLeftPanel[imageIndexLeftPanel];
+                inputfilepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                ofilepath = imageFilesRightPanel[imageIndexRightPanel];
+                inputfilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
-            string fileExt = System.IO.Path.GetExtension(ofilepath);
-            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
-            string tmpImage = tmpAppDataPath + tmpfilename;
+            string fileExt = System.IO.Path.GetExtension(inputfilepath);
+            string inputbackupfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
+            string inputbackupfilepath = tmpAppDataPath + inputbackupfilename;
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
 
+            System.IO.File.Move(inputfilepath, inputbackupfilepath);
+            string outputfilepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(inputfilepath), System.IO.Path.GetFileNameWithoutExtension(inputfilepath)) + ".gif";
+            string tmpoutputfilepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(inputbackupfilepath), System.IO.Path.GetFileNameWithoutExtension(inputbackupfilepath)) + ".gif";
 
-
-            String cmd_webptogif = $"python_pillow_webp2gif.py \"{ofilepath}\"";
+            String cmd_webptogif = $"python_pillow_webp2gif.py \"{inputbackupfilepath}\"";
             string outputvisibility = "/C ";
             // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
             string arg = outputvisibility + cmd_webptogif;
@@ -1872,17 +1874,16 @@ namespace ImageStitcher
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
 
-            System.IO.File.Move(ofilepath, tmpImage);
-            string gifimagepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ofilepath), System.IO.Path.GetFileNameWithoutExtension(ofilepath))+".gif";
-                
-            LoadImage(contextmenufocus, gifimagepath);
+            System.IO.File.Move(tmpoutputfilepath, outputfilepath);
+
+            LoadImage(contextmenufocus, outputfilepath);
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                imageFilesLeftPanel[imageIndexLeftPanel] = gifimagepath;
+                imageFilesLeftPanel[imageIndexLeftPanel] = outputfilepath;
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                imageFilesRightPanel[imageIndexRightPanel] = gifimagepath;
+                imageFilesRightPanel[imageIndexRightPanel] = outputfilepath;
             }
         }
     } // end MainWindow : Form
