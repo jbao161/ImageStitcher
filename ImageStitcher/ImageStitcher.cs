@@ -1182,7 +1182,7 @@ namespace ImageStitcher
             int result = exclude;
             for (int i =0; i < maxattempts && result==exclude; i++)
             {
-                result = RandomNumber.Between(min, max);
+                result = RandomNumber.Between(min, max-1);
             }
             return result;
             lock (getrandom) // synchronize
