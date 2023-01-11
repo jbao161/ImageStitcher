@@ -11,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -18,6 +19,7 @@ using System.Windows.Forms;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
+using CRNG = System.Security.Cryptography.RandomNumberGenerator;
 
 namespace ImageStitcher
 {
@@ -1174,13 +1176,40 @@ namespace ImageStitcher
         //https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
         private static readonly Random getrandom = new Random();
 
-        public static int GetRandomNumber(int min, int max)
+        public static int GetRandomNumber(int min, int max, int exclude)
         {
+            int maxattempts = 3;
+            int result = exclude;
+            for (int i =0; i < maxattempts && result==exclude; i++)
+            {
+                result = RandomNumber.Between(min, max);
+            }
+            return result;
             lock (getrandom) // synchronize
             {
                 return getrandom.Next(min, max);
             }
         }
+        // https://scottlilly.com/create-better-random-numbers-in-c/
+        public static class RandomNumber
+        {
+            private static readonly RNGCryptoServiceProvider _generator = new RNGCryptoServiceProvider();
+            public static int Between(int minimumValue, int maximumValue)
+            {
+                byte[] randomNumber = new byte[1];
+                _generator.GetBytes(randomNumber);
+                double asciiValueOfRandomCharacter = Convert.ToDouble(randomNumber[0]);
+                // We are using Math.Max, and substracting 0.00000000001, 
+                // to ensure "multiplier" will always be between 0.0 and .99999999999
+                // Otherwise, it's possible for it to be "1", which causes problems in our rounding.
+                double multiplier = Math.Max(0, (asciiValueOfRandomCharacter / 255d) - 0.00000000001d);
+                // We need to add one to the range, to allow for the rounding done with Math.Floor
+                int range = maximumValue - minimumValue + 1;
+                double randomValueInRange = Math.Floor(multiplier * range);
+                return (int)(minimumValue + randomValueInRange);
+            }
+        }
+
 
         private void LoadRandomImage(int targetPanel)
         {
@@ -1189,7 +1218,7 @@ namespace ImageStitcher
                 int randomindex = imageIndexLeftPanel;
                 for (int i = 0; i < 10 && randomindex == imageIndexLeftPanel; i++)
                 {
-                    randomindex = GetRandomNumber(0, imageCountLeftPanel);
+                    randomindex = GetRandomNumber(0, imageCountLeftPanel, imageIndexLeftPanel);
                 }
                 if (LoadImage(targetPanel, imageFilesLeftPanel[randomindex]))
                 {
@@ -1202,7 +1231,7 @@ namespace ImageStitcher
                 int randomindex = imageIndexRightPanel;
                 for (int i = 0; i < 10 && randomindex == imageIndexRightPanel; i++)
                 {
-                    randomindex = GetRandomNumber(0, imageCountRightPanel);
+                    randomindex = GetRandomNumber(0, imageCountRightPanel, imageIndexRightPanel);
                 }
                 if (LoadImage(targetPanel, imageFilesRightPanel[randomindex]))
                 {
