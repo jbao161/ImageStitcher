@@ -39,6 +39,7 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.checkBox_rememberlastdir = new System.Windows.Forms.CheckBox();
             this.button_crop = new System.Windows.Forms.Button();
             this.button_trash = new System.Windows.Forms.Button();
             this.button_verticalhorizontal = new System.Windows.Forms.Button();
@@ -65,6 +66,7 @@
             this.contextMenu_image_item_paste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.overwriteImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.webpToGifToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixCorruptedImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.rotateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +79,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.webpToGifToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -217,12 +218,23 @@
             this.panel_controls.Controls.Add(this.button_preview);
             this.panel_controls.Controls.Add(this.button_save);
             this.panel_controls.Controls.Add(this.checkBox_showfilename);
+            this.panel_controls.Controls.Add(this.checkBox_rememberlastdir);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_controls.Location = new System.Drawing.Point(0, 457);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(1031, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // checkBox_rememberlastdir
+            // 
+            this.checkBox_rememberlastdir.AutoSize = true;
+            this.checkBox_rememberlastdir.Location = new System.Drawing.Point(178, 17);
+            this.checkBox_rememberlastdir.Name = "checkBox_rememberlastdir";
+            this.checkBox_rememberlastdir.Size = new System.Drawing.Size(141, 17);
+            this.checkBox_rememberlastdir.TabIndex = 15;
+            this.checkBox_rememberlastdir.Text = "Remember Last Opened";
+            this.checkBox_rememberlastdir.UseVisualStyleBackColor = true;
             // 
             // button_crop
             // 
@@ -311,7 +323,7 @@
             this.checkBox_reversefileorder.AutoSize = true;
             this.checkBox_reversefileorder.Checked = true;
             this.checkBox_reversefileorder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_reversefileorder.Location = new System.Drawing.Point(27, 43);
+            this.checkBox_reversefileorder.Location = new System.Drawing.Point(25, 43);
             this.checkBox_reversefileorder.Name = "checkBox_reversefileorder";
             this.checkBox_reversefileorder.Size = new System.Drawing.Size(115, 17);
             this.checkBox_reversefileorder.TabIndex = 10;
@@ -378,7 +390,7 @@
             // checkBox_showfilename
             // 
             this.checkBox_showfilename.AutoSize = true;
-            this.checkBox_showfilename.Location = new System.Drawing.Point(148, 43);
+            this.checkBox_showfilename.Location = new System.Drawing.Point(178, 43);
             this.checkBox_showfilename.Name = "checkBox_showfilename";
             this.checkBox_showfilename.Size = new System.Drawing.Size(98, 17);
             this.checkBox_showfilename.TabIndex = 14;
@@ -415,7 +427,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 480);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
             this.contextMenu_image.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_image_Opening);
             // 
             // editToolStripMenuItem
@@ -496,6 +508,13 @@
             this.overwriteImageToolStripMenuItem.Text = "Save Image";
             this.overwriteImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
+            // webpToGifToolStripMenuItem
+            // 
+            this.webpToGifToolStripMenuItem.Name = "webpToGifToolStripMenuItem";
+            this.webpToGifToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.webpToGifToolStripMenuItem.Text = "Webp to gif";
+            this.webpToGifToolStripMenuItem.Click += new System.EventHandler(this.webpToGifToolStripMenuItem_Click);
+            // 
             // fixCorruptedImageToolStripMenuItem
             // 
             this.fixCorruptedImageToolStripMenuItem.Name = "fixCorruptedImageToolStripMenuItem";
@@ -573,13 +592,6 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
-            // 
-            // webpToGifToolStripMenuItem
-            // 
-            this.webpToGifToolStripMenuItem.Name = "webpToGifToolStripMenuItem";
-            this.webpToGifToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.webpToGifToolStripMenuItem.Text = "Webp to gif";
-            this.webpToGifToolStripMenuItem.Click += new System.EventHandler(this.webpToGifToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -662,6 +674,7 @@
         private System.Windows.Forms.Label label_filename_rightpanel;
         private System.Windows.Forms.CheckBox checkBox_showfilename;
         private System.Windows.Forms.ToolStripMenuItem webpToGifToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkBox_rememberlastdir;
     }
 }
 

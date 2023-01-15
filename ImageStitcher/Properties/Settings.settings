@@ -29,5 +29,11 @@
     <Setting Name="SlideTimeInterval" Type="System.String" Scope="User">
       <Value Profile="(Default)">5 s</Value>
     </Setting>
+    <Setting Name="LastDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="rememberLastDir" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

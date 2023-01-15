@@ -136,6 +136,8 @@ namespace ImageStitcher
 
             string configPathBackup; //https://stackoverflow.com/questions/42708868/user-config-corruption
 
+
+        // Load settings
             try
             {// https://www.codeproject.com/Articles/30216/Handling-Corrupt-user-config-Settings
                 Settings.Default.Reload();
@@ -159,8 +161,29 @@ namespace ImageStitcher
                 this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
                 this.checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
                 this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
+                this.checkBox_rememberlastdir.Checked = Settings.Default.rememberLastDir;
 
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
+
+                // try to load the last opened file, or if its directory if file could not be opened
+                if (checkBox_rememberlastdir.Checked && imageCountLeftPanel==0)
+                { 
+                    try
+                    {
+                        DragDropHandler(0, new string[] { Settings.Default.LastDirectory });
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            DragDropHandler(0, new string[] { System.IO.Path.GetDirectoryName(Settings.Default.LastDirectory) });
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
             catch (ConfigurationErrorsException ex)
             { //(requires System.Configuration)
@@ -218,7 +241,7 @@ namespace ImageStitcher
                 // then enumerate a list of all image files in the same directory as the loaded image
                 // then store the position of the loaded image in that list
 
-                imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, isFolder);
+                imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
                 if (checkBox_reversefileorder.Checked) imageList.Reverse();
                 int imageCount = imageList.Count();
                 int imageIndex = 0;
@@ -1729,6 +1752,11 @@ namespace ImageStitcher
             Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
             Settings.Default.ReverseFileOrder = this.checkBox_reversefileorder.Checked;
             Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
+            Settings.Default.rememberLastDir = this.checkBox_rememberlastdir.Checked;
+            if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastDirectory = imageFilesLeftPanel[imageIndexLeftPanel]; } else
+                {
+                    Settings.Default.LastDirectory = "";
+                }
 
             // Save settings
             Settings.Default.Save();
