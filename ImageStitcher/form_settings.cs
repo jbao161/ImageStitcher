@@ -31,14 +31,27 @@ namespace ImageStitcher
                 textBox_defaultdir.Text = dialog.FileName;
             }
         }
+        private void CheckBounds()
+        { //https://social.msdn.microsoft.com/Forums/vstudio/en-US/aa5e617a-6955-47f5-8b8b-6839f38944ba/how-to-restrict-a-window-move-and-grow-within-screen-in-wpf?forum=wpf
+            var height = System.Windows.SystemParameters.PrimaryScreenHeight;
+            var width = System.Windows.SystemParameters.PrimaryScreenWidth;
 
+            if (this.Left < 0)
+                this.Left = 0;
+            if (this.Top < 0)
+                this.Top = 0;
+            if (this.Top + this.Height > height)
+                this.Top = (int)(height - this.Height);
+            if (this.Left + this.Width > width)
+                this.Left = (int)(width - this.Width);
+        }
         private void form_settings_Load(object sender, EventArgs e)
         {
             pntLocation.X -= this.Size.Width / 2;
             pntLocation.Y -= this.Size.Height;
             this.Location = pntLocation;
             System.Drawing.Point topleft = this.PointToScreen(new System.Drawing.Point(this.Left, this.Top));
-            if (topleft.X < 0) { this.Left =  0; } // opens settings form within viewable screen
+            CheckBounds();
             checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
             checkBox_rememberlastfile.Checked = Settings.Default.rememberLastFile;
             checkBox_defaultdirectory.Checked = Settings.Default.loaddefaultdir;
