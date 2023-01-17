@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace ImageStitcher
@@ -36,7 +37,8 @@ namespace ImageStitcher
             pntLocation.X -= this.Size.Width / 2;
             pntLocation.Y -= this.Size.Height;
             this.Location = pntLocation;
-
+            System.Drawing.Point topleft = this.PointToScreen(new System.Drawing.Point(this.Left, this.Top));
+            if (topleft.X < 0) { this.Left =  0; } // opens settings form within viewable screen
             checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
             checkBox_rememberlastfile.Checked = Settings.Default.rememberLastFile;
             checkBox_defaultdirectory.Checked = Settings.Default.loaddefaultdir;

@@ -260,6 +260,7 @@ namespace ImageStitcher
                 // then store the position of the loaded image in that list
 
                 imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
+                imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
                 if (Settings.Default.ReverseFileOrder) imageList.Reverse();
                 int imageCount = imageList.Count();
                 int imageIndex = 0;
