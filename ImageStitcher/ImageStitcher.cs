@@ -140,6 +140,14 @@ namespace ImageStitcher
         // Load settings
             try
             {// https://www.codeproject.com/Articles/30216/Handling-Corrupt-user-config-Settings
+
+                if (Settings.Default.NeedsUpgrade)
+                { // https://stackoverflow.com/questions/13772936/c-sharp-settings-file-how-to-load
+                    Settings.Default.Upgrade();
+                    Settings.Default.NeedsUpgrade = false;
+                    Settings.Default.Save();
+                }
+
                 Settings.Default.Reload();
 
 
@@ -159,29 +167,38 @@ namespace ImageStitcher
                 this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
                 savesplitterdistance = Settings.Default.SplitContainerSplitterDistance;
                 this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
-                this.checkBox_reversefileorder.Checked = Settings.Default.ReverseFileOrder;
                 this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
-                this.checkBox_rememberlastdir.Checked = Settings.Default.rememberLastDir;
 
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
 
                 // try to load the last opened file, or if its directory if file could not be opened
-                if (checkBox_rememberlastdir.Checked && !String.IsNullOrEmpty(Settings.Default.LastDirectory) && imageCountLeftPanel ==0)
+                if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel ==0)
                 { 
                     try
                     {
-                        DragDropHandler(0, new string[] { Settings.Default.LastDirectory });
+                        DragDropHandler(0, new string[] { Settings.Default.LastFile });
                     }
                     catch (Exception)
                     {
                         try
                         {
-                            DragDropHandler(0, new string[] { System.IO.Path.GetDirectoryName(Settings.Default.LastDirectory) });
+                            DragDropHandler(0, new string[] { System.IO.Path.GetDirectoryName(Settings.Default.LastFile) });
                         }
                         catch (Exception)
                         {
                             throw;
                         }
+                    }
+                }
+                // load default directory
+                if (Settings.Default.loaddefaultdir && !String.IsNullOrEmpty(Settings.Default.DefaultDirectory) && imageCountLeftPanel == 0)
+                {
+                    try
+                    {
+                        DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
+                    }
+                    catch (Exception)
+                    {
                     }
                 }
             }
@@ -230,7 +247,7 @@ namespace ImageStitcher
 
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
-
+           //if (String.IsNullOrEmpty(filepaths[0])) return;
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
             bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
             string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
@@ -243,7 +260,7 @@ namespace ImageStitcher
                 // then store the position of the loaded image in that list
 
                 imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
-                if (checkBox_reversefileorder.Checked) imageList.Reverse();
+                if (Settings.Default.ReverseFileOrder) imageList.Reverse();
                 int imageCount = imageList.Count();
                 int imageIndex = 0;
                 string imagepath = filepaths[0];
@@ -1751,12 +1768,11 @@ namespace ImageStitcher
             }
             Settings.Default.SplitContainerSplitterDistance = savesplitterdistance;
             Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
-            Settings.Default.ReverseFileOrder = this.checkBox_reversefileorder.Checked;
             Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
-            Settings.Default.rememberLastDir = this.checkBox_rememberlastdir.Checked;
-            if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastDirectory = imageFilesLeftPanel[imageIndexLeftPanel]; } else
+
+            if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; } else
                 {
-                    Settings.Default.LastDirectory = "";
+                    Settings.Default.LastFile = "";
                 }
 
             // Save settings
@@ -1789,6 +1805,15 @@ namespace ImageStitcher
 
         private void button_slideshow_Click(object sender, EventArgs e)
         {
+            foreach (Form f in Application.OpenForms)
+            { // https://stackoverflow.com/questions/2018272/preventing-multiple-instance-of-one-form-from-displaying
+                if (f is form_slideshow)
+                {
+                    f.Focus();
+                    return;
+                }
+            }
+
             if (default_slideshowbot == null)
             {
                 default_slideshowbot = new slideshow_bot("ordered", "ordered", new DispatcherTimer());
@@ -1859,7 +1884,14 @@ namespace ImageStitcher
         }
         private void button_crop_Click(object sender, EventArgs e)
         {
-
+            foreach (Form f in Application.OpenForms)
+            { // https://stackoverflow.com/questions/2018272/preventing-multiple-instance-of-one-form-from-displaying
+                if (f is Form_Crop)
+                {
+                    f.Focus();
+                    return;
+                }
+            }
             Image targetimage = activePanel == 0 ? pictureBox_leftpanel.Image : pictureBox_rightpanel.Image;
 
             Form_Crop crop_window = new Form_Crop(this);
@@ -1943,6 +1975,24 @@ namespace ImageStitcher
             {
                 imageFilesRightPanel[imageIndexRightPanel] = outputfilepath;
             }
+        }
+
+        private void button_settings_Click(object sender, EventArgs e)
+        {
+            foreach (Form f in Application.OpenForms)
+            { // https://stackoverflow.com/questions/2018272/preventing-multiple-instance-of-one-form-from-displaying
+                if (f is form_settings)
+                {
+                    f.Focus();
+                    return;
+                }
+            }
+
+            form_settings main_settings = new form_settings(this);
+            Point location = button_settings.PointToScreen(Point.Empty);
+            location.X += button_settings.Width / 2;
+            main_settings.pntLocation = location;
+            main_settings.Show();
         }
     } // end MainWindow : Form
 }

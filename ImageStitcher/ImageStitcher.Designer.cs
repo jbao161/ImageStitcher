@@ -45,13 +45,12 @@
             this.button_swapimages = new System.Windows.Forms.Button();
             this.button_slideshow = new System.Windows.Forms.Button();
             this.checkBox_screengrab = new System.Windows.Forms.CheckBox();
-            this.checkBox_reversefileorder = new System.Windows.Forms.CheckBox();
             this.checkBox_randomOnClick = new System.Windows.Forms.CheckBox();
             this.checkBox_openaftersave = new System.Windows.Forms.CheckBox();
             this.button_preview = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.checkBox_showfilename = new System.Windows.Forms.CheckBox();
-            this.checkBox_rememberlastdir = new System.Windows.Forms.CheckBox();
+            this.button_settings = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -212,13 +211,12 @@
             this.panel_controls.Controls.Add(this.button_swapimages);
             this.panel_controls.Controls.Add(this.button_slideshow);
             this.panel_controls.Controls.Add(this.checkBox_screengrab);
-            this.panel_controls.Controls.Add(this.checkBox_reversefileorder);
             this.panel_controls.Controls.Add(this.checkBox_randomOnClick);
             this.panel_controls.Controls.Add(this.checkBox_openaftersave);
             this.panel_controls.Controls.Add(this.button_preview);
             this.panel_controls.Controls.Add(this.button_save);
             this.panel_controls.Controls.Add(this.checkBox_showfilename);
-            this.panel_controls.Controls.Add(this.checkBox_rememberlastdir);
+            this.panel_controls.Controls.Add(this.button_settings);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_controls.Location = new System.Drawing.Point(0, 457);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
@@ -308,18 +306,6 @@
             this.checkBox_screengrab.Text = "Screengrab";
             this.checkBox_screengrab.UseVisualStyleBackColor = true;
             // 
-            // checkBox_reversefileorder
-            // 
-            this.checkBox_reversefileorder.AutoSize = true;
-            this.checkBox_reversefileorder.Checked = true;
-            this.checkBox_reversefileorder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_reversefileorder.Location = new System.Drawing.Point(25, 43);
-            this.checkBox_reversefileorder.Name = "checkBox_reversefileorder";
-            this.checkBox_reversefileorder.Size = new System.Drawing.Size(115, 17);
-            this.checkBox_reversefileorder.TabIndex = 10;
-            this.checkBox_reversefileorder.Text = "Reverse FIle Order";
-            this.checkBox_reversefileorder.UseVisualStyleBackColor = true;
-            // 
             // checkBox_randomOnClick
             // 
             this.checkBox_randomOnClick.AutoSize = true;
@@ -380,7 +366,7 @@
             // checkBox_showfilename
             // 
             this.checkBox_showfilename.AutoSize = true;
-            this.checkBox_showfilename.Location = new System.Drawing.Point(178, 43);
+            this.checkBox_showfilename.Location = new System.Drawing.Point(25, 43);
             this.checkBox_showfilename.Name = "checkBox_showfilename";
             this.checkBox_showfilename.Size = new System.Drawing.Size(98, 17);
             this.checkBox_showfilename.TabIndex = 14;
@@ -388,15 +374,15 @@
             this.checkBox_showfilename.UseVisualStyleBackColor = true;
             this.checkBox_showfilename.CheckedChanged += new System.EventHandler(this.checkBox_showfilename_CheckedChanged);
             // 
-            // checkBox_rememberlastdir
+            // button_settings
             // 
-            this.checkBox_rememberlastdir.AutoSize = true;
-            this.checkBox_rememberlastdir.Location = new System.Drawing.Point(178, 17);
-            this.checkBox_rememberlastdir.Name = "checkBox_rememberlastdir";
-            this.checkBox_rememberlastdir.Size = new System.Drawing.Size(141, 17);
-            this.checkBox_rememberlastdir.TabIndex = 15;
-            this.checkBox_rememberlastdir.Text = "Remember Last Opened";
-            this.checkBox_rememberlastdir.UseVisualStyleBackColor = true;
+            this.button_settings.Location = new System.Drawing.Point(200, 17);
+            this.button_settings.Name = "button_settings";
+            this.button_settings.Size = new System.Drawing.Size(75, 43);
+            this.button_settings.TabIndex = 16;
+            this.button_settings.Text = "Settings";
+            this.button_settings.UseVisualStyleBackColor = true;
+            this.button_settings.Click += new System.EventHandler(this.button_settings_Click);
             // 
             // contextMenu_image
             // 
@@ -661,7 +647,6 @@
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeFromListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixCorruptedImageToolStripMenuItem;
-        private System.Windows.Forms.CheckBox checkBox_reversefileorder;
         private System.Windows.Forms.ToolStripMenuItem overwriteImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem openInWindowsToolStripMenuItem;
@@ -674,7 +659,7 @@
         private System.Windows.Forms.Label label_filename_rightpanel;
         private System.Windows.Forms.CheckBox checkBox_showfilename;
         private System.Windows.Forms.ToolStripMenuItem webpToGifToolStripMenuItem;
-        private System.Windows.Forms.CheckBox checkBox_rememberlastdir;
+        private System.Windows.Forms.Button button_settings;
     }
 }
 

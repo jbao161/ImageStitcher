@@ -134,24 +134,60 @@ namespace ImageStitcher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastDirectory {
+        public string DefaultDirectory {
             get {
-                return ((string)(this["LastDirectory"]));
+                return ((string)(this["DefaultDirectory"]));
             }
             set {
-                this["LastDirectory"] = value;
+                this["DefaultDirectory"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool rememberLastDir {
+        public bool rememberLastFile {
             get {
-                return ((bool)(this["rememberLastDir"]));
+                return ((bool)(this["rememberLastFile"]));
             }
             set {
-                this["rememberLastDir"] = value;
+                this["rememberLastFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastFile {
+            get {
+                return ((string)(this["LastFile"]));
+            }
+            set {
+                this["LastFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NeedsUpgrade {
+            get {
+                return ((bool)(this["NeedsUpgrade"]));
+            }
+            set {
+                this["NeedsUpgrade"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool loaddefaultdir {
+            get {
+                return ((bool)(this["loaddefaultdir"]));
+            }
+            set {
+                this["loaddefaultdir"] = value;
             }
         }
     }

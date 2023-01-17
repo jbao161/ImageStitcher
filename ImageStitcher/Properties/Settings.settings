@@ -29,10 +29,19 @@
     <Setting Name="SlideTimeInterval" Type="System.String" Scope="User">
       <Value Profile="(Default)">5 s</Value>
     </Setting>
-    <Setting Name="LastDirectory" Type="System.String" Scope="User">
+    <Setting Name="DefaultDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="rememberLastDir" Type="System.Boolean" Scope="User">
+    <Setting Name="rememberLastFile" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LastFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NeedsUpgrade" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="loaddefaultdir" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
