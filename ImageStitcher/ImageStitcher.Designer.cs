@@ -39,7 +39,6 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
-            this.checkBox_rememberlastdir = new System.Windows.Forms.CheckBox();
             this.button_crop = new System.Windows.Forms.Button();
             this.button_trash = new System.Windows.Forms.Button();
             this.button_verticalhorizontal = new System.Windows.Forms.Button();
@@ -52,6 +51,7 @@
             this.button_preview = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.checkBox_showfilename = new System.Windows.Forms.CheckBox();
+            this.checkBox_rememberlastdir = new System.Windows.Forms.CheckBox();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -226,16 +226,6 @@
             this.panel_controls.Size = new System.Drawing.Size(1031, 80);
             this.panel_controls.TabIndex = 7;
             // 
-            // checkBox_rememberlastdir
-            // 
-            this.checkBox_rememberlastdir.AutoSize = true;
-            this.checkBox_rememberlastdir.Location = new System.Drawing.Point(178, 17);
-            this.checkBox_rememberlastdir.Name = "checkBox_rememberlastdir";
-            this.checkBox_rememberlastdir.Size = new System.Drawing.Size(141, 17);
-            this.checkBox_rememberlastdir.TabIndex = 15;
-            this.checkBox_rememberlastdir.Text = "Remember Last Opened";
-            this.checkBox_rememberlastdir.UseVisualStyleBackColor = true;
-            // 
             // button_crop
             // 
             this.button_crop.Dock = System.Windows.Forms.DockStyle.Right;
@@ -397,6 +387,16 @@
             this.checkBox_showfilename.Text = "Show Filename";
             this.checkBox_showfilename.UseVisualStyleBackColor = true;
             this.checkBox_showfilename.CheckedChanged += new System.EventHandler(this.checkBox_showfilename_CheckedChanged);
+            // 
+            // checkBox_rememberlastdir
+            // 
+            this.checkBox_rememberlastdir.AutoSize = true;
+            this.checkBox_rememberlastdir.Location = new System.Drawing.Point(178, 17);
+            this.checkBox_rememberlastdir.Name = "checkBox_rememberlastdir";
+            this.checkBox_rememberlastdir.Size = new System.Drawing.Size(141, 17);
+            this.checkBox_rememberlastdir.TabIndex = 15;
+            this.checkBox_rememberlastdir.Text = "Remember Last Opened";
+            this.checkBox_rememberlastdir.UseVisualStyleBackColor = true;
             // 
             // contextMenu_image
             // 

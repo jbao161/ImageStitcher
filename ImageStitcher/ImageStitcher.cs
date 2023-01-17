@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
-
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -166,7 +166,7 @@ namespace ImageStitcher
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
 
                 // try to load the last opened file, or if its directory if file could not be opened
-                if (checkBox_rememberlastdir.Checked && imageCountLeftPanel==0)
+                if (checkBox_rememberlastdir.Checked && !String.IsNullOrEmpty(Settings.Default.LastDirectory) && imageCountLeftPanel ==0)
                 { 
                     try
                     {
@@ -230,6 +230,7 @@ namespace ImageStitcher
 
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
+
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
             bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
             string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
