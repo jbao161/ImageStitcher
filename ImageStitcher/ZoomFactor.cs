@@ -68,8 +68,7 @@ namespace ImageStitcher
         }
 
         public RectangleF ConstrainCropAreaToImage(RectangleF rect, SizeF imageSize)
-        {
-            //RectangleF result = rect; // clones the original rectangle
+        { // prevent cropping area from going outside the image
             float rl, rt, rw, rh;
             rl = rect.Left;
             rt = rect.Top;
@@ -79,9 +78,7 @@ namespace ImageStitcher
             if (rect.Top > imageSize.Height - rect.Height) { rh -= Math.Abs(rect.Top+rect.Height - imageSize.Height); }
             if (rect.Left < 0) { rl = 0; rw -= Math.Abs(rect.Left); }
             if (rect.Left > imageSize.Width - rect.Width) { rw -= Math.Abs(rect.Left+rect.Width - imageSize.Width); }
-            //if (rect.Width > imageSize.Width) rw = imageSize.Width;
-            //if (rect.Height > imageSize.Height) rh = imageSize.Height;
-            //MessageBox.Show("crop area: " + rl +","+ rt + ","+ rw + "," + rh +"\n\nimage : " + imageSize.Width + "," + imageSize.Height);
+    
             return new RectangleF(rl, rt, rw, rh);
         }
     }

@@ -10,13 +10,10 @@ using System.Drawing;
 
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web.Configuration;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -1351,13 +1348,19 @@ namespace ImageStitcher
 
         private void SaveImage(Image targetimage, string filename, string directorypath, Boolean savedialog)
         {
-            if (!savedialog) targetimage.Save(directorypath);
+            bool savedYes = false;
+            string newfilepath = System.IO.Path.Combine(directorypath, filename);
+            if (!(targetimage is null) && !savedialog)
+            {
+                targetimage.Save(newfilepath);
+                savedYes = true;
+            }
             if (!(targetimage is null) && savedialog) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
                     saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
                     saveFileDialog1.Title = "Save an Image File";
-                    saveFileDialog1.FileName = filename;
+                    saveFileDialog1.FileName = System.IO.Path.GetFileNameWithoutExtension(filename);
                     saveFileDialog1.RestoreDirectory = false;
                     saveFileDialog1.InitialDirectory = directorypath;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -1392,25 +1395,27 @@ namespace ImageStitcher
                         }
 
                         fs.Close();
+                        savedYes = true;
+                        newfilepath = System.IO.Path.GetFullPath(saveFileDialog1.FileName);
                     } // if dialog OK
-                    // Opens Fle Directory if checkbox enabled
-                    if (checkBox_openaftersave.Checked)
-                    {
-                        string args = string.Format("/e, /select, \"{0}\"", System.IO.Path.GetFullPath(saveFileDialog1.FileName));
-
-                        ProcessStartInfo info = new ProcessStartInfo
-                        {
-                            FileName = "explorer",
-                            Arguments = args
-                        };
-                        Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
-                        Process.Start(info);
-                    }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("{0}", ex);
                 }
+            // Opens Fle Directory if checkbox enabled
+            if (checkBox_openaftersave.Checked && savedYes)
+            {
+                string args = string.Format("/e, /select, \"{0}\"", newfilepath);
+
+                ProcessStartInfo info = new ProcessStartInfo
+                {
+                    FileName = "explorer",
+                    Arguments = args
+                };
+                Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
+                Process.Start(info);
+            }
         }
 
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1881,7 +1886,6 @@ namespace ImageStitcher
 
             ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox_rightpanel);
             ControlrectPicturebox.SetControl(this.pictureBox_rightpanel);
-
         }
         private void button_crop_Click(object sender, EventArgs e)
         {
@@ -1934,7 +1938,24 @@ namespace ImageStitcher
 
             return result;
         }
-
+        public void cropSaveImage(bool overwrite)
+        {
+            string filename="",directorypath="";
+            bool savedialog = true;
+            if (overwrite) savedialog = false;
+            if ((activePanel == 0) && pictureBox_leftpanel.Image != null)
+            {
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesLeftPanel[imageIndexLeftPanel]); }
+                Image targetimage = pictureBox_leftpanel.Image;
+                SaveImage(targetimage, filename, directorypath, savedialog);
+            }
+            if ((activePanel == 1) && pictureBox_rightpanel.Image != null)
+            {
+                Image targetimage = pictureBox_rightpanel.Image;
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesRightPanel[imageIndexRightPanel]); }
+                SaveImage(targetimage, filename, directorypath, savedialog);
+            }
+        }
         public void LoadActiveImage (Image targetimage)
         {
             PictureBox targetpictureBox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;

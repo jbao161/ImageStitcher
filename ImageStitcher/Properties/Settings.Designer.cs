@@ -190,5 +190,17 @@ namespace ImageStitcher.Properties {
                 this["loaddefaultdir"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CropOverwrite {
+            get {
+                return ((bool)(this["CropOverwrite"]));
+            }
+            set {
+                this["CropOverwrite"] = value;
+            }
+        }
     }
 }

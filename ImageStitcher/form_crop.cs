@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImageStitcher.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -34,7 +35,10 @@ namespace ImageStitcher
 
         public void Load_img(String img_path)
         {
-            source_image = new Bitmap(img_path);
+            using (Bitmap bm = new Bitmap(img_path))
+            { // does not lock image file
+                source_image = new Bitmap(bm);
+            }
             Update();
         }
         private void CheckBounds()
@@ -89,9 +93,9 @@ namespace ImageStitcher
 
             pictureBox1.Image = source_image;
             resize_to_picturebox();
-            //Set crop control for each picturebox
-            //ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox1);
-            //ControlrectPicturebox.SetControl(this.pictureBox1);
+
+            checkBox_overwrite.Checked = Settings.Default.CropOverwrite;
+
         }
 
         private Size GetDisplayedImageSize(PictureBox pictureBox)
@@ -114,8 +118,6 @@ namespace ImageStitcher
             }
             return result;
         }
-
-        ControlCrop.ControlCrop ControlrectPicturebox;
 
         int xUp, yUp, xDown, yDown;
         Rectangle rectCropArea;
@@ -169,20 +171,6 @@ namespace ImageStitcher
             xDown = e.X;
             yDown = e.Y;
         }
-        public RectangleF GetRectangeOnImage(PictureBox p, Rectangle rectOnPictureBox)
-        {
-            var method = typeof(PictureBox).GetMethod("ImageRectangleFromSizeMode",
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.Instance);
-            var imageRect = (Rectangle)method.Invoke(p, new object[] { p.SizeMode });
-            if (p.Image == null)
-                return rectOnPictureBox;
-            var cx = (float)p.Image.Width / (float)imageRect.Width;
-            var cy = (float)p.Image.Height / (float)imageRect.Height;
-            rectOnPictureBox.Offset(-imageRect.X, -imageRect.Y);
-            return new RectangleF(rectOnPictureBox.X * cx, rectOnPictureBox.Y * cy,
-                rectOnPictureBox.Width * cx, rectOnPictureBox.Height * cy);
-        }
         
         private void btnCrop_Click(object sender, EventArgs e)
         {
@@ -217,52 +205,18 @@ namespace ImageStitcher
 
             }
         }
-        private void Button_Crop_Yes_Click(object sender, EventArgs e)
+
+        private void button_accept_Click(object sender, EventArgs e)
         {
-            try
-            {
-                PictureBox targetpicturebox = pictureBox1;
-
-                double xscale, yscale;
-                xscale = (double)pictureBox1.Image.Width / (double)pictureBox1.Width;
-                yscale = (double)pictureBox1.Image.Height / (double)pictureBox1.Height;
-                //Process Picturebox
-
-                // xscale = 1.0 ;
-                //yscale = 1.0 ;
-
-
-                int nx, ny, nw, nh;
-                nx = (int) (xscale * ControlrectPicturebox.rect.X);
-                ny = (int) (yscale * ControlrectPicturebox.rect.Y);
-                nw = (int) (xscale * ControlrectPicturebox.rect.Width);
-                nh = (int) (yscale * ControlrectPicturebox.rect.Height);
-                Rectangle rectPicturebox = new Rectangle(nx, ny, nw, nh);
-                //set cropped image size and creat new bitmap
-                Bitmap _pboximg = new Bitmap(pictureBox1.Image.Width, pictureBox1.Image.Height);
-
-                //Create the original image to be cropped
-                Bitmap OriginalPictureboxImage = new Bitmap(targetpicturebox.Image, targetpicturebox.Width, targetpicturebox.Height);
-
-
-                //create graphic with using statement to auto close grahics
-                using (Graphics gr = Graphics.FromImage(_pboximg))
-                {
-                    gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    gr.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                    gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                    ////set image attributes
-                    gr.DrawImage(OriginalPictureboxImage, 0, 0, rectPicturebox, GraphicsUnit.Pixel);
-                    mainForm.LoadActiveImage(_pboximg);
-                    //targetpicturebox.Image = _pboximg;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+            this.mainForm.cropSaveImage(checkBox_overwrite.Checked);
         }
+
+        private void Form_Crop_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.CropOverwrite = checkBox_overwrite.Checked;
+            Settings.Default.Save();
+        }
+
 
         private void button_crop_cancel_Click(object sender, EventArgs e)
         {
@@ -272,6 +226,8 @@ namespace ImageStitcher
         private void button_revert_Click(object sender, EventArgs e)
         {
             mainForm.LoadActiveImage(source_image);
+            pictureBox1.Visible = true;
+            pictureBox1.Image = source_image;
         }
     }
 }
