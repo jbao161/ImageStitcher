@@ -10,10 +10,12 @@ using System.Drawing;
 
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Web.Configuration;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Shapes;
@@ -133,8 +135,6 @@ namespace ImageStitcher
             label_filename_rightpanel.Parent = pictureBox_rightpanel;
             //label_filename_rightpanel.BackColor = System.Drawing.Color.Transparent;
             label_filename_rightpanel.Text = "";
-
-            string configPathBackup; //https://stackoverflow.com/questions/42708868/user-config-corruption
 
 
         // Load settings
@@ -1227,10 +1227,7 @@ namespace ImageStitcher
                 result = RandomNumber.Between(min, max-1);
             }
             return result;
-            lock (getrandom) // synchronize
-            {
-                return getrandom.Next(min, max);
-            }
+
         }
         // https://scottlilly.com/create-better-random-numbers-in-c/
         public static class RandomNumber
@@ -1657,7 +1654,9 @@ namespace ImageStitcher
             int containerheight = thispicturebox.Parent.ClientSize.Height;
             if (newWidth < containerwidth && newHeight < containerheight)
             {
+                thispicturebox.Invalidate();
                 thispicturebox.Dock = DockStyle.Fill;
+
                 return;
             }
 
@@ -1793,6 +1792,7 @@ namespace ImageStitcher
                     throw ex;
                 }
                 //Settings.Default.Reload();
+                throw exception;
             }
             clearTmpAppData();
         }
@@ -1889,35 +1889,58 @@ namespace ImageStitcher
             { // https://stackoverflow.com/questions/2018272/preventing-multiple-instance-of-one-form-from-displaying
                 if (f is Form_Crop)
                 {
-                    f.Focus();
-                    return;
+                    f.Dispose();
+                    break;
                 }
             }
+            //ImageStitcher.Window1 icwin = new ImageStitcher.Window1();
+            //icwin.Show();
+
+
             Image targetimage = activePanel == 0 ? pictureBox_leftpanel.Image : pictureBox_rightpanel.Image;
 
             Form_Crop crop_window = new Form_Crop(this);
+
             Point location = button_crop.PointToScreen(Point.Empty);
             location.X += button_crop.Width / 2;
             crop_window.pntLocation = location;
-            crop_window.source_image = targetimage;
-            crop_window.Show();
+
+            String image_path = "";
+            if (activePanel == 0 && imageFilesLeftPanel != null && imageCountLeftPanel != 0) image_path = imageFilesLeftPanel[imageIndexLeftPanel];
+            if (activePanel == 1 && imageFilesRightPanel != null && imageCountRightPanel != 0) image_path = imageFilesRightPanel[imageIndexRightPanel];
+            if (!String.IsNullOrEmpty(image_path))
+            {
+                crop_window.Load_img(image_path);
+                crop_window.Show();
+            }
         }
         
-        private void CancelCrop()
+        public int[] getCropWindowPositions()
         {
-            //Set crop control for each picturebox
-            ControlrectPanel = new ControlCrop.ControlCrop(pictureBox_leftpanel);
-            ControlrectPanel.SetControl(this.pictureBox_leftpanel);
+            int[] result= new int[10];
 
-            ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox_rightpanel);
-            ControlrectPicturebox.SetControl(this.pictureBox_rightpanel);
+            Point pbllocation = pictureBox_leftpanel.PointToScreen(new Point(0, 0));
+            Point pbrlocation = pictureBox_rightpanel.PointToScreen(new Point(0, 0));
 
+            result[0] = splitContainer_bothimages.Panel1.Width;
+            result[1] = splitContainer_bothimages.Panel1.Height;
+            result[2] = pbllocation.X;
+            result[3] = pbllocation.Y;
+            result[4] = splitContainer_bothimages.Panel2.Width;
+            result[5] = splitContainer_bothimages.Panel2.Height;
+            result[6] = pbrlocation.X;
+            result[7] = pbrlocation.Y;
+            result[8] = activePanel;
+
+            return result;
         }
 
         public void LoadActiveImage (Image targetimage)
         {
             PictureBox targetpictureBox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
             targetpictureBox.Image = targetimage;
+            targetpictureBox.Invalidate();
+            Resize_imagepanels();
         }
 
         private void checkBox_showfilename_CheckedChanged(object sender, EventArgs e)

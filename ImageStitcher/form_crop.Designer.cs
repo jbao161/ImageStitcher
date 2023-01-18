@@ -4,14 +4,7 @@ namespace ImageStitcher
 {
     partial class Form_Crop
     {
-        public Point pntLocation;
-        private MainWindow mainForm = null;
-        public Form_Crop(MainWindow callingForm)
-        { // https://stackoverflow.com/questions/1665533/communicate-between-two-windows-forms-in-c-sharp
-            mainForm = callingForm as MainWindow;
-            InitializeComponent();
-        }
-        public Image source_image;
+
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -42,12 +35,14 @@ namespace ImageStitcher
             this.button_crop_no = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.button_revert = new System.Windows.Forms.Button();
             this.button_accept = new System.Windows.Forms.Button();
+            this.button_revert = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // button_crop
@@ -60,7 +55,7 @@ namespace ImageStitcher
             this.button_crop.TabIndex = 0;
             this.button_crop.Text = "Crop";
             this.button_crop.UseVisualStyleBackColor = false;
-            this.button_crop.Click += new System.EventHandler(this.Button_Crop_Yes_Click);
+            this.button_crop.Click += new System.EventHandler(this.btnCrop_Click);
             // 
             // button_crop_no
             // 
@@ -83,6 +78,8 @@ namespace ImageStitcher
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
             // panel1
             // 
@@ -96,15 +93,16 @@ namespace ImageStitcher
             this.panel1.Size = new System.Drawing.Size(617, 77);
             this.panel1.TabIndex = 3;
             // 
-            // panel2
+            // button_accept
             // 
-            this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panel2.Controls.Add(this.pictureBox1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(617, 503);
-            this.panel2.TabIndex = 4;
+            this.button_accept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_accept.BackColor = System.Drawing.Color.LimeGreen;
+            this.button_accept.Location = new System.Drawing.Point(564, 15);
+            this.button_accept.Name = "button_accept";
+            this.button_accept.Size = new System.Drawing.Size(50, 50);
+            this.button_accept.TabIndex = 4;
+            this.button_accept.Text = "Accept";
+            this.button_accept.UseVisualStyleBackColor = false;
             // 
             // button_revert
             // 
@@ -118,16 +116,26 @@ namespace ImageStitcher
             this.button_revert.UseVisualStyleBackColor = false;
             this.button_revert.Click += new System.EventHandler(this.button_revert_Click);
             // 
-            // button_accept
+            // panel2
             // 
-            this.button_accept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_accept.BackColor = System.Drawing.Color.LimeGreen;
-            this.button_accept.Location = new System.Drawing.Point(564, 15);
-            this.button_accept.Name = "button_accept";
-            this.button_accept.Size = new System.Drawing.Size(50, 50);
-            this.button_accept.TabIndex = 4;
-            this.button_accept.Text = "Accept";
-            this.button_accept.UseVisualStyleBackColor = false;
+            this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel2.Controls.Add(this.pictureBox1);
+            this.panel2.Controls.Add(this.pictureBox2);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(617, 503);
+            this.panel2.TabIndex = 4;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox2.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(617, 503);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 3;
+            this.pictureBox2.TabStop = false;
             // 
             // Form_Crop
             // 
@@ -137,11 +145,12 @@ namespace ImageStitcher
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "Form_Crop";
-            this.Text = "Form1";
+            this.Text = "Crop image";
             this.Load += new System.EventHandler(this.form_crop_load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -155,5 +164,6 @@ namespace ImageStitcher
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button button_accept;
         private System.Windows.Forms.Button button_revert;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
