@@ -1876,17 +1876,7 @@ namespace ImageStitcher
                 LoadNextImage(targetpicturebox);
             }
         }
-        ControlCrop.ControlCrop ControlrectPanel;
-        ControlCrop.ControlCrop ControlrectPicturebox;
-        private void InitializeCrop()
-        {
-            //Set crop control for each picturebox
-            ControlrectPanel = new ControlCrop.ControlCrop(pictureBox_leftpanel);
-            ControlrectPanel.SetControl(this.pictureBox_leftpanel);
 
-            ControlrectPicturebox = new ControlCrop.ControlCrop(pictureBox_rightpanel);
-            ControlrectPicturebox.SetControl(this.pictureBox_rightpanel);
-        }
         private void button_crop_Click(object sender, EventArgs e)
         {
             foreach (Form f in Application.OpenForms)

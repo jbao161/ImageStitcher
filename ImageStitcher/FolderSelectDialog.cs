@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ImageStitcher
-{
-
+{//https://stackoverflow.com/questions/31059/how-do-you-configure-an-openfiledialog-to-select-folders
+    // author: ErikE
     /// <summary>
     /// Present the Windows Vista-style open file dialog to select a folder. Fall back for older Windows Versions
     /// </summary>
