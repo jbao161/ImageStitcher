@@ -126,7 +126,7 @@ namespace ImageStitcher
             xUp = e.X;
             yUp = e.Y;
 
-            Rectangle rec = new Rectangle(xDown, yDown, Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+            Rectangle rec = new Rectangle(Math.Min(xDown,xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
 
             using (Pen pen = new Pen(Color.Green, 2))
             {

@@ -63,7 +63,7 @@ namespace ImageStitcher
         }
         internal float GetScaleFactor(SizeF scaled, SizeF original)
         {
-            return (original.Width > original.Height) ? (scaled.Width / original.Width)
+            return (original.Width / original.Height > scaled.Width / scaled.Height) ? (scaled.Width / original.Width)
                                                       : (scaled.Height / original.Height);
         }
 
