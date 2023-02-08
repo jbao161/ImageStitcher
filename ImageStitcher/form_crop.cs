@@ -57,7 +57,7 @@ namespace ImageStitcher
         }
 
         private void resize_to_picturebox()
-        {
+        { // resizes the crop form window on load to match the size of the source picture 
             int[] cropWindowPositions = this.mainForm.getCropWindowPositions();
             int pblw, pblh, pbll, pblt, pbrw, pbrh, pbrl, pbrt;
             pblw = cropWindowPositions[0];
@@ -123,8 +123,9 @@ namespace ImageStitcher
         Rectangle rectCropArea;
         void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            xUp = e.X;
-            yUp = e.Y;
+            var coordinates = pictureBox1.PointToClient(Cursor.Position);
+            xUp = coordinates.X;
+            yUp = coordinates.Y;
 
             Rectangle rec = new Rectangle(Math.Min(xDown,xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
 
@@ -161,16 +162,16 @@ namespace ImageStitcher
             int offsetxUp = xUp - (int)((double)(source_image.Width - pbsize.Width) * 0.5);
             int offsetyUp = yUp - (int)((double)(source_image.Height - pbsize.Height) * 0.5);
 
-            rectCropArea = new Rectangle(offsetxDown, offsetyDown, scaledwidth, scaledheight);
+            //rectCropArea = new Rectangle(offsetxDown, offsetyDown, scaledwidth, scaledheight);
             // allow crop area to be dragged from any corner, always start rectangle from top left corner
             rectCropArea = new Rectangle(Math.Min(xUp,xDown), Math.Min(yUp,yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
         }
         void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             pictureBox1.Invalidate();
-
-            xDown = e.X;
-            yDown = e.Y;
+            var coordinates = pictureBox1.PointToClient(Cursor.Position);
+            xDown = coordinates.X;
+            yDown = coordinates.Y;
         }
         
         private void btnCrop_Click(object sender, EventArgs e)
