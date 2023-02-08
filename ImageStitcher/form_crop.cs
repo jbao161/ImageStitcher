@@ -162,7 +162,8 @@ namespace ImageStitcher
             int offsetyUp = yUp - (int)((double)(source_image.Height - pbsize.Height) * 0.5);
 
             rectCropArea = new Rectangle(offsetxDown, offsetyDown, scaledwidth, scaledheight);
-            rectCropArea = new Rectangle(xDown, yDown, Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+            // allow crop area to be dragged from any corner, always start rectangle from top left corner
+            rectCropArea = new Rectangle(Math.Min(xUp,xDown), Math.Min(yUp,yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
         }
         void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
