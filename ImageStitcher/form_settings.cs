@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
+
 using System.Windows.Forms;
 
 namespace ImageStitcher
@@ -18,7 +18,13 @@ namespace ImageStitcher
         {
             InitializeComponent();
         }
-
+        public Point pntLocation;
+        private MainWindow mainForm = null;
+        public form_settings(MainWindow callingForm)
+        { // https://stackoverflow.com/questions/1665533/communicate-between-two-windows-forms-in-c-sharp
+            mainForm = callingForm as MainWindow;
+            InitializeComponent();
+        }
         private void button_browsedir_Click(object sender, EventArgs e)
         {
             var dialog = new FolderSelectDialog
@@ -56,6 +62,7 @@ namespace ImageStitcher
             checkBox_rememberlastfile.Checked = Settings.Default.rememberLastFile;
             checkBox_defaultdirectory.Checked = Settings.Default.loaddefaultdir;
             textBox_defaultdir.Text = Settings.Default.DefaultDirectory;
+            checkBox_darkskin.Checked = Settings.Default.DarkMode;
         }
 
         private void form_settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -64,6 +71,13 @@ namespace ImageStitcher
             Settings.Default.rememberLastFile = checkBox_rememberlastfile.Checked;
             Settings.Default.loaddefaultdir = checkBox_defaultdirectory.Checked;
             Settings.Default.DefaultDirectory = textBox_defaultdir.Text;
+            Settings.Default.DarkMode = checkBox_darkskin.Checked;
+        }
+
+        private void checkBox_darkskin_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.DarkMode = checkBox_darkskin.Checked;
+            mainForm.DarkModeRefresh();
         }
     }
 }

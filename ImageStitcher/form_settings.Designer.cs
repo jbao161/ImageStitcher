@@ -4,13 +4,7 @@ namespace ImageStitcher
 {
     partial class form_settings
     {
-        public Point pntLocation;
-        private MainWindow mainForm = null;
-        public form_settings(MainWindow callingForm)
-        { // https://stackoverflow.com/questions/1665533/communicate-between-two-windows-forms-in-c-sharp
-            mainForm = callingForm as MainWindow;
-            InitializeComponent();
-        }
+
 
         /// <summary>
         /// Required designer variable.
@@ -44,6 +38,7 @@ namespace ImageStitcher
             this.checkBox_defaultdirectory = new System.Windows.Forms.CheckBox();
             this.textBox_defaultdir = new System.Windows.Forms.TextBox();
             this.button_browsedir = new System.Windows.Forms.Button();
+            this.checkBox_darkskin = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_reversefileorder
@@ -98,11 +93,23 @@ namespace ImageStitcher
             this.button_browsedir.UseVisualStyleBackColor = true;
             this.button_browsedir.Click += new System.EventHandler(this.button_browsedir_Click);
             // 
+            // checkBox_darkskin
+            // 
+            this.checkBox_darkskin.AutoSize = true;
+            this.checkBox_darkskin.Location = new System.Drawing.Point(182, 16);
+            this.checkBox_darkskin.Name = "checkBox_darkskin";
+            this.checkBox_darkskin.Size = new System.Drawing.Size(78, 17);
+            this.checkBox_darkskin.TabIndex = 22;
+            this.checkBox_darkskin.Text = "Dark mode";
+            this.checkBox_darkskin.UseVisualStyleBackColor = true;
+            this.checkBox_darkskin.CheckedChanged += new System.EventHandler(this.checkBox_darkskin_CheckedChanged);
+            // 
             // form_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(329, 139);
+            this.Controls.Add(this.checkBox_darkskin);
             this.Controls.Add(this.button_browsedir);
             this.Controls.Add(this.textBox_defaultdir);
             this.Controls.Add(this.checkBox_defaultdirectory);
@@ -124,5 +131,6 @@ namespace ImageStitcher
         private System.Windows.Forms.CheckBox checkBox_defaultdirectory;
         private System.Windows.Forms.TextBox textBox_defaultdir;
         private System.Windows.Forms.Button button_browsedir;
+        private System.Windows.Forms.CheckBox checkBox_darkskin;
     }
 }

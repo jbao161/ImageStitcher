@@ -202,5 +202,53 @@ namespace ImageStitcher.Properties {
                 this["CropOverwrite"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DarkMode {
+            get {
+                return ((bool)(this["DarkMode"]));
+            }
+            set {
+                this["DarkMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#181A1B")]
+        public string DarkModeColor {
+            get {
+                return ((string)(this["DarkModeColor"]));
+            }
+            set {
+                this["DarkModeColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#424242")]
+        public string DarkModeColorAccent {
+            get {
+                return ((string)(this["DarkModeColorAccent"]));
+            }
+            set {
+                this["DarkModeColorAccent"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#CCD6DD")]
+        public string DarkModeColorText {
+            get {
+                return ((string)(this["DarkModeColorText"]));
+            }
+            set {
+                this["DarkModeColorText"] = value;
+            }
+        }
     }
 }

@@ -67,6 +67,9 @@
   <PropertyGroup>
     <ApplicationIcon>imagestitcher.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ImageCropper">
       <HintPath>I:\tmp\ImageCropper\ImageCropper\bin\Debug\ImageCropper.dll</HintPath>
@@ -94,6 +97,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DarkTitleBar.cs" />
     <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="form_crop.cs">
       <SubType>Form</SubType>
@@ -147,6 +151,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

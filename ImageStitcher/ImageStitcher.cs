@@ -15,7 +15,6 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 using CRNG = System.Security.Cryptography.RandomNumberGenerator;
@@ -198,6 +197,9 @@ namespace ImageStitcher
                     {
                     }
                 }
+
+                // apply dark light colors
+                DarkModeRefresh();
             }
             catch (ConfigurationErrorsException ex)
             { //(requires System.Configuration)
@@ -2029,5 +2031,64 @@ namespace ImageStitcher
             main_settings.pntLocation = location;
             main_settings.Show();
         }
-    } // end MainWindow : Form
+
+        // Skins dark/light mode
+
+        public void DarkModeRefresh()
+        {
+            if (Settings.Default.DarkMode == true) {
+
+                Color darkcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColor);
+                Color darkaccentcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorAccent);
+                pictureBox_leftpanel.BackColor = darkcolor;
+                pictureBox_rightpanel.BackColor = darkcolor;
+                panel_controls.BackColor = darkaccentcolor;
+                this.BackColor = darkaccentcolor;
+                splitContainer_bothimages.BackColor = darkaccentcolor;
+
+                Color darkcolortext = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorText);
+                
+
+                foreach (Control subC in panel_controls.Controls)
+                {
+                    subC.BackColor = darkaccentcolor;
+                    if (!(subC is Button))
+                    {
+                        subC.ForeColor = darkcolortext;
+                    }
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Flat;
+                        ((Button)subC).FlatAppearance.BorderColor = darkcolor;
+                        if (subC.BackgroundImage is null) { subC.ForeColor = darkcolortext; }
+                    }
+
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, true);
+            }
+            if (Settings.Default.DarkMode == false)
+            {
+                Color lightbackground = SystemColors.Control;
+                pictureBox_leftpanel.BackColor = SystemColors.GradientInactiveCaption;
+                pictureBox_rightpanel.BackColor = SystemColors.GradientInactiveCaption;
+                panel_controls.BackColor = SystemColors.Control;
+                splitContainer_bothimages.BackColor = lightbackground;
+                foreach (Control subC in panel_controls.Controls)
+                {
+                    subC.BackColor = lightbackground;
+                    subC.ForeColor = Color.Black;
+
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Standard;
+                        ((Button)subC).FlatAppearance.BorderColor = SystemColors.Control;
+                    }
+
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, false);
+                this.BackColor = SystemColors.Control;
+            }
+        }
+    
+} // end MainWindow : Form
 }
