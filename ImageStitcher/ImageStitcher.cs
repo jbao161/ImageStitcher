@@ -545,26 +545,30 @@ namespace ImageStitcher
                             // Saves the Image in the appropriate ImageFormat based upon the
                             // File type selected in the dialog box.
                             // NOTE that the FilterIndex property is one-based.
+
+                            var encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+                            encoderParameters.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.ImageSaveQuality);
+
                             switch (saveFileDialog1.FilterIndex)
                             {
                                 case 1:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Jpeg);
+                                    stitchedimage.Save(fs,GetEncoder(
+                                       System.Drawing.Imaging.ImageFormat.Jpeg),encoderParameters);
                                     break;
 
                                 case 2:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Bmp);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                       System.Drawing.Imaging.ImageFormat.Bmp), encoderParameters);
                                     break;
 
                                 case 3:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Gif);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                          System.Drawing.Imaging.ImageFormat.Gif), encoderParameters);
                                     break;
 
                                 case 4:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Png);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                          System.Drawing.Imaging.ImageFormat.Png), encoderParameters);
                                     break;
                             }
                         }
@@ -1373,26 +1377,31 @@ namespace ImageStitcher
                         // Saves the Image in the appropriate ImageFormat based upon the
                         // File type selected in the dialog box.
                         // NOTE that the FilterIndex property is one-based.
+
+                        var encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+                        encoderParameters.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.ImageSaveQuality);
+
+
                         switch (saveFileDialog1.FilterIndex)
                         {
                             case 1:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Jpeg);
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Jpeg), encoderParameters);
                                 break;
 
                             case 2:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Bmp);
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Bmp), encoderParameters);
                                 break;
 
                             case 3:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Gif);
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Gif), encoderParameters);
                                 break;
 
                             case 4:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Png);
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Png), encoderParameters);
                                 break;
                         }
 
@@ -2065,6 +2074,11 @@ namespace ImageStitcher
 
                 }
                 DarkTitleBarClass.UseImmersiveDarkMode(Handle, true);
+
+                label_filename_leftpanel.BackColor = darkaccentcolor;
+                label_filename_rightpanel.BackColor = darkaccentcolor;
+                label_filename_leftpanel.ForeColor = darkcolortext;
+                label_filename_rightpanel.ForeColor = darkcolortext;
             }
             if (Settings.Default.DarkMode == false)
             {
@@ -2087,8 +2101,26 @@ namespace ImageStitcher
                 }
                 DarkTitleBarClass.UseImmersiveDarkMode(Handle, false);
                 this.BackColor = SystemColors.Control;
+
+                label_filename_leftpanel.BackColor = lightbackground;
+                label_filename_rightpanel.BackColor = lightbackground;
+                label_filename_leftpanel.ForeColor = Color.Black;
+                label_filename_rightpanel.ForeColor = Color.Black;
             }
         }
-    
-} // end MainWindow : Form
+
+        // image quality when saving
+        private static System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)
+        { // https://efundies.com/csharp-save-jpg/
+            var codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageDecoders();
+            foreach (var codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
+            }
+            return null;
+        }
+    } // end MainWindow : Form
 }

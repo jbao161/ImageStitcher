@@ -59,5 +59,8 @@
     <Setting Name="DarkModeColorText" Type="System.String" Scope="User">
       <Value Profile="(Default)">#CCD6DD</Value>
     </Setting>
+    <Setting Name="ImageSaveQuality" Type="System.Int64" Scope="User">
+      <Value Profile="(Default)">70</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

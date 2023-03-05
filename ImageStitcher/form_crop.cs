@@ -96,6 +96,7 @@ namespace ImageStitcher
 
             checkBox_overwrite.Checked = Settings.Default.CropOverwrite;
 
+            DarkModeRefresh();
         }
 
         private Size GetDisplayedImageSize(PictureBox pictureBox)
@@ -230,6 +231,55 @@ namespace ImageStitcher
             mainForm.LoadActiveImage(source_image);
             pictureBox1.Visible = true;
             pictureBox1.Image = source_image;
+        }
+
+        private void DarkModeRefresh()
+        {
+            if (Settings.Default.DarkMode == true)
+            {
+
+                Color darkcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColor);
+                Color darkaccentcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorAccent);
+ 
+                this.BackColor = darkaccentcolor;
+
+                Color darkcolortext = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorText);
+
+
+                foreach (Control subC in panel1.Controls)
+                {
+                    subC.BackColor = darkaccentcolor;
+                    subC.ForeColor = darkcolortext;
+
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Flat;
+                        ((Button)subC).FlatAppearance.BorderColor = darkcolor;
+                        ((Button)subC).ForeColor = darkcolortext;
+                    }
+
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, true);
+            }
+            if (Settings.Default.DarkMode == false)
+            {
+                Color lightbackground = SystemColors.Control;
+                this.BackColor = lightbackground;
+                foreach (Control subC in panel1.Controls)
+                {
+                    subC.BackColor = lightbackground;
+                    subC.ForeColor = Color.Black;
+
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Standard;
+                        ((Button)subC).FlatAppearance.BorderColor = SystemColors.Control;
+                    }
+
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, false);
+                this.BackColor = SystemColors.Control;
+            }
         }
     }
 }

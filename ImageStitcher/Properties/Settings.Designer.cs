@@ -250,5 +250,17 @@ namespace ImageStitcher.Properties {
                 this["DarkModeColorText"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("70")]
+        public long ImageSaveQuality {
+            get {
+                return ((long)(this["ImageSaveQuality"]));
+            }
+            set {
+                this["ImageSaveQuality"] = value;
+            }
+        }
     }
 }
