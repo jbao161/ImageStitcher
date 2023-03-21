@@ -200,6 +200,9 @@ namespace ImageStitcher
 
                 // apply dark light colors
                 DarkModeRefresh();
+
+                // set number of image panels
+                set_NumberOfPanels(Settings.Default.NumberOfPanels);
             }
             catch (ConfigurationErrorsException ex)
             { //(requires System.Configuration)
@@ -1786,10 +1789,14 @@ namespace ImageStitcher
             Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
             Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
 
-            if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; } else
+            if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; } 
+                else
                 {
                     Settings.Default.LastFile = "";
                 }
+
+             // remember number of image panels
+              Settings.Default.NumberOfPanels = numberofimagepanels;
 
             // Save settings
             Settings.Default.Save();
@@ -2121,6 +2128,33 @@ namespace ImageStitcher
                 }
             }
             return null;
+        }
+
+        int numberofimagepanels = 2;
+        private void set_NumberOfPanels(int npanels)
+        {
+            if (npanels == 1)
+            {
+                panel_bothimages.Controls.Add(pictureBox_leftpanel);
+                numberofimagepanels = 1;
+                splitContainer_bothimages.Hide();
+                button_numberofpanels.Text = "Switch to Dual";
+            }
+            else if (npanels == 2)
+            {
+                splitContainer_bothimages.Panel1.Controls.Add(pictureBox_leftpanel);
+                Resize_imagepanels();
+                numberofimagepanels = 2;
+                splitContainer_bothimages.Show();
+                button_numberofpanels.Text = "Switch to Single";
+            }
+        }
+        private void button_numberofpanels_Click(object sender, EventArgs e)
+        {
+            // dirty hackish flip between 1 and 2
+            int flip = numberofimagepanels - 1;
+            flip = 1 - flip;
+            set_NumberOfPanels(flip +1);
         }
     } // end MainWindow : Form
 }
