@@ -10,6 +10,7 @@ using System.Drawing;
 
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -1345,10 +1346,51 @@ namespace ImageStitcher
         {
             bool savedYes = false;
             string newfilepath = System.IO.Path.Combine(directorypath, filename);
+
+            var encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+            encoderParameters.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.ImageSaveQuality);
+
+
             if (!(targetimage is null) && !savedialog)
             {
-                targetimage.Save(newfilepath);
-                savedYes = true;
+                try
+                {
+                    using (FileStream fs = System.IO.File.Create(newfilepath))
+
+                    {
+
+                        string extension = Path.GetExtension(filename);
+                        switch (extension.ToLower())
+                        {
+                            case ".jpeg":
+                            case ".jpg":
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Jpeg), encoderParameters);
+                                break;
+
+                            case ".bmp":
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Bmp), encoderParameters);
+                                break;
+
+                            case ".gif":
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Gif), encoderParameters);
+                                break;
+
+                            case ".png":
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Png), encoderParameters);
+                                break;
+                            default:
+                                throw new NotSupportedException(
+                                    "Unknown file extension " + extension);
+                        }
+
+                        fs.Close();
+                        savedYes = true;
+                    }
+                } catch { }
             }
             if (!(targetimage is null) && savedialog) try
                 {
@@ -1366,10 +1408,6 @@ namespace ImageStitcher
                         // Saves the Image in the appropriate ImageFormat based upon the
                         // File type selected in the dialog box.
                         // NOTE that the FilterIndex property is one-based.
-
-                        var encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
-                        encoderParameters.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.ImageSaveQuality);
-
 
                         switch (saveFileDialog1.FilterIndex)
                         {
