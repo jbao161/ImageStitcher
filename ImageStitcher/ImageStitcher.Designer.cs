@@ -39,6 +39,7 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.button_numberofpanels = new System.Windows.Forms.Button();
             this.button_crop = new System.Windows.Forms.Button();
             this.button_trash = new System.Windows.Forms.Button();
             this.button_verticalhorizontal = new System.Windows.Forms.Button();
@@ -78,7 +79,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button_numberofpanels = new System.Windows.Forms.Button();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -225,6 +225,16 @@
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(1031, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // button_numberofpanels
+            // 
+            this.button_numberofpanels.Location = new System.Drawing.Point(281, 17);
+            this.button_numberofpanels.Name = "button_numberofpanels";
+            this.button_numberofpanels.Size = new System.Drawing.Size(75, 43);
+            this.button_numberofpanels.TabIndex = 17;
+            this.button_numberofpanels.Text = "1 or 2 Images";
+            this.button_numberofpanels.UseVisualStyleBackColor = true;
+            this.button_numberofpanels.Click += new System.EventHandler(this.button_numberofpanels_Click);
             // 
             // button_crop
             // 
@@ -580,16 +590,6 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
-            // 
-            // button_numberofpanels
-            // 
-            this.button_numberofpanels.Location = new System.Drawing.Point(281, 17);
-            this.button_numberofpanels.Name = "button_numberofpanels";
-            this.button_numberofpanels.Size = new System.Drawing.Size(75, 43);
-            this.button_numberofpanels.TabIndex = 17;
-            this.button_numberofpanels.Text = "1 or 2 Images";
-            this.button_numberofpanels.UseVisualStyleBackColor = true;
-            this.button_numberofpanels.Click += new System.EventHandler(this.button_numberofpanels_Click);
             // 
             // MainWindow
             // 

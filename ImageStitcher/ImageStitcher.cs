@@ -108,8 +108,8 @@ namespace ImageStitcher
             label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel + 1) + "/" + imageCountRightPanel);
             if (checkBox_showfilename.Checked)
             {
-                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " "+(System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]));
-                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " "+(System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]));
+                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]));
+                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]));
             }
             else
             {
@@ -133,7 +133,7 @@ namespace ImageStitcher
             label_filename_rightpanel.Text = "";
 
 
-        // Load settings
+            // Load settings
             try
             {// https://www.codeproject.com/Articles/30216/Handling-Corrupt-user-config-Settings
 
@@ -168,8 +168,8 @@ namespace ImageStitcher
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
 
                 // try to load the last opened file, or if its directory if file could not be opened
-                if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel ==0)
-                { 
+                if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel == 0)
+                {
                     try
                     {
                         DragDropHandler(0, new string[] { Settings.Default.LastFile });
@@ -249,7 +249,7 @@ namespace ImageStitcher
 
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
-           //if (String.IsNullOrEmpty(filepaths[0])) return;
+            //if (String.IsNullOrEmpty(filepaths[0])) return;
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
             bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
             string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
@@ -341,6 +341,7 @@ namespace ImageStitcher
                     this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Height * stitched_leftimg_height / result_height;
                 }
             }
+            cleanupmemory();
         }
 
         /*  Create a new image by stitching the two panel images together
@@ -443,6 +444,7 @@ namespace ImageStitcher
 
         private void Button_preview_Click(object sender, EventArgs e)
         {
+            cleanupmemory();
             Bitmap stitchedimage = Stitch_images();
             Form form = new Form
             {
@@ -515,6 +517,7 @@ namespace ImageStitcher
 
         private void Button_save_Click(object sender, EventArgs e)
         {
+            cleanupmemory();
             Bitmap stitchedimage = Stitch_images();
             if (!(stitchedimage is null))
             {
@@ -555,8 +558,8 @@ namespace ImageStitcher
                             switch (saveFileDialog1.FilterIndex)
                             {
                                 case 1:
-                                    stitchedimage.Save(fs,GetEncoder(
-                                       System.Drawing.Imaging.ImageFormat.Jpeg),encoderParameters);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                       System.Drawing.Imaging.ImageFormat.Jpeg), encoderParameters);
                                     break;
 
                                 case 2:
@@ -620,6 +623,7 @@ namespace ImageStitcher
 
         private Bitmap Screen_stitch()
         { // stitches a screenshot of the images as displayed in the viewer (i.e. with zoom, unsaved edit effects)
+            cleanupmemory();
             Panel leftpanel = splitContainer_bothimages.Panel1;
             Panel rightpanel = splitContainer_bothimages.Panel2;
             Bitmap bmp1 = new Bitmap(leftpanel.Width, leftpanel.Height);
@@ -689,7 +693,7 @@ namespace ImageStitcher
             TimeSpan durationl = TimeSpan.Zero;
             if (check_if_animated_gif(leftimagepath))
             {
-                 durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
+                durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
             }
             TimeSpan durationr = TimeSpan.Zero;
             if (check_if_animated_gif(rightimagepath))
@@ -1222,49 +1226,35 @@ namespace ImageStitcher
         }
 
         //https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
-        private static readonly Random getrandom = new Random();
+        private static readonly System.Random getrandom = new System.Random();
+
+        static RandomLCG rng = new RandomLCG();
 
         public static int GetRandomNumber(int min, int max, int exclude)
         {
             int maxattempts = 3;
             int result = exclude;
-            for (int i =0; i < maxattempts && result==exclude; i++)
+            for (int i = 0; i < maxattempts && result == exclude; i++)
             {
-                result = RandomNumber.Between(min, max-1);
+                result = (int)(rng.Next(max - min) + min);
             }
             return result;
 
         }
-        // https://scottlilly.com/create-better-random-numbers-in-c/
-        public static class RandomNumber
+        
+        private void cleanupmemory()
         {
-            private static readonly RNGCryptoServiceProvider _generator = new RNGCryptoServiceProvider();
-            public static int Between(int minimumValue, int maximumValue)
-            {
-                byte[] randomNumber = new byte[1];
-                _generator.GetBytes(randomNumber);
-                double asciiValueOfRandomCharacter = Convert.ToDouble(randomNumber[0]);
-                // We are using Math.Max, and substracting 0.00000000001, 
-                // to ensure "multiplier" will always be between 0.0 and .99999999999
-                // Otherwise, it's possible for it to be "1", which causes problems in our rounding.
-                double multiplier = Math.Max(0, (asciiValueOfRandomCharacter / 255d) - 0.00000000001d);
-                // We need to add one to the range, to allow for the rounding done with Math.Floor
-                int range = maximumValue - minimumValue + 1;
-                double randomValueInRange = Math.Floor(multiplier * range);
-                return (int)(minimumValue + randomValueInRange);
-            }
+            //Force garbage collection.
+            GC.Collect();
+            // Wait for all finalizers to complete before continuing.
+            GC.WaitForPendingFinalizers();
         }
-
 
         private void LoadRandomImage(int targetPanel)
         {
             if (targetPanel == 0 && imageCountLeftPanel > 1)
             {
-                int randomindex = imageIndexLeftPanel;
-                for (int i = 0; i < 10 && randomindex == imageIndexLeftPanel; i++)
-                {
-                    randomindex = GetRandomNumber(0, imageCountLeftPanel, imageIndexLeftPanel);
-                }
+                int randomindex = GetRandomNumber(0, imageCountLeftPanel, imageIndexLeftPanel);
                 if (LoadImage(targetPanel, imageFilesLeftPanel[randomindex]))
                 {
                     priorimageIndexLeftPanel = imageIndexLeftPanel;
@@ -1273,11 +1263,7 @@ namespace ImageStitcher
             }
             if (targetPanel == 1 && imageCountRightPanel > 1)
             {
-                int randomindex = imageIndexRightPanel;
-                for (int i = 0; i < 10 && randomindex == imageIndexRightPanel; i++)
-                {
-                    randomindex = GetRandomNumber(0, imageCountRightPanel, imageIndexRightPanel);
-                }
+                int randomindex  = GetRandomNumber(0, imageCountRightPanel, imageIndexRightPanel);
                 if (LoadImage(targetPanel, imageFilesRightPanel[randomindex]))
                 {
                     priorimageIndexRightPanel = imageIndexRightPanel;
