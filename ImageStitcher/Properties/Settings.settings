@@ -42,13 +42,13 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="loaddefaultdir" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="CropOverwrite" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="DarkMode" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="DarkModeColor" Type="System.String" Scope="User">
       <Value Profile="(Default)">#181A1B</Value>

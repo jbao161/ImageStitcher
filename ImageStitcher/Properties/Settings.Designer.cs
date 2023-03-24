@@ -181,7 +181,7 @@ namespace ImageStitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool loaddefaultdir {
             get {
                 return ((bool)(this["loaddefaultdir"]));
@@ -205,7 +205,7 @@ namespace ImageStitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool DarkMode {
             get {
                 return ((bool)(this["DarkMode"]));

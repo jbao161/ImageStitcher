@@ -33,8 +33,8 @@
             this.panel_bothimages = new System.Windows.Forms.Panel();
             this.splitContainer_bothimages = new System.Windows.Forms.SplitContainer();
             this.label_filename_leftpanel = new System.Windows.Forms.Label();
-            this.label_imageindex_leftpanel = new System.Windows.Forms.Label();
             this.pictureBox_leftpanel = new System.Windows.Forms.PictureBox();
+            this.label_imageindex_leftpanel = new System.Windows.Forms.Label();
             this.label_filename_rightpanel = new System.Windows.Forms.Label();
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
@@ -85,6 +85,7 @@
             this.splitContainer_bothimages.Panel2.SuspendLayout();
             this.splitContainer_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_leftpanel)).BeginInit();
+            this.pictureBox_leftpanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_rightpanel)).BeginInit();
             this.panel_controls.SuspendLayout();
             this.contextMenu_image.SuspendLayout();
@@ -111,7 +112,6 @@
             // 
             this.splitContainer_bothimages.Panel1.AllowDrop = true;
             this.splitContainer_bothimages.Panel1.Controls.Add(this.label_filename_leftpanel);
-            this.splitContainer_bothimages.Panel1.Controls.Add(this.label_imageindex_leftpanel);
             this.splitContainer_bothimages.Panel1.Controls.Add(this.pictureBox_leftpanel);
             this.splitContainer_bothimages.Panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
             this.splitContainer_bothimages.Panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
@@ -140,19 +140,10 @@
             this.label_filename_leftpanel.TabIndex = 2;
             this.label_filename_leftpanel.Text = "label_filename_leftpanel";
             // 
-            // label_imageindex_leftpanel
-            // 
-            this.label_imageindex_leftpanel.AutoSize = true;
-            this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 438);
-            this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
-            this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
-            this.label_imageindex_leftpanel.TabIndex = 1;
-            this.label_imageindex_leftpanel.Text = "label_imageindex_leftpanel";
-            // 
             // pictureBox_leftpanel
             // 
             this.pictureBox_leftpanel.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.pictureBox_leftpanel.Controls.Add(this.label_imageindex_leftpanel);
             this.pictureBox_leftpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_leftpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_leftpanel.Name = "pictureBox_leftpanel";
@@ -166,6 +157,16 @@
             this.pictureBox_leftpanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             this.pictureBox_leftpanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
             this.pictureBox_leftpanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+            // 
+            // label_imageindex_leftpanel
+            // 
+            this.label_imageindex_leftpanel.AutoSize = true;
+            this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 438);
+            this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
+            this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
+            this.label_imageindex_leftpanel.TabIndex = 1;
+            this.label_imageindex_leftpanel.Text = "label_imageindex_leftpanel";
             // 
             // label_filename_rightpanel
             // 
@@ -613,6 +614,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).EndInit();
             this.splitContainer_bothimages.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_leftpanel)).EndInit();
+            this.pictureBox_leftpanel.ResumeLayout(false);
+            this.pictureBox_leftpanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_rightpanel)).EndInit();
             this.panel_controls.ResumeLayout(false);
             this.panel_controls.PerformLayout();

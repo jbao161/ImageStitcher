@@ -2070,12 +2070,15 @@ namespace ImageStitcher
 
                 label_filename_leftpanel.BackColor = darkaccentcolor;
                 label_filename_rightpanel.BackColor = darkaccentcolor;
-                label_filename_leftpanel.ForeColor = darkcolortext;
-                label_filename_rightpanel.ForeColor = darkcolortext;
+                //label_filename_leftpanel.ForeColor = darkcolortext;
+                //label_filename_rightpanel.ForeColor = darkcolortext;
+                label_imageindex_leftpanel.BackColor = darkaccentcolor;
+                //label_imageindex_leftpanel.ForeColor = darkcolortext;
             }
             if (Settings.Default.DarkMode == false)
             {
                 Color lightbackground = SystemColors.Control;
+                Color lighttextcolor = Color.Black;
                 pictureBox_leftpanel.BackColor = SystemColors.GradientInactiveCaption;
                 pictureBox_rightpanel.BackColor = SystemColors.GradientInactiveCaption;
                 panel_controls.BackColor = SystemColors.Control;
@@ -2083,7 +2086,7 @@ namespace ImageStitcher
                 foreach (Control subC in panel_controls.Controls)
                 {
                     subC.BackColor = lightbackground;
-                    subC.ForeColor = Color.Black;
+                    subC.ForeColor = lighttextcolor;
 
                     if (subC is Button)
                     {
@@ -2097,8 +2100,10 @@ namespace ImageStitcher
 
                 label_filename_leftpanel.BackColor = lightbackground;
                 label_filename_rightpanel.BackColor = lightbackground;
-                label_filename_leftpanel.ForeColor = Color.Black;
-                label_filename_rightpanel.ForeColor = Color.Black;
+                //label_filename_leftpanel.ForeColor = lighttextcolor;
+                //label_filename_rightpanel.ForeColor = lighttextcolor;
+                label_imageindex_leftpanel.BackColor = lightbackground;
+                //label_imageindex_leftpanel.ForeColor = lightforeground;
             }
         }
 
