@@ -322,8 +322,6 @@
             // checkBox_randomOnClick
             // 
             this.checkBox_randomOnClick.AutoSize = true;
-            this.checkBox_randomOnClick.Checked = true;
-            this.checkBox_randomOnClick.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_randomOnClick.Location = new System.Drawing.Point(25, 17);
             this.checkBox_randomOnClick.Name = "checkBox_randomOnClick";
             this.checkBox_randomOnClick.Size = new System.Drawing.Size(152, 17);
@@ -335,8 +333,6 @@
             // 
             this.checkBox_openaftersave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_openaftersave.AutoSize = true;
-            this.checkBox_openaftersave.Checked = true;
-            this.checkBox_openaftersave.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_openaftersave.Location = new System.Drawing.Point(892, 60);
             this.checkBox_openaftersave.Name = "checkBox_openaftersave";
             this.checkBox_openaftersave.Size = new System.Drawing.Size(136, 17);
