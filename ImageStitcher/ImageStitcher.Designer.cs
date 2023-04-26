@@ -422,7 +422,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 480);
             this.contextMenu_image.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_image_Opening);
             // 
             // editToolStripMenuItem
@@ -455,7 +455,7 @@
             // 
             this.sendToTrashToolStripMenuItem.Name = "sendToTrashToolStripMenuItem";
             this.sendToTrashToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.sendToTrashToolStripMenuItem.Text = "Send to Trash (D)";
+            this.sendToTrashToolStripMenuItem.Text = "Send to Trash (Del)";
             this.sendToTrashToolStripMenuItem.Click += new System.EventHandler(this.SendToTrashToolStripMenuItem_Click);
             // 
             // removeFromListToolStripMenuItem
@@ -526,14 +526,14 @@
             // 
             this.rotateToolStripMenuItem.Name = "rotateToolStripMenuItem";
             this.rotateToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.rotateToolStripMenuItem.Text = "Rotate (R)";
+            this.rotateToolStripMenuItem.Text = "Rotate (O)";
             this.rotateToolStripMenuItem.Click += new System.EventHandler(this.RotateToolStripMenuItem_Click);
             // 
             // blurBToolStripMenuItem
             // 
             this.blurBToolStripMenuItem.Name = "blurBToolStripMenuItem";
             this.blurBToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.blurBToolStripMenuItem.Text = "Blur (B)";
+            this.blurBToolStripMenuItem.Text = "Blur (L)";
             this.blurBToolStripMenuItem.Click += new System.EventHandler(this.BlurBToolStripMenuItem_Click);
             // 
             // mirrorToolStripMenuItem
@@ -578,7 +578,7 @@
             // 
             this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
             this.randomToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.randomToolStripMenuItem.Text = "Random";
+            this.randomToolStripMenuItem.Text = "Random (R)";
             this.randomToolStripMenuItem.Click += new System.EventHandler(this.RandomToolStripMenuItem_Click);
             // 
             // jumpBackToolStripMenuItem
