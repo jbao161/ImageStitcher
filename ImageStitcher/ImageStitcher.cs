@@ -153,6 +153,11 @@ namespace ImageStitcher
                 if (Settings.Default.WindowLocation != null)
                 {
                     this.Location = Settings.Default.WindowLocation;
+                    // If window location settings are corrupted, put the window back on screen
+                    if (!Screen.FromControl(this).Bounds.Contains(this.Location))
+                    {
+                        this.DesktopLocation = new Point(0, 0);
+                    }
                 }
 
                 // Set window size
