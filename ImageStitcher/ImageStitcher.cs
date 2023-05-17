@@ -747,7 +747,7 @@ namespace ImageStitcher
 
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
 
-            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale=iw:ih:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=sierra2_4a \" \"{fileOutPath}\"";
+            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale=iw:ih:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=sierra2_4a \" -r 10 \"{fileOutPath}\""; // -r 10 reduce sample rate for smaller file size
             string outputvisibility = "/C ";
             // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
             string arg = outputvisibility + ifstillimagepresent + joinasvideo + converttogif + deletetempfiles;

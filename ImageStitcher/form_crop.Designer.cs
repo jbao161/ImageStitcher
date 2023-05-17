@@ -39,15 +39,15 @@ namespace ImageStitcher
             this.button_accept = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel_insidetablelayout = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.panel_insidetablelayout = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.panel_insidetablelayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.panel_insidetablelayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_crop
@@ -150,6 +150,16 @@ namespace ImageStitcher
             this.tableLayoutPanel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
             this.tableLayoutPanel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
+            // panel_insidetablelayout
+            // 
+            this.panel_insidetablelayout.Controls.Add(this.pictureBox1);
+            this.panel_insidetablelayout.Controls.Add(this.pictureBox2);
+            this.panel_insidetablelayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel_insidetablelayout.Location = new System.Drawing.Point(26, 18);
+            this.panel_insidetablelayout.Name = "panel_insidetablelayout";
+            this.panel_insidetablelayout.Size = new System.Drawing.Size(896, 578);
+            this.panel_insidetablelayout.TabIndex = 6;
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -159,7 +169,9 @@ namespace ImageStitcher
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
             // pictureBox2
@@ -171,16 +183,6 @@ namespace ImageStitcher
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
-            // 
-            // panel_insidetablelayout
-            // 
-            this.panel_insidetablelayout.Controls.Add(this.pictureBox1);
-            this.panel_insidetablelayout.Controls.Add(this.pictureBox2);
-            this.panel_insidetablelayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel_insidetablelayout.Location = new System.Drawing.Point(26, 18);
-            this.panel_insidetablelayout.Name = "panel_insidetablelayout";
-            this.panel_insidetablelayout.Size = new System.Drawing.Size(896, 578);
-            this.panel_insidetablelayout.TabIndex = 6;
             // 
             // Form_Crop
             // 
@@ -197,9 +199,9 @@ namespace ImageStitcher
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.panel_insidetablelayout.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.panel_insidetablelayout.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

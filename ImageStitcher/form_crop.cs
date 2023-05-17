@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using System.Windows.Forms;
 
 namespace ImageStitcher
@@ -122,6 +123,8 @@ namespace ImageStitcher
 
         int xUp, yUp, xDown, yDown;
         Rectangle rectCropArea;
+        Rectangle mRect;
+
         void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             var coordinates = pictureBox1.PointToClient(Cursor.Position);
@@ -173,6 +176,8 @@ namespace ImageStitcher
             var coordinates = pictureBox1.PointToClient(Cursor.Position);
             xDown = coordinates.X;
             yDown = coordinates.Y;
+
+            mRect = new Rectangle(e.X, e.Y, 0, 0);
         }
         
         private void btnCrop_Click(object sender, EventArgs e)
@@ -186,12 +191,9 @@ namespace ImageStitcher
 
                 ZoomFactor zoomHelper = new ZoomFactor();
 
-
                 RectangleF currentSelection = rectCropArea;
                 RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
                 RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
-
-
 
                 var croppedBitmap = new Bitmap((int)bitmapRect.Width, (int)bitmapRect.Height, OriginalPictureboxImage.PixelFormat);
                 using (var g = Graphics.FromImage(croppedBitmap))
@@ -201,11 +203,9 @@ namespace ImageStitcher
                     pictureBox2.Image = croppedBitmap;
                     mainForm.LoadActiveImage(croppedBitmap);
                 }
-
             }
             catch (Exception ex)
             {
-
             }
         }
 
@@ -219,7 +219,27 @@ namespace ImageStitcher
             Settings.Default.CropOverwrite = checkBox_overwrite.Checked;
             Settings.Default.Save();
         }
+        //check if mouse is down and being draged, then draw rectangle
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            var coordinates = pictureBox1.PointToClient(Cursor.Position);
+            xUp = coordinates.X;
+            yUp = coordinates.Y;
 
+            if (e.Button == MouseButtons.Left)
+            {
+                mRect = new Rectangle(Math.Min(xDown, xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+                pictureBox1.Invalidate();
+            }
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen pen = new Pen(Color.Green, 2))
+            {
+                e.Graphics.DrawRectangle(pen, mRect);
+            }
+        }
 
         private void button_crop_cancel_Click(object sender, EventArgs e)
         {
