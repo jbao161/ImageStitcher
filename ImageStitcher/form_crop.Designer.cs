@@ -148,6 +148,7 @@ namespace ImageStitcher
             this.tableLayoutPanel1.Size = new System.Drawing.Size(950, 615);
             this.tableLayoutPanel1.TabIndex = 4;
             this.tableLayoutPanel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.tableLayoutPanel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             this.tableLayoutPanel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
             // panel_insidetablelayout
