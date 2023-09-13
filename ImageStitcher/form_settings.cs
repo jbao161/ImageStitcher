@@ -63,6 +63,9 @@ namespace ImageStitcher
             checkBox_defaultdirectory.Checked = Settings.Default.loaddefaultdir;
             textBox_defaultdir.Text = Settings.Default.DefaultDirectory;
             checkBox_darkskin.Checked = Settings.Default.DarkMode;
+            checkBox_script.Checked = Settings.Default.scriptonload;
+            textBox_scriptloc.Text = Settings.Default.scriptloc;
+            checkBox_scriptwait.Checked = Settings.Default.scriptwait;
         }
 
         private void form_settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -72,12 +75,28 @@ namespace ImageStitcher
             Settings.Default.loaddefaultdir = checkBox_defaultdirectory.Checked;
             Settings.Default.DefaultDirectory = textBox_defaultdir.Text;
             Settings.Default.DarkMode = checkBox_darkskin.Checked;
+            Settings.Default.scriptonload = checkBox_script.Checked;
+            Settings.Default.scriptloc = textBox_scriptloc.Text;
+            Settings.Default.scriptwait = checkBox_scriptwait.Checked;
         }
 
         private void checkBox_darkskin_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.DarkMode = checkBox_darkskin.Checked;
             mainForm.DarkModeRefresh();
+        }
+
+        private void button_script_click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog()
+            {
+                InitialDirectory = textBox_scriptloc.Text,
+                Title = "Select a file to run at startup"
+            };
+            if (dialog.ShowDialog()==DialogResult.OK)
+            {
+                textBox_scriptloc.Text = dialog.FileName;
+            }
         }
     }
 }

@@ -274,5 +274,53 @@ namespace ImageStitcher.Properties {
                 this["NumberOfPanels"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool scriptonload {
+            get {
+                return ((bool)(this["scriptonload"]));
+            }
+            set {
+                this["scriptonload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string scriptloc {
+            get {
+                return ((string)(this["scriptloc"]));
+            }
+            set {
+                this["scriptloc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool scriptwait {
+            get {
+                return ((bool)(this["scriptwait"]));
+            }
+            set {
+                this["scriptwait"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool showinfo {
+            get {
+                return ((bool)(this["showinfo"]));
+            }
+            set {
+                this["showinfo"] = value;
+            }
+        }
     }
 }

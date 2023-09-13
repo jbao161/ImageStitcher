@@ -107,10 +107,15 @@ namespace ImageStitcher
         {
             label_imageindex_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : ((imageIndexLeftPanel + 1) + "/" + imageCountLeftPanel);
             label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel + 1) + "/" + imageCountRightPanel);
+
             if (checkBox_showfilename.Checked)
             {
-                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]));
-                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]));
+                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel])) + " " + 
+                    (Utils.GetFileSizeString(imageFilesLeftPanel[imageIndexLeftPanel])) + " " +
+                    Utils.GetDimensionString(pictureBox_leftpanel.Image);
+                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]))+ " " + 
+                    (Utils.GetFileSizeString(imageFilesRightPanel[imageIndexRightPanel])) + " " +
+                    Utils.GetDimensionString(pictureBox_rightpanel.Image); ;
             }
             else
             {
@@ -147,7 +152,16 @@ namespace ImageStitcher
 
                 Settings.Default.Reload();
 
-
+                // optionally run a custom external script
+                if (Settings.Default.scriptonload)
+                {
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    process.StartInfo.FileName = "cmd.exe";
+                    process.StartInfo.Arguments = "/C " + "\"" + Settings.Default.scriptloc + "\"";
+                    process.Start();
+                    if (Settings.Default.scriptwait) process.WaitForExit();
+                }
                 //https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
                 // Set window location
                 if (Settings.Default.WindowLocation != null)
@@ -170,6 +184,7 @@ namespace ImageStitcher
                 savesplitterdistance = Settings.Default.SplitContainerSplitterDistance;
                 this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
                 this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
+                this.checkBox_showfilename.Checked = Settings.Default.showinfo;
 
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
 
@@ -1817,6 +1832,7 @@ namespace ImageStitcher
             Settings.Default.SplitContainerSplitterDistance = savesplitterdistance;
             Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
             Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
+            Settings.Default.showinfo = this.checkBox_showfilename.Checked;
 
             if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; } 
                 else

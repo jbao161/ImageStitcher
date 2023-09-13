@@ -377,9 +377,9 @@
             this.checkBox_showfilename.AutoSize = true;
             this.checkBox_showfilename.Location = new System.Drawing.Point(25, 43);
             this.checkBox_showfilename.Name = "checkBox_showfilename";
-            this.checkBox_showfilename.Size = new System.Drawing.Size(98, 17);
+            this.checkBox_showfilename.Size = new System.Drawing.Size(74, 17);
             this.checkBox_showfilename.TabIndex = 14;
-            this.checkBox_showfilename.Text = "Show Filename";
+            this.checkBox_showfilename.Text = "Show Info";
             this.checkBox_showfilename.UseVisualStyleBackColor = true;
             this.checkBox_showfilename.CheckedChanged += new System.EventHandler(this.checkBox_showfilename_CheckedChanged);
             // 

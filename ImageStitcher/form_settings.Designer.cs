@@ -39,6 +39,10 @@ namespace ImageStitcher
             this.textBox_defaultdir = new System.Windows.Forms.TextBox();
             this.button_browsedir = new System.Windows.Forms.Button();
             this.checkBox_darkskin = new System.Windows.Forms.CheckBox();
+            this.checkBox_script = new System.Windows.Forms.CheckBox();
+            this.textBox_scriptloc = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.checkBox_scriptwait = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_reversefileorder
@@ -104,11 +108,55 @@ namespace ImageStitcher
             this.checkBox_darkskin.UseVisualStyleBackColor = true;
             this.checkBox_darkskin.CheckedChanged += new System.EventHandler(this.checkBox_darkskin_CheckedChanged);
             // 
+            // checkBox_script
+            // 
+            this.checkBox_script.AutoSize = true;
+            this.checkBox_script.Location = new System.Drawing.Point(11, 107);
+            this.checkBox_script.Name = "checkBox_script";
+            this.checkBox_script.Size = new System.Drawing.Size(121, 17);
+            this.checkBox_script.TabIndex = 23;
+            this.checkBox_script.Text = "Run script at startup";
+            this.checkBox_script.UseVisualStyleBackColor = true;
+            // 
+            // textBox_scriptloc
+            // 
+            this.textBox_scriptloc.Location = new System.Drawing.Point(12, 130);
+            this.textBox_scriptloc.Name = "textBox_scriptloc";
+            this.textBox_scriptloc.Size = new System.Drawing.Size(224, 20);
+            this.textBox_scriptloc.TabIndex = 24;
+            // 
+            // button1
+            // 
+            this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button1.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(242, 119);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(35, 31);
+            this.button1.TabIndex = 25;
+            this.button1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button_script_click);
+            // 
+            // checkBox_scriptwait
+            // 
+            this.checkBox_scriptwait.AutoSize = true;
+            this.checkBox_scriptwait.Location = new System.Drawing.Point(138, 107);
+            this.checkBox_scriptwait.Name = "checkBox_scriptwait";
+            this.checkBox_scriptwait.Size = new System.Drawing.Size(124, 17);
+            this.checkBox_scriptwait.TabIndex = 26;
+            this.checkBox_scriptwait.Text = "Wait until script ends";
+            this.checkBox_scriptwait.UseVisualStyleBackColor = true;
+            // 
             // form_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(329, 139);
+            this.ClientSize = new System.Drawing.Size(329, 203);
+            this.Controls.Add(this.checkBox_scriptwait);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.textBox_scriptloc);
+            this.Controls.Add(this.checkBox_script);
             this.Controls.Add(this.checkBox_darkskin);
             this.Controls.Add(this.button_browsedir);
             this.Controls.Add(this.textBox_defaultdir);
@@ -132,5 +180,9 @@ namespace ImageStitcher
         private System.Windows.Forms.TextBox textBox_defaultdir;
         private System.Windows.Forms.Button button_browsedir;
         private System.Windows.Forms.CheckBox checkBox_darkskin;
+        private System.Windows.Forms.CheckBox checkBox_script;
+        private System.Windows.Forms.TextBox textBox_scriptloc;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBox_scriptwait;
     }
 }
