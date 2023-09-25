@@ -882,6 +882,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexLeftPanel;
                 imageIndexLeftPanel -= 1;
+                if (imageIndexLeftPanel < 0) imageIndexLeftPanel = 0;
                 LoadNextImage(targetpanel);
                 priorimageIndexLeftPanel = restorepriorimageindex;
             }
@@ -895,6 +896,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexRightPanel;
                 imageIndexRightPanel -= 1;
+                if (imageIndexRightPanel < 0) imageIndexRightPanel = 0;
                 LoadNextImage(targetpanel);
                 priorimageIndexRightPanel = restorepriorimageindex;
             }
@@ -1067,6 +1069,7 @@ namespace ImageStitcher
                         imageIndexLeftPanel = nextImageIndex;
                     }
                 }
+                if (imageCountLeftPanel == 0) pictureBox_leftpanel.Image = null;
             }
             if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
             {
@@ -1080,6 +1083,7 @@ namespace ImageStitcher
                         imageIndexRightPanel = nextImageIndex;
                     }
                 }
+                if (imageCountRightPanel == 0) pictureBox_rightpanel.Image = null;
             }
             Resize_imagepanels();
             UpdateLabelImageIndex();
