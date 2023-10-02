@@ -1697,7 +1697,6 @@ namespace ImageStitcher
                 int picY = (containerheight - picheight) / 2;
 
                 targetpicturebox.Size = new Size(picwidth, picheight);
-                targetpicturebox.Image = new Bitmap(targetpicturebox.Image, new Size(picwidth, picheight));
                 // https://stackoverflow.com/questions/9375588/keeping-a-picturebox-centered-inside-a-container
                 targetpicturebox.Dock = DockStyle.None;
                 targetpicturebox.Location = new Point(picX, picY);
