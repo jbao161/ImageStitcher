@@ -152,16 +152,7 @@ namespace ImageStitcher
 
                 Settings.Default.Reload();
 
-                // optionally run a custom external script
-                if (Settings.Default.scriptonload)
-                {
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.Arguments = "/C " + "\"" + Settings.Default.scriptloc + "\"";
-                    process.Start();
-                    if (Settings.Default.scriptwait) process.WaitForExit();
-                }
+
                 //https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
                 // Set window location
                 if (Settings.Default.WindowLocation != null)
@@ -212,6 +203,16 @@ namespace ImageStitcher
                 {
                     try
                     {
+                        // optionally run a custom external script
+                        if (Settings.Default.scriptonload)
+                        {
+                            System.Diagnostics.Process process = new System.Diagnostics.Process();
+                            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            process.StartInfo.FileName = "cmd.exe";
+                            process.StartInfo.Arguments = "/C " + "\"" + Settings.Default.scriptloc + "\"";
+                            process.Start();
+                            if (Settings.Default.scriptwait) process.WaitForExit();
+                        }
                         DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
                     }
                     catch (Exception)

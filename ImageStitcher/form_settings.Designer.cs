@@ -72,9 +72,9 @@ namespace ImageStitcher
             this.checkBox_defaultdirectory.AutoSize = true;
             this.checkBox_defaultdirectory.Location = new System.Drawing.Point(12, 58);
             this.checkBox_defaultdirectory.Name = "checkBox_defaultdirectory";
-            this.checkBox_defaultdirectory.Size = new System.Drawing.Size(130, 17);
+            this.checkBox_defaultdirectory.Size = new System.Drawing.Size(212, 17);
             this.checkBox_defaultdirectory.TabIndex = 19;
-            this.checkBox_defaultdirectory.Text = "Open default directory";
+            this.checkBox_defaultdirectory.Text = "Open default directory if no file selected";
             this.checkBox_defaultdirectory.UseVisualStyleBackColor = true;
             // 
             // textBox_defaultdir
@@ -113,9 +113,9 @@ namespace ImageStitcher
             this.checkBox_script.AutoSize = true;
             this.checkBox_script.Location = new System.Drawing.Point(11, 107);
             this.checkBox_script.Name = "checkBox_script";
-            this.checkBox_script.Size = new System.Drawing.Size(121, 17);
+            this.checkBox_script.Size = new System.Drawing.Size(132, 17);
             this.checkBox_script.TabIndex = 23;
-            this.checkBox_script.Text = "Run script at startup";
+            this.checkBox_script.Text = "Also load startup script";
             this.checkBox_script.UseVisualStyleBackColor = true;
             // 
             // textBox_scriptloc
@@ -141,7 +141,7 @@ namespace ImageStitcher
             // checkBox_scriptwait
             // 
             this.checkBox_scriptwait.AutoSize = true;
-            this.checkBox_scriptwait.Location = new System.Drawing.Point(138, 107);
+            this.checkBox_scriptwait.Location = new System.Drawing.Point(149, 107);
             this.checkBox_scriptwait.Name = "checkBox_scriptwait";
             this.checkBox_scriptwait.Size = new System.Drawing.Size(124, 17);
             this.checkBox_scriptwait.TabIndex = 26;
