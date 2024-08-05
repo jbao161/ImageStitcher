@@ -16,9 +16,11 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 using CRNG = System.Security.Cryptography.RandomNumberGenerator;
+using Path = System.IO.Path;
 
 namespace ImageStitcher
 {
@@ -179,7 +181,7 @@ namespace ImageStitcher
 
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
 
-                // try to load the last opened file, or if its directory if file could not be opened
+                // try to load the last opened file, or its directory if file could not be opened
                 if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel == 0)
                 {
                     try
@@ -1016,8 +1018,28 @@ namespace ImageStitcher
             RotateImage(activePanel);
         }
 
+        private string GetCurrentImage(int targetPanel)
+        {
+            if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
+            {
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+                {
+                    return imageFilesLeftPanel[imageIndexLeftPanel];
+                }
+
+            }
+            if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
+            {
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0)
+                {
+                    return imageFilesRightPanel[imageIndexRightPanel];
+                }
+            }
+            return null;
+        }
         private void LoadPreviousImage(int targetPanel)
         {
+            if (loadprevattempts > maxloadattempts) { return; }
             if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
@@ -1029,6 +1051,7 @@ namespace ImageStitcher
                         priorimageIndexLeftPanel = imageIndexLeftPanel;
                         imageIndexLeftPanel = nextImageIndex;
                     }
+                    else { loadprevattempts++; LoadPreviousImage(targetPanel); }
                 }
                 Resize_imagepanels();
             }
@@ -1044,6 +1067,7 @@ namespace ImageStitcher
                         priorimageIndexRightPanel = imageIndexRightPanel;
                         imageIndexRightPanel = nextImageIndex;
                     }
+                    else { loadprevattempts++; LoadPreviousImage(targetPanel); }
                 }
                 Resize_imagepanels();
             }
@@ -1055,8 +1079,12 @@ namespace ImageStitcher
             LoadPreviousImage(activePanel);
         }
 
+        int loadnextattempts = 0;
+        int loadprevattempts = 0;
+        static readonly int maxloadattempts = 1;
         private void LoadNextImage(int targetPanel)
         {
+            if (loadnextattempts > maxloadattempts) { Console.WriteLine(loadnextattempts.ToString()); return; }
             if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
@@ -1068,7 +1096,7 @@ namespace ImageStitcher
                     {
                         priorimageIndexLeftPanel = imageIndexLeftPanel;
                         imageIndexLeftPanel = nextImageIndex;
-                    }
+                    } else { loadnextattempts++; LoadNextImage(targetPanel); }
                 }
                 if (imageCountLeftPanel == 0) pictureBox_leftpanel.Image = null;
             }
@@ -1083,6 +1111,7 @@ namespace ImageStitcher
                         priorimageIndexRightPanel = imageIndexRightPanel;
                         imageIndexRightPanel = nextImageIndex;
                     }
+                    else { loadnextattempts++; LoadNextImage(targetPanel); }
                 }
                 if (imageCountRightPanel == 0) pictureBox_rightpanel.Image = null;
             }
@@ -1791,6 +1820,7 @@ namespace ImageStitcher
                     targetpicturebox.Size = new Size(bmpTemp.Width, bmpTemp.Height);
                     targetpicturebox.Image = new Bitmap(bmpTemp);
                     targetpicturebox.Dock = System.Windows.Forms.DockStyle.Fill;
+
                     return true;
                 }
             }
@@ -1799,7 +1829,14 @@ namespace ImageStitcher
                 string loaderrormsg = "Failed to load image: " + imagePath;
                 if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, loaderrormsg); }
                 if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, loaderrormsg); }
-                return true; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
+                try
+                {
+                    DragDropHandler(targetPanel, new String[] { GetCurrentImage(targetPanel) }); ;
+                    return false;
+                }
+                catch (Exception) { return false; }
+
+                return false; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
             }
         }
 
