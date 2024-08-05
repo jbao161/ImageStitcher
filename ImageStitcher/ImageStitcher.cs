@@ -285,12 +285,16 @@ namespace ImageStitcher
                 // set the pseudo-focus on the left or right panel
                 // then enumerate a list of all image files in the same directory as the loaded image
                 // then store the position of the loaded image in that list
-                for (int i = 0; i< filepaths.Length; i++)
+                if (isFolder) { 
+                    for (int i = 0; i< filepaths.Length; i++)
                 {
                     sublist= EnumerateImageFiles(filepaths[i], allowedImageExtensions, Settings.Default.LoadSubfolders);
                     imageList.AddRange(sublist);
                 }
-                // imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, Settings.Default.LoadSubfolders);
+                } else if (isImage)
+                {
+                     imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
+                }
                 imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
                 if (Settings.Default.ReverseFileOrder) imageList.Reverse();
                 int imageCount = imageList.Count();
