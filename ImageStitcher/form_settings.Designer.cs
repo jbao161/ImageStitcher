@@ -43,6 +43,7 @@ namespace ImageStitcher
             this.textBox_scriptloc = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox_scriptwait = new System.Windows.Forms.CheckBox();
+            this.checkBox_loadsubfolders = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_reversefileorder
@@ -148,11 +149,25 @@ namespace ImageStitcher
             this.checkBox_scriptwait.Text = "Wait until script ends";
             this.checkBox_scriptwait.UseVisualStyleBackColor = true;
             // 
+            // checkBox_loadsubfolders
+            // 
+            this.checkBox_loadsubfolders.AutoSize = true;
+            this.checkBox_loadsubfolders.Checked = true;
+            this.checkBox_loadsubfolders.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_loadsubfolders.Location = new System.Drawing.Point(182, 35);
+            this.checkBox_loadsubfolders.Name = "checkBox_loadsubfolders";
+            this.checkBox_loadsubfolders.Size = new System.Drawing.Size(101, 17);
+            this.checkBox_loadsubfolders.TabIndex = 27;
+            this.checkBox_loadsubfolders.Text = "Load subfolders";
+            this.checkBox_loadsubfolders.UseVisualStyleBackColor = true;
+            this.checkBox_loadsubfolders.CheckedChanged += new System.EventHandler(this.checkBox_loadsubfolders_CheckedChanged);
+            // 
             // form_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(329, 203);
+            this.Controls.Add(this.checkBox_loadsubfolders);
             this.Controls.Add(this.checkBox_scriptwait);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox_scriptloc);
@@ -184,5 +199,6 @@ namespace ImageStitcher
         private System.Windows.Forms.TextBox textBox_scriptloc;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox checkBox_scriptwait;
+        private System.Windows.Forms.CheckBox checkBox_loadsubfolders;
     }
 }

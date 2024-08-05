@@ -322,5 +322,17 @@ namespace ImageStitcher.Properties {
                 this["showinfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool LoadSubfolders {
+            get {
+                return ((bool)(this["LoadSubfolders"]));
+            }
+            set {
+                this["LoadSubfolders"] = value;
+            }
+        }
     }
 }

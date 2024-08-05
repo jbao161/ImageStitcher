@@ -283,7 +283,7 @@ namespace ImageStitcher
                 // then enumerate a list of all image files in the same directory as the loaded image
                 // then store the position of the loaded image in that list
 
-                imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
+                imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, Settings.Default.LoadSubfolders);
                 imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
                 if (Settings.Default.ReverseFileOrder) imageList.Reverse();
                 int imageCount = imageList.Count();
