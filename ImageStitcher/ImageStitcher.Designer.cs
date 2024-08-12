@@ -79,6 +79,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBox_hotkeyboth = new System.Windows.Forms.CheckBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -207,6 +208,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.checkBox_hotkeyboth);
             this.panel_controls.Controls.Add(this.button_numberofpanels);
             this.panel_controls.Controls.Add(this.button_crop);
             this.panel_controls.Controls.Add(this.button_trash);
@@ -377,9 +379,9 @@
             this.checkBox_showfilename.AutoSize = true;
             this.checkBox_showfilename.Location = new System.Drawing.Point(25, 43);
             this.checkBox_showfilename.Name = "checkBox_showfilename";
-            this.checkBox_showfilename.Size = new System.Drawing.Size(74, 17);
+            this.checkBox_showfilename.Size = new System.Drawing.Size(44, 17);
             this.checkBox_showfilename.TabIndex = 14;
-            this.checkBox_showfilename.Text = "Show Info";
+            this.checkBox_showfilename.Text = "Info";
             this.checkBox_showfilename.UseVisualStyleBackColor = true;
             this.checkBox_showfilename.CheckedChanged += new System.EventHandler(this.checkBox_showfilename_CheckedChanged);
             // 
@@ -588,6 +590,17 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
+            // checkBox_hotkeyboth
+            // 
+            this.checkBox_hotkeyboth.AutoSize = true;
+            this.checkBox_hotkeyboth.Location = new System.Drawing.Point(75, 43);
+            this.checkBox_hotkeyboth.Name = "checkBox_hotkeyboth";
+            this.checkBox_hotkeyboth.Size = new System.Drawing.Size(85, 17);
+            this.checkBox_hotkeyboth.TabIndex = 18;
+            this.checkBox_hotkeyboth.Text = "Hotkey Both";
+            this.checkBox_hotkeyboth.UseVisualStyleBackColor = true;
+            this.checkBox_hotkeyboth.CheckedChanged += new System.EventHandler(this.checkBox_hotkeyboth_CheckedChanged);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -672,6 +685,7 @@
         private System.Windows.Forms.ToolStripMenuItem webpToGifToolStripMenuItem;
         private System.Windows.Forms.Button button_settings;
         private System.Windows.Forms.Button button_numberofpanels;
+        private System.Windows.Forms.CheckBox checkBox_hotkeyboth;
     }
 }
 

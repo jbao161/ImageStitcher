@@ -334,5 +334,17 @@ namespace ImageStitcher.Properties {
                 this["LoadSubfolders"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HotkeyBoth {
+            get {
+                return ((bool)(this["HotkeyBoth"]));
+            }
+            set {
+                this["HotkeyBoth"] = value;
+            }
+        }
     }
 }

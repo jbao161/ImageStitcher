@@ -175,9 +175,12 @@ namespace ImageStitcher
 
                 this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
                 savesplitterdistance = Settings.Default.SplitContainerSplitterDistance;
+
+                // load checkbox settings
                 this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
                 this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
                 this.checkBox_showfilename.Checked = Settings.Default.showinfo;
+                this.checkBox_hotkeyboth.Checked = Settings.Default.HotkeyBoth;
 
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
 
@@ -216,6 +219,7 @@ namespace ImageStitcher
                             if (Settings.Default.scriptwait) process.WaitForExit();
                         }
                         DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
+                        DragDropHandler(1, new string[] { Settings.Default.DefaultDirectory });
                     }
                     catch (Exception)
                     {
@@ -227,6 +231,7 @@ namespace ImageStitcher
 
                 // set number of image panels
                 set_NumberOfPanels(Settings.Default.NumberOfPanels);
+
             }
             catch (ConfigurationErrorsException ex)
             { //(requires System.Configuration)
@@ -1574,14 +1579,18 @@ namespace ImageStitcher
             // L hotkey for blur
             if ((keyData == Keys.L)) { Blur(activePanel); return true; }
 
-            // Alt + R hotkey for randomize both panels
-            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
+            // Alt + R hotkey for alternate randomize panels
+            //if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
+            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (!checkBox_hotkeyboth.Checked) { LoadRandomImage(1 - activePanel); } return true; }
 
-            // R hotkey for active panel
-            if (keyData == Keys.R) { LoadRandomImage(activePanel); return true; }
+            // R hotkey for randomize panel
+            if (keyData == Keys.R) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked ) { LoadRandomImage(1 - activePanel); } return true; }
 
-            // Alt + U hotkey for jump back both panels
-            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(0); JumpBack(1); return true; }
+            // U hotkey for jump back 
+            if (keyData == (Keys.U)) { JumpBack(activePanel); if (checkBox_hotkeyboth.Checked){ JumpBack(1 - activePanel); } return true; }
+
+            // Alt + U hotkey for alternate jump back 
+            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked) { JumpBack(1 - activePanel); } return true; }
 
             // Delete or Shift + D hotkey for send to recycle
             if ((keyData == Keys.Delete) || (keyData == Keys.D)) { SendToTrash(activePanel); return true; }
@@ -1883,6 +1892,7 @@ namespace ImageStitcher
             Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
             Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
             Settings.Default.showinfo = this.checkBox_showfilename.Checked;
+            Settings.Default.HotkeyBoth = this.checkBox_hotkeyboth.Checked;
 
             if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; } 
                 else
@@ -2255,6 +2265,11 @@ namespace ImageStitcher
             int flip = numberofimagepanels - 1;
             flip = 1 - flip;
             set_NumberOfPanels(flip +1);
+        }
+
+        private void checkBox_hotkeyboth_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.HotkeyBoth = checkBox_hotkeyboth.Checked;
         }
     } // end MainWindow : Form
 }
