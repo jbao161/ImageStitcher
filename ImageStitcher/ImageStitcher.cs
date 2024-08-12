@@ -364,6 +364,9 @@ namespace ImageStitcher
 
         private void Resize_imagepanels()
         {
+            if (pictureBox_leftpanel.Image is null) splitContainer_bothimages.SplitterDistance = 0;
+            if (pictureBox_rightpanel.Image is null) splitContainer_bothimages.SplitterDistance = panel_bothimages.Width;
+
             if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
             {
                 if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
@@ -825,6 +828,7 @@ namespace ImageStitcher
                 imageIndexRightPanel = 0;
                 priorimageIndexRightPanel = imageIndexRightPanel;
             }
+            Resize_imagepanels();
             UpdateLabelImageIndex();
         }
 
