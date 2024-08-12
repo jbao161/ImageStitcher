@@ -39,6 +39,7 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.checkBox_hotkeyboth = new System.Windows.Forms.CheckBox();
             this.button_numberofpanels = new System.Windows.Forms.Button();
             this.button_crop = new System.Windows.Forms.Button();
             this.button_trash = new System.Windows.Forms.Button();
@@ -79,7 +80,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBox_hotkeyboth = new System.Windows.Forms.CheckBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -127,8 +127,9 @@
             this.splitContainer_bothimages.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
             this.splitContainer_bothimages.Size = new System.Drawing.Size(1031, 451);
             this.splitContainer_bothimages.SplitterDistance = 501;
-            this.splitContainer_bothimages.SplitterWidth = 10;
+            this.splitContainer_bothimages.SplitterWidth = 1;
             this.splitContainer_bothimages.TabIndex = 0;
+            this.splitContainer_bothimages.TabStop = false;
             this.splitContainer_bothimages.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_bothimages_SplitterMoved);
             // 
             // label_filename_leftpanel
@@ -173,7 +174,7 @@
             // 
             this.label_filename_rightpanel.AutoSize = true;
             this.label_filename_rightpanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label_filename_rightpanel.Location = new System.Drawing.Point(394, 0);
+            this.label_filename_rightpanel.Location = new System.Drawing.Point(403, 0);
             this.label_filename_rightpanel.Name = "label_filename_rightpanel";
             this.label_filename_rightpanel.Size = new System.Drawing.Size(126, 13);
             this.label_filename_rightpanel.TabIndex = 2;
@@ -195,7 +196,7 @@
             this.pictureBox_rightpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_rightpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_rightpanel.Name = "pictureBox_rightpanel";
-            this.pictureBox_rightpanel.Size = new System.Drawing.Size(520, 451);
+            this.pictureBox_rightpanel.Size = new System.Drawing.Size(529, 451);
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
@@ -228,6 +229,17 @@
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(1031, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // checkBox_hotkeyboth
+            // 
+            this.checkBox_hotkeyboth.AutoSize = true;
+            this.checkBox_hotkeyboth.Location = new System.Drawing.Point(75, 43);
+            this.checkBox_hotkeyboth.Name = "checkBox_hotkeyboth";
+            this.checkBox_hotkeyboth.Size = new System.Drawing.Size(85, 17);
+            this.checkBox_hotkeyboth.TabIndex = 18;
+            this.checkBox_hotkeyboth.Text = "Hotkey Both";
+            this.checkBox_hotkeyboth.UseVisualStyleBackColor = true;
+            this.checkBox_hotkeyboth.CheckedChanged += new System.EventHandler(this.checkBox_hotkeyboth_CheckedChanged);
             // 
             // button_numberofpanels
             // 
@@ -589,17 +601,6 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
-            // 
-            // checkBox_hotkeyboth
-            // 
-            this.checkBox_hotkeyboth.AutoSize = true;
-            this.checkBox_hotkeyboth.Location = new System.Drawing.Point(75, 43);
-            this.checkBox_hotkeyboth.Name = "checkBox_hotkeyboth";
-            this.checkBox_hotkeyboth.Size = new System.Drawing.Size(85, 17);
-            this.checkBox_hotkeyboth.TabIndex = 18;
-            this.checkBox_hotkeyboth.Text = "Hotkey Both";
-            this.checkBox_hotkeyboth.UseVisualStyleBackColor = true;
-            this.checkBox_hotkeyboth.CheckedChanged += new System.EventHandler(this.checkBox_hotkeyboth_CheckedChanged);
             // 
             // MainWindow
             // 

@@ -226,11 +226,15 @@ namespace ImageStitcher
                     }
                 }
 
-                // apply dark light colors
-                DarkModeRefresh();
 
                 // set number of image panels
                 set_NumberOfPanels(Settings.Default.NumberOfPanels);
+
+                // apply dark light colors
+                DarkModeRefresh();
+
+                // deselect all elements
+
 
             }
             catch (ConfigurationErrorsException ex)
@@ -1930,6 +1934,7 @@ namespace ImageStitcher
         private void splitContainer_bothimages_SplitterMoved(object sender, SplitterEventArgs e)
         {
             savesplitterdistance = splitContainer_bothimages.SplitterDistance;
+            panel_bothimages.Focus();
         }
 
         private void button_slideshow_Click(object sender, EventArgs e)
@@ -2271,5 +2276,6 @@ namespace ImageStitcher
         {
             Settings.Default.HotkeyBoth = checkBox_hotkeyboth.Checked;
         }
+
     } // end MainWindow : Form
 }
