@@ -1585,16 +1585,16 @@ namespace ImageStitcher
 
             // Alt + R hotkey for alternate randomize panels
             //if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
-            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (!checkBox_hotkeyboth.Checked) { LoadRandomImage(1 - activePanel); } return true; }
+            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels==2) { LoadRandomImage(1 - activePanel); } return true; }
 
             // R hotkey for randomize panel
-            if (keyData == Keys.R) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked ) { LoadRandomImage(1 - activePanel); } return true; }
+            if (keyData == Keys.R) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
 
             // U hotkey for jump back 
-            if (keyData == (Keys.U)) { JumpBack(activePanel); if (checkBox_hotkeyboth.Checked){ JumpBack(1 - activePanel); } return true; }
+            if (keyData == (Keys.U)) { JumpBack(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
 
             // Alt + U hotkey for alternate jump back 
-            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked) { JumpBack(1 - activePanel); } return true; }
+            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
 
             // Delete or Shift + D hotkey for send to recycle
             if ((keyData == Keys.Delete) || (keyData == Keys.D)) { SendToTrash(activePanel); return true; }
@@ -1934,7 +1934,7 @@ namespace ImageStitcher
         private void splitContainer_bothimages_SplitterMoved(object sender, SplitterEventArgs e)
         {
             savesplitterdistance = splitContainer_bothimages.SplitterDistance;
-            panel_bothimages.Focus();
+            panel_bothimages.Focus(); // remove dotted line around splitter
         }
 
         private void button_slideshow_Click(object sender, EventArgs e)
@@ -2254,6 +2254,7 @@ namespace ImageStitcher
                 numberofimagepanels = 1;
                 splitContainer_bothimages.Hide();
                 button_numberofpanels.Text = "Switch to Dual";
+                activePanel = 0;
             }
             else if (npanels == 2)
             {
