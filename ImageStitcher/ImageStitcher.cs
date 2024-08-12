@@ -1938,7 +1938,6 @@ namespace ImageStitcher
         private void splitContainer_bothimages_SplitterMoved(object sender, SplitterEventArgs e)
         {
             savesplitterdistance = splitContainer_bothimages.SplitterDistance;
-            panel_bothimages.Focus(); // remove dotted line around splitter
         }
 
         private void button_slideshow_Click(object sender, EventArgs e)
@@ -2282,5 +2281,9 @@ namespace ImageStitcher
             Settings.Default.HotkeyBoth = checkBox_hotkeyboth.Checked;
         }
 
+        private void splitContainer_bothimages_MouseUp(object sender, MouseEventArgs e)
+        {
+            panel_bothimages.Focus(); // remove dotted line around splitter
+        }
     } // end MainWindow : Form
 }

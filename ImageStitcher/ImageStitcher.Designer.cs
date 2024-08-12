@@ -131,6 +131,7 @@
             this.splitContainer_bothimages.TabIndex = 0;
             this.splitContainer_bothimages.TabStop = false;
             this.splitContainer_bothimages.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_bothimages_SplitterMoved);
+            this.splitContainer_bothimages.MouseUp += new System.Windows.Forms.MouseEventHandler(this.splitContainer_bothimages_MouseUp);
             // 
             // label_filename_leftpanel
             // 
