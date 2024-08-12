@@ -1315,6 +1315,7 @@ namespace ImageStitcher
             {
                 result = (int)(rng.Next(max - min) + min);
             }
+            if (result == exclude) result = (exclude + 1) % max;
             return result;
 
         }
@@ -1857,8 +1858,8 @@ namespace ImageStitcher
                 if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, loaderrormsg); }
                 try
                 {
-                    DragDropHandler(targetPanel, new String[] { GetCurrentImage(targetPanel) }); ;
-                    return false;
+                 //   DragDropHandler(targetPanel, new String[] { GetCurrentImage(targetPanel) }); ;
+                    return true;
                 }
                 catch (Exception) { return false; }
 
