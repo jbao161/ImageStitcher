@@ -112,12 +112,14 @@ namespace ImageStitcher
 
             if (checkBox_showfilename.Checked)
             {
-                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel])) + " " + 
+                try { 
+                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel])) + " " +
                     (Utils.GetFileSizeString(imageFilesLeftPanel[imageIndexLeftPanel])) + " " +
                     Utils.GetDimensionString(pictureBox_leftpanel.Image);
-                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]))+ " " + 
+                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel])) + " " +
                     (Utils.GetFileSizeString(imageFilesRightPanel[imageIndexRightPanel])) + " " +
-                    Utils.GetDimensionString(pictureBox_rightpanel.Image); ;
+                    Utils.GetDimensionString(pictureBox_rightpanel.Image); ; }
+                catch { }
             }
             else
             {
@@ -283,6 +285,7 @@ namespace ImageStitcher
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
             //if (String.IsNullOrEmpty(filepaths[0])) return;
+            try { 
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
             bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
             string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
@@ -337,6 +340,8 @@ namespace ImageStitcher
                 Resize_imagepanels();
                 UpdateLabelImageIndex();
             }
+            }
+            catch { }
         }
 
         private void PictureBox_DragDrop(object sender, DragEventArgs e)
