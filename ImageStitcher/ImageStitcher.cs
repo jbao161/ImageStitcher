@@ -1619,6 +1619,10 @@ namespace ImageStitcher
             // Ctrl + Alt + X for cut and remove from list
             if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); return true; }
 
+            // Alt + Spacebar to toggle if hotkeys affect both panels
+            if (keyData == (Keys.Alt | Keys.Space )) {checkBox_hotkeyboth.Checked = !checkBox_hotkeyboth.Checked;
+                return true; }
+
             // end of hotkeys. ignore the keystroke
             else { return base.ProcessCmdKey(ref msg, keyData); }
         }
