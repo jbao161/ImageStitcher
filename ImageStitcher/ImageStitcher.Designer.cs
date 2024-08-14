@@ -39,6 +39,8 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.label_textbox_extfilter = new System.Windows.Forms.Label();
+            this.textBox_extfilter = new System.Windows.Forms.TextBox();
             this.checkBox_hotkeyboth = new System.Windows.Forms.CheckBox();
             this.button_numberofpanels = new System.Windows.Forms.Button();
             this.button_crop = new System.Windows.Forms.Button();
@@ -210,6 +212,8 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.label_textbox_extfilter);
+            this.panel_controls.Controls.Add(this.textBox_extfilter);
             this.panel_controls.Controls.Add(this.checkBox_hotkeyboth);
             this.panel_controls.Controls.Add(this.button_numberofpanels);
             this.panel_controls.Controls.Add(this.button_crop);
@@ -230,6 +234,23 @@
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(1031, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // label_textbox_extfilter
+            // 
+            this.label_textbox_extfilter.AutoSize = true;
+            this.label_textbox_extfilter.Location = new System.Drawing.Point(375, 24);
+            this.label_textbox_extfilter.Name = "label_textbox_extfilter";
+            this.label_textbox_extfilter.Size = new System.Drawing.Size(52, 13);
+            this.label_textbox_extfilter.TabIndex = 20;
+            this.label_textbox_extfilter.Text = "extension";
+            // 
+            // textBox_extfilter
+            // 
+            this.textBox_extfilter.Location = new System.Drawing.Point(373, 40);
+            this.textBox_extfilter.Name = "textBox_extfilter";
+            this.textBox_extfilter.Size = new System.Drawing.Size(68, 20);
+            this.textBox_extfilter.TabIndex = 19;
+            this.textBox_extfilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_extfilter_KeyPress);
             // 
             // checkBox_hotkeyboth
             // 
@@ -688,6 +709,8 @@
         private System.Windows.Forms.Button button_settings;
         private System.Windows.Forms.Button button_numberofpanels;
         private System.Windows.Forms.CheckBox checkBox_hotkeyboth;
+        private System.Windows.Forms.Label label_textbox_extfilter;
+        private System.Windows.Forms.TextBox textBox_extfilter;
     }
 }
 

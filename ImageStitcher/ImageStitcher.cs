@@ -285,13 +285,18 @@ namespace ImageStitcher
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
             //if (String.IsNullOrEmpty(filepaths[0])) return;
-            try { 
+            try
+            {
+                string testpath = System.IO.Path.GetDirectoryName(filepaths[0]);
+            }
+            catch { return; }
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
-            bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
-            string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
-            if (isFolder) { folderPath = filepaths[0]; }
-            List<string> imageList = new List<string>(); ;
-            List<string> sublist = null;
+                bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
+                string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
+                if (isFolder) { folderPath = filepaths[0]; }
+                List<string> imageList = new List<string>(); ;
+                List<string> sublist = null;
+
             if (isFolder | isImage)
             {
                 // set the pseudo-focus on the left or right panel
@@ -300,8 +305,9 @@ namespace ImageStitcher
                 if (isFolder) { 
                     for (int i = 0; i< filepaths.Length; i++)
                 {
+
                     sublist= EnumerateImageFiles(filepaths[i], allowedImageExtensions, Settings.Default.LoadSubfolders);
-                    imageList.AddRange(sublist);
+                        imageList.AddRange(sublist);
                 }
                 } else if (isImage)
                 {
@@ -340,10 +346,14 @@ namespace ImageStitcher
                 Resize_imagepanels();
                 UpdateLabelImageIndex();
             }
-            }
-            catch { }
-        }
 
+        }
+        static bool HasExtension(string filename, string extension)
+        {
+            // add other possible extensions here
+            return Path.GetExtension(filename).Equals(extension, StringComparison.InvariantCultureIgnoreCase)
+                || Path.GetExtension(filename).Equals(extension, StringComparison.InvariantCultureIgnoreCase);
+        }
         private void PictureBox_DragDrop(object sender, DragEventArgs e)
         {
             PictureBox activePictureBox = null;
@@ -589,6 +599,7 @@ namespace ImageStitcher
                             isanimatedgif = true;
                             saveFileDialog1.FilterIndex = 3;
                         }
+                        else saveFileDialog1.FilterIndex = 1;
                     }
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
@@ -836,7 +847,14 @@ namespace ImageStitcher
             Resize_imagepanels();
             UpdateLabelImageIndex();
         }
-
+        private void ReloadPanel(int targetPanel)
+        {
+            if (!string.IsNullOrEmpty(GetCurrentImage(targetPanel))) {
+                string[] limagelist = new string[1];
+                limagelist[0] = GetCurrentImage(targetPanel);
+                DragDropHandler(targetPanel, limagelist);
+            }
+        }
         private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ClearPanel(contextmenufocus);
@@ -2294,6 +2312,24 @@ namespace ImageStitcher
         private void splitContainer_bothimages_MouseUp(object sender, MouseEventArgs e)
         {
             panel_bothimages.Focus(); // remove dotted line around splitter
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox_extfilter_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox_extfilter_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                ReloadPanel(0); ReloadPanel(1);
+            }
         }
     } // end MainWindow : Form
 }
