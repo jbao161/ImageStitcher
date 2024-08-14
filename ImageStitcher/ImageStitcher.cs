@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -103,6 +104,15 @@ namespace ImageStitcher
 
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath });
+        }
+
+        public MainWindow(string leftfilepath, string rightfilepath)
+        {
+            InitializeComponent();
+
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { leftfilepath });
+            DragDropHandler(1, new String[] { rightfilepath });
         }
 
         private void UpdateLabelImageIndex()
@@ -849,10 +859,61 @@ namespace ImageStitcher
         }
         private void ReloadPanel(int targetPanel)
         {
-            if (!string.IsNullOrEmpty(GetCurrentImage(targetPanel))) {
-                string[] limagelist = new string[1];
-                limagelist[0] = GetCurrentImage(targetPanel);
-                DragDropHandler(targetPanel, limagelist);
+            List<string> imagelist = targetPanel == 0 ? imageFilesLeftPanel : imageFilesRightPanel;
+            string imagepath = "";
+            int imageIndex = 0;
+            if (imagelist != null) {
+                try
+                {
+                    if (allowedImageExtensions.Any(GetCurrentImage(targetPanel).ToLower().EndsWith)) // save filepath of current image if it matches filter
+                    { imagepath = GetCurrentImage(targetPanel); }
+
+                    if (!string.IsNullOrEmpty(textBox_extfilter.Text)) filterImageListByExt(imagelist); // filter the image list
+
+                    // need to get the matched image index and set it
+                    for (int i = 0;
+                        i < imagelist.Count; i++)
+                    {
+                        if (imagelist[i] == imagepath) { imageIndex = i; }
+                    }
+
+                    if (targetPanel == 0)
+                    {
+                        imageFilesLeftPanel = imagelist;
+                        imageCountLeftPanel = imagelist.Count;
+                        imageIndexLeftPanel = imageIndex;
+                        priorimageIndexLeftPanel = imageIndex;
+                    }
+                    if (targetPanel == 1)
+                    {
+                        imageFilesRightPanel = imagelist;
+                        imageCountRightPanel = imagelist.Count;
+                        imageIndexRightPanel = imageIndex;
+                        priorimageIndexRightPanel = imageIndex;
+                    }
+                    UpdateLabelImageIndex();
+                    if (imagelist.Count() == 0) { ClearPanel(targetPanel); }
+                    else
+                    {
+                        LoadImage(targetPanel, imagelist[imageIndex]);
+                    }
+                }
+                catch { };
+            }
+
+        }
+        private void filterImageListByExt(List<string> imagelist)
+        {
+            List<string> newList = new List<string>(imagelist);
+            int k = 0;
+            for (int i = 0; i< newList.Count; i++)
+            {
+                if (allowedImageExtensions.Any(newList[i].ToLower().EndsWith))
+                {
+                    continue;
+                }
+                imagelist.RemoveAt(i-k);
+                k++;
             }
         }
         private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2300,7 +2361,7 @@ namespace ImageStitcher
         }
         private void button_numberofpanels_Click(object sender, EventArgs e)
         {
-            // dirty hackish flip between 1 and 2
+            // flip between 1 and 2
             int flip = numberofimagepanels - 1;
             flip = 1 - flip;
             set_NumberOfPanels(flip +1);
@@ -2314,28 +2375,6 @@ namespace ImageStitcher
         private void splitContainer_bothimages_MouseUp(object sender, MouseEventArgs e)
         {
             panel_bothimages.Focus(); // remove dotted line around splitter
-        }
-
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox_extfilter_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox_extfilter_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Enter)
-            {
-                allowedImageExtensions = new string[1];
-                allowedImageExtensions[0] = textBox_extfilter.Text;
-                if (string.IsNullOrEmpty(textBox_extfilter.Text)) { allowedImageExtensions = defaultallowedImageExtensions; }
-                ReloadPanel(0); ReloadPanel(1);
-                    e.Handled = true;
-            }
         }
 
         private void textBox_extfilter_KeyPress(object sender, System.Windows.Forms.KeyEventArgs e)
