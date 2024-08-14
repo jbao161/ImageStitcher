@@ -250,7 +250,7 @@
             this.textBox_extfilter.Name = "textBox_extfilter";
             this.textBox_extfilter.Size = new System.Drawing.Size(68, 20);
             this.textBox_extfilter.TabIndex = 19;
-            this.textBox_extfilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_extfilter_KeyPress);
+            this.textBox_extfilter.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox_extfilter_KeyPress);
             // 
             // checkBox_hotkeyboth
             // 

@@ -291,7 +291,7 @@ namespace ImageStitcher
             }
             catch { return; }
             bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
-                bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
+                bool isImage = defaultallowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
                 string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
                 if (isFolder) { folderPath = filepaths[0]; }
                 List<string> imageList = new List<string>(); ;
@@ -320,12 +320,12 @@ namespace ImageStitcher
                 string imagepath = filepaths[0];
 
                 if (isFolder) { imageIndex = 0; imagepath = imageList[0]; }
-
+                if (!allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith)) { imagepath = imageList[0]; }
                 if (LoadImage(targetPanel, imagepath))
                 {
                     for (int i = 0; i < imageCount; i++)
                     {
-                        if (imageList[i] == filepaths[0]) { imageIndex = i; }
+                        if (imageList[i] == imagepath) { imageIndex = i; }
                     }
 
                     if (targetPanel == 0)
@@ -1007,8 +1007,8 @@ namespace ImageStitcher
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
-        private static readonly String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif", "webp" };
-
+        private String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif", "webp" };
+        private readonly String[] defaultallowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif", "webp" };
         public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
         {
             List<String> filesFound = new List<String>();
@@ -1780,7 +1780,9 @@ namespace ImageStitcher
                 int picY = (containerheight - picheight) / 2;
 
                 targetpicturebox.Size = new Size(picwidth, picheight);
-                // https://stackoverflow.com/questions/9375588/keeping-a-picturebox-centered-inside-a-container
+                // https://stackoverflow.com/questions/9375588/keeping-a-picturebox-c
+                //
+                // ed-inside-a-container
                 targetpicturebox.Dock = DockStyle.None;
                 targetpicturebox.Location = new Point(picX, picY);
                 targetpicturebox.Refresh();
@@ -2328,7 +2330,24 @@ namespace ImageStitcher
         {
             if (e.KeyChar == (char)Keys.Enter)
             {
+                allowedImageExtensions = new string[1];
+                allowedImageExtensions[0] = textBox_extfilter.Text;
+                if (string.IsNullOrEmpty(textBox_extfilter.Text)) { allowedImageExtensions = defaultallowedImageExtensions; }
                 ReloadPanel(0); ReloadPanel(1);
+                    e.Handled = true;
+            }
+        }
+
+        private void textBox_extfilter_KeyPress(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                allowedImageExtensions = new string[1];
+                allowedImageExtensions[0] = textBox_extfilter.Text;
+                if (string.IsNullOrEmpty(textBox_extfilter.Text)) { allowedImageExtensions = defaultallowedImageExtensions; }
+                ReloadPanel(0); ReloadPanel(1);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
             }
         }
     } // end MainWindow : Form
