@@ -82,6 +82,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -711,6 +712,7 @@
         private System.Windows.Forms.CheckBox checkBox_hotkeyboth;
         private System.Windows.Forms.Label label_textbox_extfilter;
         private System.Windows.Forms.TextBox textBox_extfilter;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog2;
     }
 }
 

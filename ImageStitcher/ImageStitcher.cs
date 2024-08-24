@@ -1556,21 +1556,21 @@ namespace ImageStitcher
             if (!(targetimage is null) && savedialog) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
-                    saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
-                    saveFileDialog1.Title = "Save an Image File";
-                    saveFileDialog1.FileName = System.IO.Path.GetFileNameWithoutExtension(filename);
-                    saveFileDialog1.RestoreDirectory = false;
-                    saveFileDialog1.InitialDirectory = directorypath;
-                    if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                    saveFileDialog2.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
+                    saveFileDialog2.Title = "Save an Image File";
+                    saveFileDialog2.FileName = System.IO.Path.GetFileNameWithoutExtension(filename);
+                    saveFileDialog2.RestoreDirectory = false;
+                    saveFileDialog2.InitialDirectory = directorypath;
+                    if (saveFileDialog2.ShowDialog() == DialogResult.OK)
                     {
                         // Saves the Image via a FileStream created by the OpenFile method.
                         System.IO.FileStream fs =
-                           (System.IO.FileStream)saveFileDialog1.OpenFile();
+                           (System.IO.FileStream)saveFileDialog2.OpenFile();
                         // Saves the Image in the appropriate ImageFormat based upon the
                         // File type selected in the dialog box.
                         // NOTE that the FilterIndex property is one-based.
 
-                        switch (saveFileDialog1.FilterIndex)
+                        switch (saveFileDialog2.FilterIndex)
                         {
                             case 1:
                                 targetimage.Save(fs, GetEncoder(
@@ -1595,7 +1595,7 @@ namespace ImageStitcher
 
                         fs.Close();
                         savedYes = true;
-                        newfilepath = System.IO.Path.GetFullPath(saveFileDialog1.FileName);
+                        newfilepath = System.IO.Path.GetFullPath(saveFileDialog2.FileName);
                     } // if dialog OK
                 }
                 catch (Exception ex)
