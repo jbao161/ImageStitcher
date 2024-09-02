@@ -1666,27 +1666,27 @@ namespace ImageStitcher
             if (keyData == Keys.Left) { LoadPreviousImage(activePanel); return true; }
             if (keyData == Keys.Right) { LoadNextImage(activePanel); return true; }
 
-            // O hotkey for rotations
-            if (keyData == Keys.O) { RotateImage(activePanel); return true; }
+            // alt + O hotkey for rotations
+            if (keyData == (Keys.Alt | Keys.O)) { RotateImage(activePanel); return true; }
 
-            // L hotkey for blur
-            if ((keyData == Keys.L)) { Blur(activePanel); return true; }
+            // alt + L hotkey for blur
+            if (keyData == (Keys.Alt | Keys.L)) { Blur(activePanel); return true; }
 
-            // Alt + R hotkey for alternate randomize panels
+            // shift + alt + R hotkey for alternate randomize panels
             //if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
-            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels==2) { LoadRandomImage(1 - activePanel); } return true; }
+            if (keyData == (Keys.Shift | Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels==2) { LoadRandomImage(1 - activePanel); } return true; }
 
-            // R hotkey for randomize panel
-            if (keyData == Keys.R) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
+            // alt + R hotkey for randomize panel
+            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
 
             // U hotkey for jump back 
-            if (keyData == (Keys.U)) { JumpBack(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
+            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
 
-            // Alt + U hotkey for alternate jump back 
-            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
+            // shift + alt + U hotkey for alternate jump back 
+            if (keyData == (Keys.Shift | Keys.Alt | Keys.U)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
 
-            // Delete or Shift + D hotkey for send to recycle
-            if ((keyData == Keys.Delete) || (keyData == Keys.D)) { SendToTrash(activePanel); return true; }
+            // Delete or alt + D hotkey for send to recycle
+            if ((keyData == Keys.Delete) || (keyData == (Keys.Alt | Keys.D))) { SendToTrash(activePanel); return true; }
 
             // Ctrl + X for cut
             if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel, "file", true); return true; }
@@ -2388,6 +2388,11 @@ namespace ImageStitcher
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
+        }
+
+        private void button_copy_Click(object sender, EventArgs e)
+        {
+            Copycut(activePanel, "file", false);
         }
     } // end MainWindow : Form
 }
