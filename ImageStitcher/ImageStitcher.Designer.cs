@@ -39,19 +39,20 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.button_copy = new System.Windows.Forms.Button();
+            this.button_crop = new System.Windows.Forms.Button();
+            this.button_swapimages = new System.Windows.Forms.Button();
+            this.button_verticalhorizontal = new System.Windows.Forms.Button();
+            this.button_preview = new System.Windows.Forms.Button();
+            this.button_slideshow = new System.Windows.Forms.Button();
+            this.button_trash = new System.Windows.Forms.Button();
             this.label_textbox_extfilter = new System.Windows.Forms.Label();
             this.textBox_extfilter = new System.Windows.Forms.TextBox();
             this.checkBox_hotkeyboth = new System.Windows.Forms.CheckBox();
             this.button_numberofpanels = new System.Windows.Forms.Button();
-            this.button_crop = new System.Windows.Forms.Button();
-            this.button_trash = new System.Windows.Forms.Button();
-            this.button_verticalhorizontal = new System.Windows.Forms.Button();
-            this.button_swapimages = new System.Windows.Forms.Button();
-            this.button_slideshow = new System.Windows.Forms.Button();
             this.checkBox_screengrab = new System.Windows.Forms.CheckBox();
             this.checkBox_randomOnClick = new System.Windows.Forms.CheckBox();
             this.checkBox_openaftersave = new System.Windows.Forms.CheckBox();
-            this.button_preview = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.checkBox_showfilename = new System.Windows.Forms.CheckBox();
             this.button_settings = new System.Windows.Forms.Button();
@@ -83,7 +84,6 @@
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
-            this.button_copy = new System.Windows.Forms.Button();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -238,6 +238,103 @@
             this.panel_controls.Size = new System.Drawing.Size(1150, 80);
             this.panel_controls.TabIndex = 7;
             // 
+            // button_copy
+            // 
+            this.button_copy.Location = new System.Drawing.Point(534, 17);
+            this.button_copy.Name = "button_copy";
+            this.button_copy.Size = new System.Drawing.Size(50, 51);
+            this.button_copy.TabIndex = 21;
+            this.button_copy.Text = "Copy";
+            this.button_copy.UseVisualStyleBackColor = true;
+            this.button_copy.Click += new System.EventHandler(this.button_copy_Click);
+            // 
+            // button_crop
+            // 
+            this.button_crop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_crop.BackgroundImage")));
+            this.button_crop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.button_crop.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_crop.Location = new System.Drawing.Point(590, 0);
+            this.button_crop.Name = "button_crop";
+            this.button_crop.Size = new System.Drawing.Size(70, 80);
+            this.button_crop.TabIndex = 2;
+            this.button_crop.Text = "Crop";
+            this.button_crop.UseVisualStyleBackColor = true;
+            this.button_crop.Click += new System.EventHandler(this.button_crop_Click);
+            // 
+            // button_swapimages
+            // 
+            this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_swapimages.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_swapimages.BackgroundImage")));
+            this.button_swapimages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_swapimages.Location = new System.Drawing.Point(660, 0);
+            this.button_swapimages.Name = "button_swapimages";
+            this.button_swapimages.Size = new System.Drawing.Size(70, 80);
+            this.button_swapimages.TabIndex = 5;
+            this.button_swapimages.Text = "Swap Images";
+            this.button_swapimages.UseVisualStyleBackColor = true;
+            this.button_swapimages.Click += new System.EventHandler(this.Button_swapimages_Click);
+            // 
+            // button_verticalhorizontal
+            // 
+            this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_verticalhorizontal.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_verticalhorizontal.BackgroundImage")));
+            this.button_verticalhorizontal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_verticalhorizontal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_verticalhorizontal.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(730, 0);
+            this.button_verticalhorizontal.Name = "button_verticalhorizontal";
+            this.button_verticalhorizontal.Size = new System.Drawing.Size(70, 80);
+            this.button_verticalhorizontal.TabIndex = 8;
+            this.button_verticalhorizontal.Text = "Stack images vertically";
+            this.button_verticalhorizontal.UseVisualStyleBackColor = true;
+            this.button_verticalhorizontal.Click += new System.EventHandler(this.Button_verticalhorizontal_Click);
+            // 
+            // button_preview
+            // 
+            this.button_preview.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_preview.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_preview.BackgroundImage")));
+            this.button_preview.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_preview.Location = new System.Drawing.Point(800, 0);
+            this.button_preview.Name = "button_preview";
+            this.button_preview.Size = new System.Drawing.Size(60, 80);
+            this.button_preview.TabIndex = 1;
+            this.button_preview.Text = "Preview";
+            this.button_preview.UseVisualStyleBackColor = true;
+            this.button_preview.Click += new System.EventHandler(this.Button_preview_Click);
+            // 
+            // button_slideshow
+            // 
+            this.button_slideshow.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_slideshow.BackgroundImage")));
+            this.button_slideshow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_slideshow.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_slideshow.Location = new System.Drawing.Point(860, 0);
+            this.button_slideshow.Name = "button_slideshow";
+            this.button_slideshow.Size = new System.Drawing.Size(70, 80);
+            this.button_slideshow.TabIndex = 13;
+            this.button_slideshow.Text = "Slideshow";
+            this.button_slideshow.UseVisualStyleBackColor = true;
+            this.button_slideshow.Click += new System.EventHandler(this.button_slideshow_Click);
+            // 
+            // button_trash
+            // 
+            this.button_trash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button_trash.BackColor = System.Drawing.SystemColors.Control;
+            this.button_trash.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_trash.BackgroundImage")));
+            this.button_trash.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_trash.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_trash.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_trash.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.button_trash.Location = new System.Drawing.Point(930, 0);
+            this.button_trash.Name = "button_trash";
+            this.button_trash.Size = new System.Drawing.Size(70, 80);
+            this.button_trash.TabIndex = 11;
+            this.button_trash.Text = "Send to trash";
+            this.button_trash.UseVisualStyleBackColor = false;
+            this.button_trash.Click += new System.EventHandler(this.button_trash_Click);
+            // 
             // label_textbox_extfilter
             // 
             this.label_textbox_extfilter.AutoSize = true;
@@ -276,79 +373,6 @@
             this.button_numberofpanels.UseVisualStyleBackColor = true;
             this.button_numberofpanels.Click += new System.EventHandler(this.button_numberofpanels_Click);
             // 
-            // button_crop
-            // 
-            this.button_crop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_crop.BackgroundImage")));
-            this.button_crop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.button_crop.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_crop.Location = new System.Drawing.Point(590, 0);
-            this.button_crop.Name = "button_crop";
-            this.button_crop.Size = new System.Drawing.Size(70, 80);
-            this.button_crop.TabIndex = 2;
-            this.button_crop.Text = "Crop";
-            this.button_crop.UseVisualStyleBackColor = true;
-            this.button_crop.Click += new System.EventHandler(this.button_crop_Click);
-            // 
-            // button_trash
-            // 
-            this.button_trash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_trash.BackColor = System.Drawing.SystemColors.Control;
-            this.button_trash.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_trash.BackgroundImage")));
-            this.button_trash.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button_trash.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_trash.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_trash.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button_trash.Location = new System.Drawing.Point(930, 0);
-            this.button_trash.Name = "button_trash";
-            this.button_trash.Size = new System.Drawing.Size(70, 80);
-            this.button_trash.TabIndex = 11;
-            this.button_trash.Text = "Send to trash";
-            this.button_trash.UseVisualStyleBackColor = false;
-            this.button_trash.Click += new System.EventHandler(this.button_trash_Click);
-            // 
-            // button_verticalhorizontal
-            // 
-            this.button_verticalhorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_verticalhorizontal.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_verticalhorizontal.BackgroundImage")));
-            this.button_verticalhorizontal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_verticalhorizontal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_verticalhorizontal.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(730, 0);
-            this.button_verticalhorizontal.Name = "button_verticalhorizontal";
-            this.button_verticalhorizontal.Size = new System.Drawing.Size(70, 80);
-            this.button_verticalhorizontal.TabIndex = 8;
-            this.button_verticalhorizontal.Text = "Stack images vertically";
-            this.button_verticalhorizontal.UseVisualStyleBackColor = true;
-            this.button_verticalhorizontal.Click += new System.EventHandler(this.Button_verticalhorizontal_Click);
-            // 
-            // button_swapimages
-            // 
-            this.button_swapimages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_swapimages.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_swapimages.BackgroundImage")));
-            this.button_swapimages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_swapimages.Location = new System.Drawing.Point(660, 0);
-            this.button_swapimages.Name = "button_swapimages";
-            this.button_swapimages.Size = new System.Drawing.Size(70, 80);
-            this.button_swapimages.TabIndex = 5;
-            this.button_swapimages.Text = "Swap Images";
-            this.button_swapimages.UseVisualStyleBackColor = true;
-            this.button_swapimages.Click += new System.EventHandler(this.Button_swapimages_Click);
-            // 
-            // button_slideshow
-            // 
-            this.button_slideshow.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_slideshow.BackgroundImage")));
-            this.button_slideshow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button_slideshow.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_slideshow.Location = new System.Drawing.Point(860, 0);
-            this.button_slideshow.Name = "button_slideshow";
-            this.button_slideshow.Size = new System.Drawing.Size(70, 80);
-            this.button_slideshow.TabIndex = 13;
-            this.button_slideshow.Text = "Slideshow";
-            this.button_slideshow.UseVisualStyleBackColor = true;
-            this.button_slideshow.Click += new System.EventHandler(this.button_slideshow_Click);
-            // 
             // checkBox_screengrab
             // 
             this.checkBox_screengrab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -381,20 +405,6 @@
             this.checkBox_openaftersave.Text = "Open Folder after Save";
             this.checkBox_openaftersave.UseVisualStyleBackColor = true;
             // 
-            // button_preview
-            // 
-            this.button_preview.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button_preview.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_preview.BackgroundImage")));
-            this.button_preview.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_preview.Location = new System.Drawing.Point(800, 0);
-            this.button_preview.Name = "button_preview";
-            this.button_preview.Size = new System.Drawing.Size(60, 80);
-            this.button_preview.TabIndex = 1;
-            this.button_preview.Text = "Preview";
-            this.button_preview.UseVisualStyleBackColor = true;
-            this.button_preview.Click += new System.EventHandler(this.Button_preview_Click);
-            // 
             // button_save
             // 
             this.button_save.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -411,7 +421,7 @@
             this.button_save.TabIndex = 0;
             this.button_save.Text = "Stitch";
             this.button_save.UseVisualStyleBackColor = false;
-            this.button_save.Click += new System.EventHandler(this.Button_save_Click);
+            this.button_save.Click += new System.EventHandler(this.Button_stitch_Click);
             // 
             // checkBox_showfilename
             // 
@@ -628,16 +638,6 @@
             this.jumpBackToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
-            // 
-            // button_copy
-            // 
-            this.button_copy.Location = new System.Drawing.Point(534, 17);
-            this.button_copy.Name = "button_copy";
-            this.button_copy.Size = new System.Drawing.Size(50, 51);
-            this.button_copy.TabIndex = 21;
-            this.button_copy.Text = "Copy";
-            this.button_copy.UseVisualStyleBackColor = true;
-            this.button_copy.Click += new System.EventHandler(this.button_copy_Click);
             // 
             // MainWindow
             // 

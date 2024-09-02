@@ -585,7 +585,7 @@ namespace ImageStitcher
          *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
          */
 
-        private void Button_save_Click(object sender, EventArgs e)
+        private void Button_stitch_Click(object sender, EventArgs e)
         {
             cleanupmemory();
             Bitmap stitchedimage = Stitch_images();
@@ -598,7 +598,15 @@ namespace ImageStitcher
                     saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
                     saveFileDialog1.Title = "Save an Image File";
                     saveFileDialog1.FileName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";                     // feature 1: timestamp
-                    saveFileDialog1.RestoreDirectory = true;
+                    if (string.IsNullOrEmpty(Settings.Default.lastsavedfolderStitch))
+                    {
+                        this.saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    }
+                    else
+                    {
+                        this.saveFileDialog1.InitialDirectory = Settings.Default.lastsavedfolderStitch;
+                    }
+                    saveFileDialog1.RestoreDirectory = false;
                     bool isanimatedgif = false;
                     if (!(imageFilesLeftPanel is null) && imageCountLeftPanel != 0 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
                     {
@@ -611,8 +619,10 @@ namespace ImageStitcher
                         }
                         else saveFileDialog1.FilterIndex = 1;
                     }
+                    bool result = false;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
+                        result = true;
                         // Saves the Image via a FileStream created by the OpenFile method.
                         System.IO.FileStream fs =
                            (System.IO.FileStream)saveFileDialog1.OpenFile();
@@ -666,6 +676,12 @@ namespace ImageStitcher
                             };
                             Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
                             Process.Start(info);
+                        }
+
+                        if (result)
+                        {
+                            Settings.Default.lastsavedfolderStitch = Path.GetDirectoryName(this.saveFileDialog1.FileName);
+                            Settings.Default.Save();
                         }
                     } // if dialog OK
                 }
