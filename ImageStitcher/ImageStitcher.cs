@@ -42,7 +42,7 @@ namespace ImageStitcher
         // end https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
 
         private readonly bool debugflag = true;
-        private static int activePanel = 0;
+        public int activePanel = 0;
         private static readonly int bluramount = 10;
 
         // private static readonly int maxLengthFileList = (int)1.0e9;
@@ -690,18 +690,20 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
-        private bool check_if_animated_gif(string imagepath)
+        public bool check_if_animated_gif(string imagepath)
         {
             // https://stackoverflow.com/questions/2848689/c-sharp-tell-static-gifs-apart-from-animated-ones
             using (Image image = Image.FromFile(imagepath))
             {
                 if (ImageAnimator.CanAnimate(image))
                 {
+                    image.Dispose();
                     // GIF is animated
                     return true;
                 }
                 else
                 {
+                    image.Dispose();
                     // GIF is not animated
                     return false;
                 }
@@ -873,7 +875,7 @@ namespace ImageStitcher
             Resize_imagepanels();
             UpdateLabelImageIndex();
         }
-        private void ReloadPanel(int targetPanel)
+        public void ReloadPanel(int targetPanel)
         {
             List<string> imagelist = targetPanel == 0 ? imageFilesLeftPanel : imageFilesRightPanel;
             string imagepath = "";
@@ -1632,7 +1634,58 @@ namespace ImageStitcher
                 Process.Start(info);
             }
         }
+        public void SaveGifImage(string tmpgifpath, string targetpath, Boolean savedialog)
+        {
+            bool savedYes = false;
+            string newfilepath = "";
+            if (savedialog)
+            {
+                try
+                {
+                    File.Copy(tmpgifpath, targetpath, savedialog);
+                    newfilepath = targetpath;
+                    savedYes = true;
+                }
+                catch (IOException ioex)
+                {
+                    Console.WriteLine(ioex.Message);
+                }
+                savedYes = true;
+            } else
+            if (!savedialog) try
+                {
+                    // Displays a SaveFileDialog so the user can save the Image
+                    saveFileDialog2.Filter = "Gif Image|*.gif";
+                    saveFileDialog2.Title = "Save an Image File";
+                    saveFileDialog2.FileName = System.IO.Path.GetFileNameWithoutExtension(targetpath);
+                    saveFileDialog2.RestoreDirectory = false;
+                    saveFileDialog2.InitialDirectory = Path.GetDirectoryName(targetpath);
+                    if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+                    {
+                        newfilepath = System.IO.Path.GetFullPath(saveFileDialog2.FileName);
+                        File.Copy(tmpgifpath, newfilepath, savedialog);
+                        savedYes = true;
 
+                    } // if dialog OK
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("{0}", ex);
+                }
+            // Opens Fle Directory if checkbox enabled
+            if (checkBox_openaftersave.Checked && savedYes)
+            {
+                string args = string.Format("/e, /select, \"{0}\"", newfilepath);
+
+                ProcessStartInfo info = new ProcessStartInfo
+                {
+                    FileName = "explorer",
+                    Arguments = args
+                };
+                Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
+                Process.Start(info);
+            }
+        }
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " image";
@@ -1976,7 +2029,7 @@ namespace ImageStitcher
         /* app closing save settings */
 
         // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
-        private String tmpAppDataPath;
+        public String tmpAppDataPath;
 
         private void clearTmpAppData()
         {
@@ -2191,7 +2244,13 @@ namespace ImageStitcher
             targetpictureBox.Invalidate();
             Resize_imagepanels();
         }
-
+        public void LoadActiveImage(string targetpath)
+        {
+            PictureBox targetpictureBox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            targetpictureBox.ImageLocation = targetpath;
+            targetpictureBox.Invalidate();
+            Resize_imagepanels();
+        }
         private void checkBox_showfilename_CheckedChanged(object sender, EventArgs e)
         {
             UpdateLabelImageIndex();

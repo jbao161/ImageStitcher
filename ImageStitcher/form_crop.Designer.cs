@@ -119,7 +119,7 @@ namespace ImageStitcher
             this.button_accept.TabIndex = 4;
             this.button_accept.Text = "Save File";
             this.button_accept.UseVisualStyleBackColor = false;
-            this.button_accept.Click += new System.EventHandler(this.button_accept_Click);
+            this.button_accept.Click += new System.EventHandler(this.button_save_Click);
             // 
             // panel2
             // 

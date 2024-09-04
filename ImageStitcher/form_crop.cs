@@ -1,9 +1,13 @@
 ﻿using ImageStitcher.Properties;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,17 +32,18 @@ namespace ImageStitcher
             //Set crop control for each picturebox
 
         }
-        public void Load_img(Image img)
-        {
-            source_image = img;
-            Update();
-        }
-
+        public string sourcepath="";
+        public string tmpimgpath = "";
         public void Load_img(String img_path)
         {
+            if (String.IsNullOrEmpty(sourcepath)) { sourcepath = img_path; } else {tmpimgpath = img_path;}
             using (Bitmap bm = new Bitmap(img_path))
             { // does not lock image file
                 source_image = new Bitmap(bm);
+            }
+            if (System.IO.Path.GetExtension(img_path).ToLower().Equals(".gif"))
+            {
+                pictureBox1.ImageLocation = img_path;
             }
             Update();
         }
@@ -195,23 +200,68 @@ namespace ImageStitcher
                 RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
                 RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
 
-                var croppedBitmap = new Bitmap((int)bitmapRect.Width, (int)bitmapRect.Height, OriginalPictureboxImage.PixelFormat);
-                using (var g = Graphics.FromImage(croppedBitmap))
+                if (mainForm.check_if_animated_gif(sourcepath))
                 {
-                    g.DrawImage(OriginalPictureboxImage, new Rectangle(Point.Empty, Size.Round(bitmapRect.Size)),
-                                bitmapRect, GraphicsUnit.Pixel);
-                    pictureBox2.Image = croppedBitmap;
-                    mainForm.LoadActiveImage(croppedBitmap);
+                    // crop video command example ffmpeg - i input.gif - vf "crop=640:480:0:0" output.gif
+                    int cropAreaWidth = (int)bitmapRect.Width;
+                    int cropAreaHeight = (int)bitmapRect.Height;
+                    int cropAreaLeft = (int)bitmapRect.Left;
+                    int cropAreaTop = (int)bitmapRect.Top;
+                    string outputvisibility = "/C ";
+                    // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
+ 
+                    string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpgif.gif";
+                    var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+                    
+                    string cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
+
+                    string arg = outputvisibility + cropgifcommand;
+                    Process proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "cmd.exe",
+                            Arguments = arg,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+
+                    proc.Start();
+                    proc.WaitForExit();
+
+                    pictureBox2.ImageLocation = tmpgifpath;
+                    mainForm.LoadActiveImage(tmpgifpath);
+                    tmpimgpath = tmpgifpath;
+                }
+                else
+                {
+                    var croppedBitmap = new Bitmap((int)bitmapRect.Width, (int)bitmapRect.Height, OriginalPictureboxImage.PixelFormat);
+                    using (var g = Graphics.FromImage(croppedBitmap))
+                    {
+                        g.DrawImage(OriginalPictureboxImage, new Rectangle(Point.Empty, Size.Round(bitmapRect.Size)),
+                                    bitmapRect, GraphicsUnit.Pixel);
+                        pictureBox2.Image = croppedBitmap;
+                        mainForm.LoadActiveImage(croppedBitmap);
+                    }
                 }
             }
             catch (Exception ex)
             {
             }
+
         }
 
-        private void button_accept_Click(object sender, EventArgs e)
+        private void button_save_Click(object sender, EventArgs e)
         {
-            this.mainForm.cropSaveImage(checkBox_overwrite.Checked);
+            if (mainForm.check_if_animated_gif(sourcepath))
+            {
+                mainForm.SaveGifImage(tmpimgpath, sourcepath, checkBox_overwrite.Checked);
+            }
+            else {
+                this.mainForm.cropSaveImage(checkBox_overwrite.Checked);
+            }
+
         }
 
         private void Form_Crop_FormClosing(object sender, FormClosingEventArgs e)
@@ -248,12 +298,13 @@ namespace ImageStitcher
 
         private void button_revert_Click(object sender, EventArgs e)
         {
-            mainForm.LoadActiveImage(source_image);
+            mainForm.ReloadPanel(mainForm.activePanel);
             pictureBox1.Visible = true;
-            pictureBox1.Image = source_image;
+            Load_img(sourcepath);
+            //pictureBox1.Image = source_image;
         }
 
-        private void DarkModeRefresh()
+        private void DarkModeRefresh() 
         {
             if (Settings.Default.DarkMode == true)
             {
