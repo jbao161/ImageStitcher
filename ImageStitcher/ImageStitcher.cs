@@ -1381,21 +1381,25 @@ namespace ImageStitcher
             if (!String.Equals("", tempFileName))
             {
                 // create our startup process and argument
-                var psi = new ProcessStartInfo(
-                    "rundll32.exe",
-                    String.Format(
-                        "\"{0}{1}\", ImageView_Fullscreen {2}",
-                        Environment.Is64BitOperatingSystem ?
-                            path.Replace(" (x86)", "") :
-                            path
-                            ,
-                        @"\Windows Photo Viewer\PhotoViewer.dll",
-                        tempFileName)
-                    );
+                //var psi = new ProcessStartInfo(
+                //    "rundll32.exe",
+                //    String.Format(
+                //        "\"{0}{1}\", ImageView_Fullscreen {2}",
+                //        Environment.Is64BitOperatingSystem ?
+                //            path.Replace(" (x86)", "") :
+                //            path
+                //            ,
+                //        @"\Windows Photo Viewer\PhotoViewer.dll",
+                //        tempFileName)
+                //    );
 
-                psi.UseShellExecute = false;
+                //psi.UseShellExecute = false;
 
-                var viewer = Process.Start(psi);
+                //var viewer = Process.Start(psi);
+
+
+                string iePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
+                Process.Start(iePath, "\""+tempFileName+"\"");
             }
         }
 
