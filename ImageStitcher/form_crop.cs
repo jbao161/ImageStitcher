@@ -212,9 +212,12 @@ namespace ImageStitcher
  
                     string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpgif.gif";
                     var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
-                    
-                    string cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
 
+                    string cropgifcommand = "";
+                    // cmd for ffmpeg. quality is bad
+                    //cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
+                    // cmd for imagemagick. good quality
+                    cropgifcommand = $"magick convert \"{sourcepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize \"{tmpgifpath}\"";
                     string arg = outputvisibility + cropgifcommand;
                     Process proc = new Process
                     {

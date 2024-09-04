@@ -194,7 +194,9 @@ namespace ImageStitcher
                 this.checkBox_showfilename.Checked = Settings.Default.showinfo;
                 this.checkBox_hotkeyboth.Checked = Settings.Default.HotkeyBoth;
 
+                // create tmp folder
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
+                if (!Directory.Exists(tmpAppDataPath)) Directory.CreateDirectory(tmpAppDataPath);
 
                 // try to load the last opened file, or its directory if file could not be opened
                 if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel == 0)
@@ -244,8 +246,6 @@ namespace ImageStitcher
 
                 // apply dark light colors
                 DarkModeRefresh();
-
-                // deselect all elements
 
 
             }
@@ -1651,7 +1651,8 @@ namespace ImageStitcher
                     Console.WriteLine(ioex.Message);
                 }
                 savedYes = true;
-            } else
+            }
+            else
             if (!savedialog) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
@@ -1684,6 +1685,18 @@ namespace ImageStitcher
                 };
                 Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
                 Process.Start(info);
+            }
+            // delete temporary file if save was successful
+            if (savedYes)
+            {
+                try
+                {
+                    File.Delete(tmpgifpath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("{0}", ex);
+                }
             }
         }
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2033,7 +2046,7 @@ namespace ImageStitcher
 
         private void clearTmpAppData()
         {
-            if (File.Exists(tmpAppDataPath))
+            if (Directory.Exists(tmpAppDataPath))
                 Directory.Delete(tmpAppDataPath, true);
         }
 
