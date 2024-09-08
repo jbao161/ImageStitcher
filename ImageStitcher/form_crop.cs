@@ -79,8 +79,12 @@ namespace ImageStitcher
             {
                 this.Left = pbll;
                 this.Top = pblt;
-                this.Width = pblw;
-                this.Height = pblh;
+
+                if (this.mainForm.numberofimagepanels == 2)
+                {
+                    this.Width = pblw;
+                    this.Height = pblh;
+                }
             }
             if (targetpicturebox == 1)
             {

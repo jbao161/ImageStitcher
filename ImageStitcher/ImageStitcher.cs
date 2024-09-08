@@ -2206,10 +2206,12 @@ namespace ImageStitcher
             Point location = button_crop.PointToScreen(Point.Empty);
             location.X += button_crop.Width / 2;
             crop_window.pntLocation = location;
-
+            
             String image_path = "";
-            if (activePanel == 0 && imageFilesLeftPanel != null && imageCountLeftPanel != 0) image_path = imageFilesLeftPanel[imageIndexLeftPanel];
+            if (activePanel == 0 && imageFilesLeftPanel != null && imageCountLeftPanel != 0) image_path = imageFilesLeftPanel[imageIndexLeftPanel]; crop_window.Width = splitContainer_bothimages.Width;
+            crop_window.Height = splitContainer_bothimages.Height;
             if (activePanel == 1 && imageFilesRightPanel != null && imageCountRightPanel != 0) image_path = imageFilesRightPanel[imageIndexRightPanel];
+
             if (!String.IsNullOrEmpty(image_path))
             {
                 crop_window.Load_img(image_path);
@@ -2431,7 +2433,7 @@ namespace ImageStitcher
             return null;
         }
 
-        int numberofimagepanels = 2;
+        public int numberofimagepanels = 0;
         private void set_NumberOfPanels(int npanels)
         {
             if (npanels == 1)

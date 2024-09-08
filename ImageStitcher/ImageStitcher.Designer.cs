@@ -84,6 +84,8 @@
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -474,7 +476,7 @@
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 480);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
             this.contextMenu_image.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_image_Opening);
             // 
             // editToolStripMenuItem
@@ -640,6 +642,18 @@
             this.jumpBackToolStripMenuItem.Text = "Jump Back";
             this.jumpBackToolStripMenuItem.Click += new System.EventHandler(this.JumpBackToolStripMenuItem_Click);
             // 
+            // imageList1
+            // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // imageList2
+            // 
+            this.imageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageList2.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -729,6 +743,8 @@
         private System.Windows.Forms.TextBox textBox_extfilter;
         private System.Windows.Forms.SaveFileDialog saveFileDialog2;
         private System.Windows.Forms.Button button_copy;
+        private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.ImageList imageList2;
     }
 }
 
