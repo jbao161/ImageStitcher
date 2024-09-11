@@ -104,6 +104,7 @@ namespace ImageStitcher
 
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath });
+            firstload = false;
         }
         public MainWindow(string filepath, bool loadsubfolders)
         {
@@ -111,6 +112,7 @@ namespace ImageStitcher
 
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath }, loadsubfolders);
+            firstload = false;
         }
         public MainWindow(string leftfilepath, string rightfilepath)
         {
@@ -119,6 +121,7 @@ namespace ImageStitcher
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { leftfilepath });
             DragDropHandler(1, new String[] { rightfilepath });
+            firstload = false;
         }
         public MainWindow(string leftfilepath, string rightfilepath, bool loadsubfolders)
         {
@@ -127,6 +130,7 @@ namespace ImageStitcher
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { leftfilepath }, loadsubfolders);
             DragDropHandler(1, new String[] { rightfilepath }, loadsubfolders);
+            firstload = false;
         }
         public MainWindow(string leftfilepath, string rightfilepath, bool lsub, bool rsub)
         {
@@ -135,6 +139,7 @@ namespace ImageStitcher
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { leftfilepath }, lsub);
             DragDropHandler(1, new String[] { rightfilepath }, rsub);
+            firstload = false;
         }
         private void UpdateLabelImageIndex()
         {
@@ -219,47 +224,7 @@ namespace ImageStitcher
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
                 if (!Directory.Exists(tmpAppDataPath)) Directory.CreateDirectory(tmpAppDataPath);
 
-                // try to load the last opened file, or its directory if file could not be opened
-                if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel == 0)
-                {
-                    try
-                    {
-                        DragDropHandler(0, new string[] { Settings.Default.LastFile });
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            DragDropHandler(0, new string[] { System.IO.Path.GetDirectoryName(Settings.Default.LastFile) });
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                    }
-                }
-                // load default directory
-                if (Settings.Default.loaddefaultdir && !String.IsNullOrEmpty(Settings.Default.DefaultDirectory) && imageCountLeftPanel == 0)
-                {
-                    try
-                    {
-                        // optionally run a custom external script
-                        if (Settings.Default.scriptonload)
-                        {
-                            System.Diagnostics.Process process = new System.Diagnostics.Process();
-                            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                            process.StartInfo.FileName = "cmd.exe";
-                            process.StartInfo.Arguments = "/C " + "\"" + Settings.Default.scriptloc + "\"";
-                            process.Start();
-                            if (Settings.Default.scriptwait) process.WaitForExit();
-                        }
-                        DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
-                        DragDropHandler(1, new string[] { Settings.Default.DefaultDirectory });
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
+                
 
 
                 // set number of image panels
@@ -343,7 +308,12 @@ namespace ImageStitcher
                     sublist= EnumerateImageFiles(filepaths[i], allowedImageExtensions, loadsubfolders);
                         imageList.AddRange(sublist);
                 }
-                } else if (isImage)
+                    if (imageList.Count == 0)
+                    {
+                        ClearPanel(targetPanel);
+                        return;
+                    }
+                } else if (isImage) // if opening an image, never load subfolders in its directory
                 {
                      imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
                 }
@@ -2511,6 +2481,52 @@ namespace ImageStitcher
         private void button_copy_Click(object sender, EventArgs e)
         {
             Copycut(activePanel, "file", false);
+        }
+
+        bool firstload = true;
+        private void MainWindow_Shown(object sender, EventArgs e)
+        {
+            // try to load the last opened file, or its directory if file could not be opened
+            if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel == 0 && firstload)
+            {
+                try
+                {
+                    DragDropHandler(0, new string[] { Settings.Default.LastFile });
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        DragDropHandler(0, new string[] { System.IO.Path.GetDirectoryName(Settings.Default.LastFile) });
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+            // load default directory
+            if (Settings.Default.loaddefaultdir && !String.IsNullOrEmpty(Settings.Default.DefaultDirectory) && imageCountLeftPanel == 0 && imageCountRightPanel == 0 && firstload)
+            {
+                try
+                {
+                    // optionally run a custom external script
+                    if (Settings.Default.scriptonload)
+                    {
+                        System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        process.StartInfo.FileName = "cmd.exe";
+                        process.StartInfo.Arguments = "/C " + "\"" + Settings.Default.scriptloc + "\"";
+                        process.Start();
+                        if (Settings.Default.scriptwait) process.WaitForExit();
+                    }
+                    DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
+                    DragDropHandler(1, new string[] { Settings.Default.DefaultDirectory });
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
     } // end MainWindow : Form
 }

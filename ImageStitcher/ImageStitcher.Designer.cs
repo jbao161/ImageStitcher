@@ -668,6 +668,7 @@
             this.Text = "Image Stitcher";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.MainWindow_Load);
+            this.Shown += new System.EventHandler(this.MainWindow_Shown);
             this.panel_bothimages.ResumeLayout(false);
             this.splitContainer_bothimages.Panel1.ResumeLayout(false);
             this.splitContainer_bothimages.Panel1.PerformLayout();

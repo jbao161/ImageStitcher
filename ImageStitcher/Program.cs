@@ -32,9 +32,9 @@ namespace ImageStitcher
                 case 2: // load two images or load one image with subfolder setting
                 {
                         bool loadsubfolders = false;
-                        if (args[2].ToString().Equals("-sub")|| args[2].ToString().Equals("-nsub"))
+                        if (args[1].ToString().Equals("-sub")|| args[1].ToString().Equals("-nsub"))
                         {
-                            loadsubfolders = args[2].ToString().Equals("-sub") ? true : false;
+                            loadsubfolders = args[1].ToString().Equals("-sub") ? true : false;
                             MainWindow mainWindow = new MainWindow(args[0], loadsubfolders);
                             Application.Run(mainWindow);
                         }
