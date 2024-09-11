@@ -1,31 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-
-using System;
-using System.IO;
-using System.Security.Permissions;
 using System.Drawing;
-using System.Net;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Threading;
-using System.Windows.Forms.Layout;
-using Microsoft.Win32;
-
+using System.Windows.Forms;
 
 namespace ImageStitcher
 {
-
-
     public class PictureBoxS : PictureBox
     {
         private bool currentlyAnimating;
@@ -33,7 +11,7 @@ namespace ImageStitcher
 
         public object ParentInternal { get; private set; }
 
-         void  Animate()
+        private void Animate()
         {
             Animate(!DesignMode && Visible && Enabled && ParentInternal != null);
         }

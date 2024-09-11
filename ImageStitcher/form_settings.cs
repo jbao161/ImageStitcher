@@ -1,12 +1,6 @@
 ﻿using ImageStitcher.Properties;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using System.Windows.Forms;
 
@@ -18,13 +12,16 @@ namespace ImageStitcher
         {
             InitializeComponent();
         }
+
         public Point pntLocation;
         private MainWindow mainForm = null;
+
         public form_settings(MainWindow callingForm)
         { // https://stackoverflow.com/questions/1665533/communicate-between-two-windows-forms-in-c-sharp
             mainForm = callingForm as MainWindow;
             InitializeComponent();
         }
+
         private void button_browsedir_Click(object sender, EventArgs e)
         {
             var dialog = new FolderSelectDialog
@@ -37,6 +34,7 @@ namespace ImageStitcher
                 textBox_defaultdir.Text = dialog.FileName;
             }
         }
+
         private void CheckBounds()
         { //https://social.msdn.microsoft.com/Forums/vstudio/en-US/aa5e617a-6955-47f5-8b8b-6839f38944ba/how-to-restrict-a-window-move-and-grow-within-screen-in-wpf?forum=wpf
             var height = System.Windows.SystemParameters.PrimaryScreenHeight;
@@ -51,6 +49,7 @@ namespace ImageStitcher
             if (this.Left + this.Width > width)
                 this.Left = (int)(width - this.Width);
         }
+
         private void form_settings_Load(object sender, EventArgs e)
         {
             pntLocation.X -= this.Size.Width / 2;
@@ -95,7 +94,7 @@ namespace ImageStitcher
                 InitialDirectory = textBox_scriptloc.Text,
                 Title = "Select a file to run at startup"
             };
-            if (dialog.ShowDialog()==DialogResult.OK)
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
                 textBox_scriptloc.Text = dialog.FileName;
             }

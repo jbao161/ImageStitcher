@@ -19,20 +19,22 @@ namespace ImageStitcher
             {
                 case 0: // load nothing
                     {
-                    MainWindow mainWindow = new MainWindow();
-                    Application.Run(mainWindow);
+                        MainWindow mainWindow = new MainWindow();
+                        Application.Run(mainWindow);
                     }
-                break;
+                    break;
+
                 case 1: // load one image
-                {
-                    MainWindow mainWindow = new MainWindow(args[0]);
-                    Application.Run(mainWindow);
-                }
-                break;
+                    {
+                        MainWindow mainWindow = new MainWindow(args[0]);
+                        Application.Run(mainWindow);
+                    }
+                    break;
+
                 case 2: // load two images or load one image with subfolder setting
-                {
+                    {
                         bool loadsubfolders = false;
-                        if (args[1].ToString().Equals("-sub")|| args[1].ToString().Equals("-nsub"))
+                        if (args[1].ToString().Equals("-sub") || args[1].ToString().Equals("-nsub"))
                         {
                             loadsubfolders = args[1].ToString().Equals("-sub") ? true : false;
                             MainWindow mainWindow = new MainWindow(args[0], loadsubfolders);
@@ -43,8 +45,9 @@ namespace ImageStitcher
                             MainWindow mainWindow = new MainWindow(args[0], args[1]);
                             Application.Run(mainWindow);
                         }
-                }
-                break;
+                    }
+                    break;
+
                 case 3: // load two file/folders. same subfolder settings
                     {
                         bool loadsubfolders = false;
@@ -57,6 +60,7 @@ namespace ImageStitcher
                         }
                     }
                     break;
+
                 case 4: // load two files/folders. individual subfolder settings
                     {
                         bool lsub = false;

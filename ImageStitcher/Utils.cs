@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Shapes;
 
 namespace ImageStitcher
 {
@@ -15,6 +9,7 @@ namespace ImageStitcher
         {
             return new System.IO.FileInfo(path).Length;
         }
+
         public static string FileSizetoString(long byteCount)
         {
             string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
@@ -25,6 +20,7 @@ namespace ImageStitcher
             double num = Math.Round(bytes / Math.Pow(1024, place), 1);
             return (Math.Sign(byteCount) * num).ToString() + " " + suf[place];
         }
+
         public static string GetFileSizeString(String path)
         {
             return FileSizetoString(GetFileSize(path));

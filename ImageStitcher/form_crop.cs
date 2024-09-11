@@ -1,16 +1,7 @@
 ﻿using ImageStitcher.Properties;
-using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using System.Windows.Forms;
 
@@ -20,23 +11,27 @@ namespace ImageStitcher
     {
         public Point pntLocation;
         private MainWindow mainForm = null;
+
         public Form_Crop(MainWindow callingForm)
         { // https://stackoverflow.com/questions/1665533/communicate-between-two-windows-forms-in-c-sharp
             mainForm = callingForm as MainWindow;
             InitializeComponent();
         }
+
         public Image source_image;
+
         public Form_Crop()
         {
             InitializeComponent();
             //Set crop control for each picturebox
-
         }
-        public string sourcepath="";
+
+        public string sourcepath = "";
         public string tmpimgpath = "";
+
         public void Load_img(String img_path)
         {
-            if (String.IsNullOrEmpty(sourcepath)) { sourcepath = img_path; } else {tmpimgpath = img_path;}
+            if (String.IsNullOrEmpty(sourcepath)) { sourcepath = img_path; } else { tmpimgpath = img_path; }
             using (Bitmap bm = new Bitmap(img_path))
             { // does not lock image file
                 source_image = new Bitmap(bm);
@@ -47,6 +42,7 @@ namespace ImageStitcher
             }
             Update();
         }
+
         private void CheckBounds()
         { //https://social.msdn.microsoft.com/Forums/vstudio/en-US/aa5e617a-6955-47f5-8b8b-6839f38944ba/how-to-restrict-a-window-move-and-grow-within-screen-in-wpf?forum=wpf
             var height = System.Windows.SystemParameters.PrimaryScreenHeight;
@@ -63,7 +59,7 @@ namespace ImageStitcher
         }
 
         private void resize_to_picturebox()
-        { // resizes the crop form window on load to match the size of the source picture 
+        { // resizes the crop form window on load to match the size of the source picture
             int[] cropWindowPositions = this.mainForm.getCropWindowPositions();
             int pblw, pblh, pbll, pblt, pbrw, pbrh, pbrl, pbrt;
             pblw = cropWindowPositions[0];
@@ -94,6 +90,7 @@ namespace ImageStitcher
                 this.Height = pbrh;
             }
         }
+
         private void form_crop_load(object sender, EventArgs e)
         {
             pntLocation.X -= this.Size.Width / 2;
@@ -130,27 +127,25 @@ namespace ImageStitcher
             return result;
         }
 
-        int xUp, yUp, xDown, yDown;
-        Rectangle rectCropArea;
-        Rectangle mRect;
+        private int xUp, yUp, xDown, yDown;
+        private Rectangle rectCropArea;
+        private Rectangle mRect;
 
-        void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             var coordinates = pictureBox1.PointToClient(Cursor.Position);
             xUp = coordinates.X;
             yUp = coordinates.Y;
 
-            Rectangle rec = new Rectangle(Math.Min(xDown,xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+            Rectangle rec = new Rectangle(Math.Min(xDown, xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
 
             using (Pen pen = new Pen(Color.Green, 2))
             {
-
                 pictureBox1.CreateGraphics().DrawRectangle(pen, rec);
             }
 
             Size pbsize = GetDisplayedImageSize(pictureBox1);
 
-    
             double xscale, yscale;
             xscale = (double)source_image.Width / (double)pbsize.Width;
             yscale = (double)source_image.Height / (double)pbsize.Height;
@@ -161,7 +156,7 @@ namespace ImageStitcher
             scaledheight = (int)(Math.Abs(yUp - yDown) * yscale);
 
             int offsetxDown = xDown;
-            int offsetyDown = yDown; 
+            int offsetyDown = yDown;
 
             if (source_image.Height > source_image.Width)
             {
@@ -177,9 +172,10 @@ namespace ImageStitcher
 
             //rectCropArea = new Rectangle(offsetxDown, offsetyDown, scaledwidth, scaledheight);
             // allow crop area to be dragged from any corner, always start rectangle from top left corner
-            rectCropArea = new Rectangle(Math.Min(xUp,xDown), Math.Min(yUp,yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+            rectCropArea = new Rectangle(Math.Min(xUp, xDown), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
         }
-        void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             pictureBox1.Invalidate();
             var coordinates = pictureBox1.PointToClient(Cursor.Position);
@@ -188,7 +184,7 @@ namespace ImageStitcher
 
             mRect = new Rectangle(e.X, e.Y, 0, 0);
         }
-        
+
         private void btnCrop_Click(object sender, EventArgs e)
         {
             try
@@ -212,8 +208,8 @@ namespace ImageStitcher
                     int cropAreaLeft = (int)bitmapRect.Left;
                     int cropAreaTop = (int)bitmapRect.Top;
                     string outputvisibility = "/C ";
-                    // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
- 
+                    // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output
+
                     string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpgif.gif";
                     var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
 
@@ -256,7 +252,6 @@ namespace ImageStitcher
             catch (Exception ex)
             {
             }
-
         }
 
         private void button_save_Click(object sender, EventArgs e)
@@ -265,10 +260,10 @@ namespace ImageStitcher
             {
                 mainForm.SaveGifImage(tmpimgpath, sourcepath, checkBox_overwrite.Checked);
             }
-            else {
+            else
+            {
                 this.mainForm.cropSaveImage(checkBox_overwrite.Checked);
             }
-
         }
 
         private void Form_Crop_FormClosing(object sender, FormClosingEventArgs e)
@@ -276,6 +271,7 @@ namespace ImageStitcher
             Settings.Default.CropOverwrite = checkBox_overwrite.Checked;
             Settings.Default.Save();
         }
+
         //check if mouse is down and being draged, then draw rectangle
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
@@ -311,18 +307,16 @@ namespace ImageStitcher
             //pictureBox1.Image = source_image;
         }
 
-        private void DarkModeRefresh() 
+        private void DarkModeRefresh()
         {
             if (Settings.Default.DarkMode == true)
             {
-
                 Color darkcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColor);
                 Color darkaccentcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorAccent);
- 
+
                 this.BackColor = darkaccentcolor;
 
                 Color darkcolortext = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorText);
-
 
                 foreach (Control subC in panel1.Controls)
                 {
@@ -335,7 +329,6 @@ namespace ImageStitcher
                         ((Button)subC).FlatAppearance.BorderColor = darkcolor;
                         ((Button)subC).ForeColor = darkcolortext;
                     }
-
                 }
                 DarkTitleBarClass.UseImmersiveDarkMode(Handle, true);
             }
@@ -353,7 +346,6 @@ namespace ImageStitcher
                         ((Button)subC).FlatStyle = FlatStyle.Standard;
                         ((Button)subC).FlatAppearance.BorderColor = SystemColors.Control;
                     }
-
                 }
                 DarkTitleBarClass.UseImmersiveDarkMode(Handle, false);
                 this.BackColor = SystemColors.Control;

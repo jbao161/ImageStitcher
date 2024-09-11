@@ -1,32 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageStitcher
 {
-    /// <devdoc> 
+    /// <devdoc>
     ///     ImageAnimator nested helper class used to store extra image state info.
-    /// </devdoc>  
-    class ImageInfoS
+    /// </devdoc>
+    internal class ImageInfoS
     {
-        const int PropertyTagFrameDelay = 0x5100;
+        private const int PropertyTagFrameDelay = 0x5100;
 
-        Image image;
-        int frame;
-        int frameCount;
-        bool frameDirty;
-        bool animated;
-        EventHandler onFrameChangedHandler;
-        int[] frameDelay;
-        int frameTimer;
+        private Image image;
+        private int frame;
+        private int frameCount;
+        private bool frameDirty;
+        private bool animated;
+        private EventHandler onFrameChangedHandler;
+        private int[] frameDelay;
+        private int frameTimer;
 
-        /// <devdoc> 
-        /// </devdoc>  
+        /// <devdoc>
+        /// </devdoc>
         public ImageInfoS(Image image)
         {
             this.image = image;
@@ -38,7 +34,7 @@ namespace ImageStitcher
 
                 PropertyItem frameDelayItem = image.GetPropertyItem(PropertyTagFrameDelay);
 
-                // If the image does not have a frame delay, we just return 0.                                     
+                // If the image does not have a frame delay, we just return 0.
                 //
                 if (frameDelayItem != null)
                 {
@@ -63,9 +59,9 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     Whether the image supports animation.
-        /// </devdoc>  
+        /// </devdoc>
         public bool Animated
         {
             get
@@ -74,9 +70,9 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     The current frame.
-        /// </devdoc> 
+        /// </devdoc>
         public int Frame
         {
             get
@@ -103,9 +99,9 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     The current frame has not been updated.
-        /// </devdoc> 
+        /// </devdoc>
         public bool FrameDirty
         {
             get
@@ -114,8 +110,8 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
-        /// </devdoc> 
+        /// <devdoc>
+        /// </devdoc>
         public EventHandler FrameChangedHandler
         {
             get
@@ -128,9 +124,9 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     The number of frames in the image.
-        /// </devdoc> 
+        /// </devdoc>
         public int FrameCount
         {
             get
@@ -139,16 +135,16 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     The delay associated with the frame at the specified index.
-        /// </devdoc> 
+        /// </devdoc>
         public int FrameDelay(int frame)
         {
             return frameDelay[frame];
         }
 
-        /// <devdoc> 
-        /// </devdoc> 
+        /// <devdoc>
+        /// </devdoc>
         internal int FrameTimer
         {
             get
@@ -161,9 +157,9 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     The image this object wraps.
-        /// </devdoc> 
+        /// </devdoc>
         internal Image Image
         {
             get
@@ -172,9 +168,9 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     Selects the current frame as the active frame in the image.
-        /// </devdoc> 
+        /// </devdoc>
         internal void UpdateFrame()
         {
             if (frameDirty)
@@ -184,9 +180,9 @@ namespace ImageStitcher
             }
         }
 
-        /// <devdoc> 
+        /// <devdoc>
         ///     Raises the FrameChanged event.
-        /// </devdoc> 
+        /// </devdoc>
         protected void OnFrameChanged(EventArgs e)
         {
             if (this.onFrameChangedHandler != null)
@@ -195,5 +191,4 @@ namespace ImageStitcher
             }
         }
     }
-
 }
