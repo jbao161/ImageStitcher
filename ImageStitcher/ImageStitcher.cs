@@ -105,7 +105,13 @@ namespace ImageStitcher
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath });
         }
+        public MainWindow(string filepath, bool loadsubfolders)
+        {
+            InitializeComponent();
 
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { filepath }, loadsubfolders);
+        }
         public MainWindow(string leftfilepath, string rightfilepath)
         {
             InitializeComponent();
@@ -114,7 +120,22 @@ namespace ImageStitcher
             DragDropHandler(0, new String[] { leftfilepath });
             DragDropHandler(1, new String[] { rightfilepath });
         }
+        public MainWindow(string leftfilepath, string rightfilepath, bool loadsubfolders)
+        {
+            InitializeComponent();
 
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { leftfilepath }, loadsubfolders);
+            DragDropHandler(1, new String[] { rightfilepath }, loadsubfolders);
+        }
+        public MainWindow(string leftfilepath, string rightfilepath, bool lsub, bool rsub)
+        {
+            InitializeComponent();
+
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { leftfilepath }, lsub);
+            DragDropHandler(1, new String[] { rightfilepath }, rsub);
+        }
         private void UpdateLabelImageIndex()
         {
             label_imageindex_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : ((imageIndexLeftPanel + 1) + "/" + imageCountLeftPanel);
@@ -291,8 +312,11 @@ namespace ImageStitcher
          * picture files from Windows explorer onto the panel to load the image
          */
         // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
-
         private void DragDropHandler(int targetPanel, string[] filepaths)
+        {
+            DragDropHandler(targetPanel, filepaths, Settings.Default.LoadSubfolders);
+        }
+            private void DragDropHandler(int targetPanel, string[] filepaths, bool loadsubfolders)
         {
             //if (String.IsNullOrEmpty(filepaths[0])) return;
             try
@@ -316,7 +340,7 @@ namespace ImageStitcher
                     for (int i = 0; i< filepaths.Length; i++)
                 {
 
-                    sublist= EnumerateImageFiles(filepaths[i], allowedImageExtensions, Settings.Default.LoadSubfolders);
+                    sublist= EnumerateImageFiles(filepaths[i], allowedImageExtensions, loadsubfolders);
                         imageList.AddRange(sublist);
                 }
                 } else if (isImage)
