@@ -1509,9 +1509,11 @@ namespace ImageStitcher
             string fileExt = System.IO.Path.GetExtension(ofilepath);
             string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
             string tmpImage = tmpAppDataPath + tmpfilename;
+            string finalImage = Path.ChangeExtension(ofilepath, ".jpg");
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
             System.IO.File.Move(ofilepath, tmpImage);
-            arg = $"/C ffmpeg.exe -nostdin -i \"{tmpImage}\"  \"{ofilepath}\" && del \"{tmpImage}\"";
+            string argdel = "&& del \"{tmpImage}\"";
+            arg = $"/C magick  \"{tmpImage}\"  \"{finalImage}\"";
             Process proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -1520,11 +1522,20 @@ namespace ImageStitcher
                     Arguments = arg,
                 }
             };
-
+            
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
 
-            LoadImage(contextmenufocus, ofilepath);
+            if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+            {
+                imageFilesLeftPanel[imageIndexLeftPanel] = finalImage;
+            }
+            if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+            {
+                imageFilesRightPanel[imageIndexRightPanel] = finalImage;
+            }
+
+            LoadImage(contextmenufocus, finalImage);
         }
 
         private void SaveImage(Image targetimage, string filename, string directorypath, Boolean savedialog)
