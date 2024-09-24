@@ -2023,7 +2023,7 @@ namespace ImageStitcher
             targetpicturebox.Image = bmp;
         }
 
-        private bool LoadImage(int targetPanel, string imagePath)
+        public bool LoadImage(int targetPanel, string imagePath)
         {
             try
             {
@@ -2233,7 +2233,7 @@ namespace ImageStitcher
 
             if (!String.IsNullOrEmpty(image_path))
             {
-                crop_window.Load_img(image_path);
+                crop_window.Load_img(image_path, activePanel);
                 crop_window.Show();
             }
         }
@@ -2258,18 +2258,18 @@ namespace ImageStitcher
             return result;
         }
 
-        public void cropSaveImage(bool overwrite)
+        public void cropSaveImage(bool overwrite, int targetpanel)
         {
             string filename = "", directorypath = "";
             bool savedialog = true;
             if (overwrite) savedialog = false;
-            if ((activePanel == 0) && pictureBox_leftpanel.Image != null)
+            if ((targetpanel == 0) && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesLeftPanel[imageIndexLeftPanel]); }
                 Image targetimage = pictureBox_leftpanel.Image;
                 SaveImage(targetimage, filename, directorypath, savedialog);
             }
-            if ((activePanel == 1) && pictureBox_rightpanel.Image != null)
+            if ((targetpanel == 1) && pictureBox_rightpanel.Image != null)
             {
                 Image targetimage = pictureBox_rightpanel.Image;
                 if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesRightPanel[imageIndexRightPanel]); }
@@ -2277,9 +2277,9 @@ namespace ImageStitcher
             }
         }
 
-        public void LoadActiveImage(Image targetimage)
+        public void LoadImage(int targetpanel, Image targetimage)
         {
-            PictureBox targetpictureBox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            PictureBox targetpictureBox = targetpanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
             targetpictureBox.Image = targetimage;
             targetpictureBox.Invalidate();
             Resize_imagepanels();

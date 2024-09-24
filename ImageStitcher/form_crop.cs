@@ -19,6 +19,7 @@ namespace ImageStitcher
         }
 
         public Image source_image;
+        public int source_panel;
 
         public Form_Crop()
         {
@@ -29,16 +30,22 @@ namespace ImageStitcher
         public string sourcepath = "";
         public string tmpimgpath = "";
 
-        public void Load_img(String img_path)
+        public void Load_img(String img_path, int panelnum)
         {
             if (String.IsNullOrEmpty(sourcepath)) { sourcepath = img_path; } else { tmpimgpath = img_path; }
-            using (Bitmap bm = new Bitmap(img_path))
-            { // does not lock image file
-                source_image = new Bitmap(bm);
+            if (source_image == null){
+                using (Bitmap bm = new Bitmap(img_path))
+                { // does not lock image file
+                    source_image = new Bitmap(bm);
+                }
             }
+            source_panel = panelnum;
             if (System.IO.Path.GetExtension(img_path).ToLower().Equals(".gif"))
             {
                 pictureBox1.ImageLocation = img_path;
+            } else
+            {
+                pictureBox1.Image = source_image;
             }
             Update();
         }
@@ -98,7 +105,7 @@ namespace ImageStitcher
             this.Location = pntLocation;
             CheckBounds();
 
-            pictureBox1.Image = source_image;
+            //pictureBox1.Image = source_image; // already handled in image load
             resize_to_picturebox();
 
             checkBox_overwrite.Checked = Settings.Default.CropOverwrite;
@@ -234,7 +241,7 @@ namespace ImageStitcher
                     proc.WaitForExit();
 
                     pictureBox2.ImageLocation = tmpgifpath;
-                    mainForm.LoadActiveImage(tmpgifpath);
+                    mainForm.LoadImage(source_panel,tmpgifpath);
                     tmpimgpath = tmpgifpath;
                 }
                 else
@@ -245,7 +252,7 @@ namespace ImageStitcher
                         g.DrawImage(OriginalPictureboxImage, new Rectangle(Point.Empty, Size.Round(bitmapRect.Size)),
                                     bitmapRect, GraphicsUnit.Pixel);
                         pictureBox2.Image = croppedBitmap;
-                        mainForm.LoadActiveImage(croppedBitmap);
+                        mainForm.LoadImage(source_panel, croppedBitmap);
                     }
                 }
             }
@@ -258,11 +265,12 @@ namespace ImageStitcher
         {
             if (mainForm.check_if_animated_gif(sourcepath))
             {
+                if (String.Equals(tmpimgpath, sourcepath)) { return; }
                 mainForm.SaveGifImage(tmpimgpath, sourcepath, checkBox_overwrite.Checked);
             }
             else
             {
-                this.mainForm.cropSaveImage(checkBox_overwrite.Checked);
+                this.mainForm.cropSaveImage(checkBox_overwrite.Checked, source_panel);
             }
         }
 
@@ -301,9 +309,18 @@ namespace ImageStitcher
 
         private void button_revert_Click(object sender, EventArgs e)
         {
-            mainForm.ReloadPanel(mainForm.activePanel);
+            if (mainForm.check_if_animated_gif(sourcepath))
+            {
+                mainForm.ReloadPanel(source_panel);
+                tmpimgpath = sourcepath;
+                //rectCropArea = new Rectangle(0,0, source_image.Width, source_image.Height);
+            } else {
+                mainForm.LoadImage(source_panel, source_image);
+            }
+
             pictureBox1.Visible = true;
-            Load_img(sourcepath);
+            Load_img(sourcepath, source_panel);
+
             //pictureBox1.Image = source_image;
         }
 
