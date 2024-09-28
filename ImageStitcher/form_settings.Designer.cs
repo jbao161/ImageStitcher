@@ -46,6 +46,8 @@ namespace ImageStitcher
             this.checkBox_loadsubfolders = new System.Windows.Forms.CheckBox();
             this.textBox_openinwindows = new System.Windows.Forms.TextBox();
             this.label_openinwindows = new System.Windows.Forms.Label();
+            this.label_defaulteditor = new System.Windows.Forms.Label();
+            this.textBox_defaulteditor = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // checkBox_reversefileorder
@@ -180,11 +182,29 @@ namespace ImageStitcher
             this.label_openinwindows.TabIndex = 29;
             this.label_openinwindows.Text = "Open in Windows with...";
             // 
+            // label_defaulteditor
+            // 
+            this.label_defaulteditor.AutoSize = true;
+            this.label_defaulteditor.Location = new System.Drawing.Point(12, 194);
+            this.label_defaulteditor.Name = "label_defaulteditor";
+            this.label_defaulteditor.Size = new System.Drawing.Size(71, 13);
+            this.label_defaulteditor.TabIndex = 30;
+            this.label_defaulteditor.Text = "Default Editor";
+            // 
+            // textBox_defaulteditor
+            // 
+            this.textBox_defaulteditor.Location = new System.Drawing.Point(11, 210);
+            this.textBox_defaulteditor.Name = "textBox_defaulteditor";
+            this.textBox_defaulteditor.Size = new System.Drawing.Size(224, 20);
+            this.textBox_defaulteditor.TabIndex = 31;
+            // 
             // form_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(329, 203);
+            this.ClientSize = new System.Drawing.Size(329, 262);
+            this.Controls.Add(this.textBox_defaulteditor);
+            this.Controls.Add(this.label_defaulteditor);
             this.Controls.Add(this.label_openinwindows);
             this.Controls.Add(this.textBox_openinwindows);
             this.Controls.Add(this.checkBox_loadsubfolders);
@@ -222,5 +242,7 @@ namespace ImageStitcher
         private System.Windows.Forms.CheckBox checkBox_loadsubfolders;
         private System.Windows.Forms.TextBox textBox_openinwindows;
         private System.Windows.Forms.Label label_openinwindows;
+        private System.Windows.Forms.Label label_defaulteditor;
+        private System.Windows.Forms.TextBox textBox_defaulteditor;
     }
 }

@@ -1276,17 +1276,25 @@ namespace ImageStitcher
         //https://stackoverflow.com/questions/16022188/open-an-image-with-the-windows-default-editor-in-c-sharp
         private void EditToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string imagepath = "";
+            string editorPath = "";
+
             if (contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesLeftPanel[imageIndexLeftPanel])
-                {
-                    Verb = "edit"
-                };
-                Process.Start(startInfo);
+                imagepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
-            if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
+            else if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel])
+                imagepath = imageFilesRightPanel[imageIndexRightPanel];
+            }
+            if (!String.IsNullOrEmpty(Settings.Default.DefaultEditor))
+            {
+                editorPath = Settings.Default.DefaultEditor;
+                Process.Start(editorPath, "\"" + imagepath + "\"");
+            }
+            else
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(imagepath)
                 {
                     Verb = "edit"
                 };

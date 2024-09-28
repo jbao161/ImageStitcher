@@ -382,5 +382,17 @@ namespace ImageStitcher.Properties {
                 this["DefaultWindowsOpen"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultEditor {
+            get {
+                return ((string)(this["DefaultEditor"]));
+            }
+            set {
+                this["DefaultEditor"] = value;
+            }
+        }
     }
 }
