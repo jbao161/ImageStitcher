@@ -370,5 +370,17 @@ namespace ImageStitcher.Properties {
                 this["lastsavedfolderStitch"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultWindowsOpen {
+            get {
+                return ((string)(this["DefaultWindowsOpen"]));
+            }
+            set {
+                this["DefaultWindowsOpen"] = value;
+            }
+        }
     }
 }

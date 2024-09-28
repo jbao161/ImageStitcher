@@ -66,6 +66,7 @@ namespace ImageStitcher
             textBox_scriptloc.Text = Settings.Default.scriptloc;
             checkBox_scriptwait.Checked = Settings.Default.scriptwait;
             checkBox_loadsubfolders.Checked = Settings.Default.LoadSubfolders;
+            textBox_openinwindows.Text = Settings.Default.DefaultWindowsOpen;
         }
 
         private void form_settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -79,6 +80,7 @@ namespace ImageStitcher
             Settings.Default.scriptloc = textBox_scriptloc.Text;
             Settings.Default.scriptwait = checkBox_scriptwait.Checked;
             Settings.Default.LoadSubfolders = checkBox_loadsubfolders.Checked;
+            Settings.Default.DefaultWindowsOpen = textBox_openinwindows.Text;
         }
 
         private void checkBox_darkskin_CheckedChanged(object sender, EventArgs e)

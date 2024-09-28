@@ -1402,6 +1402,8 @@ namespace ImageStitcher
                 //var viewer = Process.Start(psi);
 
                 string iePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
+                if (!String.IsNullOrEmpty(Settings.Default.DefaultWindowsOpen)){
+                    iePath = Settings.Default.DefaultWindowsOpen; }
                 Process.Start(iePath, "\"" + tempFileName + "\"");
             }
         }
