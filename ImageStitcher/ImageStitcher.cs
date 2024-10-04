@@ -172,7 +172,7 @@ namespace ImageStitcher
                     }
                     else
                     {
-                        imagepathR = imageFilesLeftPanel[imageIndexLeftPanel];
+                        imagepathR = imageFilesRightPanel[imageIndexRightPanel];
                         label_filename_rightpanel.Text = " " +
                         Directory.GetParent(imagepathR) + "\\" +
                         Path.GetFileName(imagepathR) + " " +
