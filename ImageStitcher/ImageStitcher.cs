@@ -10,17 +10,11 @@ using System.Drawing;
 
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-
-using CRNG = System.Security.Cryptography.RandomNumberGenerator;
 using Path = System.IO.Path;
 
 namespace ImageStitcher
@@ -155,14 +149,36 @@ namespace ImageStitcher
 
             if (checkBox_showfilename.Checked)
             {
+                string imagepathL = "";
+                string imagepathR = "";
                 try
                 {
-                    label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel])) + " " +
-                        (Utils.GetFileSizeString(imageFilesLeftPanel[imageIndexLeftPanel])) + " " +
+                    if (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0)
+                    {
+                        label_filename_leftpanel.Text = "";
+                    }
+                    else
+                    {
+                        imagepathL = imageFilesLeftPanel[imageIndexLeftPanel];
+                        label_filename_leftpanel.Text = " " +
+                        Directory.GetParent(imagepathL) + "\\" +
+                        Path.GetFileName(imagepathL) + " " +
+                        Utils.GetFileSizeString(imagepathL) + " " +
                         Utils.GetDimensionString(pictureBox_leftpanel.Image);
-                    label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " " + (System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel])) + " " +
-                        (Utils.GetFileSizeString(imageFilesRightPanel[imageIndexRightPanel])) + " " +
-                        Utils.GetDimensionString(pictureBox_rightpanel.Image); ;
+                    }
+                    if (imageIndexRightPanel == 0 && imageCountRightPanel == 0)
+                    {
+                        label_filename_rightpanel.Text = "";
+                    }
+                    else
+                    {
+                        imagepathR = imageFilesLeftPanel[imageIndexLeftPanel];
+                        label_filename_rightpanel.Text = " " +
+                        Directory.GetParent(imagepathR) + "\\" +
+                        Path.GetFileName(imagepathR) + " " +
+                        Utils.GetFileSizeString(imagepathR) + " " +
+                        Utils.GetDimensionString(pictureBox_rightpanel.Image);
+                    }
                 }
                 catch { }
             }
@@ -1410,8 +1426,10 @@ namespace ImageStitcher
                 //var viewer = Process.Start(psi);
 
                 string iePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
-                if (!String.IsNullOrEmpty(Settings.Default.DefaultWindowsOpen)){
-                    iePath = Settings.Default.DefaultWindowsOpen; }
+                if (!String.IsNullOrEmpty(Settings.Default.DefaultWindowsOpen))
+                {
+                    iePath = Settings.Default.DefaultWindowsOpen;
+                }
                 Process.Start(iePath, "\"" + tempFileName + "\"");
             }
         }
@@ -1532,7 +1550,7 @@ namespace ImageStitcher
                     Arguments = arg,
                 }
             };
-            
+
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
 
