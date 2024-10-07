@@ -2093,8 +2093,8 @@ namespace ImageStitcher
         public String tmpAppDataPath;
 
         private void clearTmpAppData()
-        {
-            if (Directory.Exists(tmpAppDataPath))
+        { //https://stackoverflow.com/questions/6392031/how-to-check-if-another-instance-of-the-application-is-running
+            if (Directory.Exists(tmpAppDataPath)& System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() ==1)
                 Directory.Delete(tmpAppDataPath, true);
         }
 
