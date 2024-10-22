@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.panel_bothimages = new System.Windows.Forms.Panel();
             this.splitContainer_bothimages = new System.Windows.Forms.SplitContainer();
+            this.label_imageindex_leftpanel = new System.Windows.Forms.Label();
             this.label_filename_leftpanel = new System.Windows.Forms.Label();
             this.pictureBox_leftpanel = new System.Windows.Forms.PictureBox();
             this.label_filename_rightpanel = new System.Windows.Forms.Label();
@@ -85,7 +86,6 @@
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
-            this.label_imageindex_leftpanel = new System.Windows.Forms.Label();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -138,6 +138,16 @@
             this.splitContainer_bothimages.TabStop = false;
             this.splitContainer_bothimages.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_bothimages_SplitterMoved);
             this.splitContainer_bothimages.MouseUp += new System.Windows.Forms.MouseEventHandler(this.splitContainer_bothimages_MouseUp);
+            // 
+            // label_imageindex_leftpanel
+            // 
+            this.label_imageindex_leftpanel.AutoSize = true;
+            this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 438);
+            this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
+            this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
+            this.label_imageindex_leftpanel.TabIndex = 3;
+            this.label_imageindex_leftpanel.Text = "label_imageindex_leftpanel";
             // 
             // label_filename_leftpanel
             // 
@@ -642,16 +652,6 @@
             this.imageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.imageList2.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // label_imageindex_leftpanel
-            // 
-            this.label_imageindex_leftpanel.AutoSize = true;
-            this.label_imageindex_leftpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label_imageindex_leftpanel.Location = new System.Drawing.Point(0, 438);
-            this.label_imageindex_leftpanel.Name = "label_imageindex_leftpanel";
-            this.label_imageindex_leftpanel.Size = new System.Drawing.Size(134, 13);
-            this.label_imageindex_leftpanel.TabIndex = 3;
-            this.label_imageindex_leftpanel.Text = "label_imageindex_leftpanel";
             // 
             // MainWindow
             // 

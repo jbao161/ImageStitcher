@@ -224,7 +224,7 @@ namespace ImageStitcher
                     // cmd for ffmpeg. quality is bad
                     //cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
                     // cmd for imagemagick. good quality
-                    cropgifcommand = $"magick convert \"{sourcepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize \"{tmpgifpath}\"";
+                    cropgifcommand = $"magick \"{sourcepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize \"{tmpgifpath}\"";
                     string arg = outputvisibility + cropgifcommand;
                     Process proc = new Process
                     {
