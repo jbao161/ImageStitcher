@@ -179,11 +179,16 @@ namespace ImageStitcher
                         Utils.GetFileSizeString(imagepathR) + " " +
                         Utils.GetDimensionString(pictureBox_rightpanel.Image);
                     }
+
+                    label_imageindex_leftpanel.Show();
+                    label_imageindex_rightpanel.Show();
                 }
                 catch { }
             }
             else
             {
+                label_imageindex_leftpanel.Hide();
+                label_imageindex_rightpanel.Hide();
                 label_filename_leftpanel.Text = "";
                 label_filename_rightpanel.Text = "";
             }
@@ -2327,56 +2332,47 @@ namespace ImageStitcher
         }
 
         private void webpToGifToolStripMenuItem_Click(object sender, EventArgs e)
-        { // requires Python, Pillow installed, and script set in path https://gist.github.com/nimatrueway/0e743d92056e2c5f995e25b848a1bdcd
-            // in the script, rename Python3 to Python if not found
-            string inputfilepath = "";
+        { 
+            string arg = "";
+            string ofilepath = "";
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                inputfilepath = imageFilesLeftPanel[imageIndexLeftPanel];
+                ofilepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                inputfilepath = imageFilesRightPanel[imageIndexRightPanel];
+                ofilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
-            string fileExt = System.IO.Path.GetExtension(inputfilepath);
-            string inputbackupfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
-            string inputbackupfilepath = tmpAppDataPath + inputbackupfilename;
+            string fileExt = System.IO.Path.GetExtension(ofilepath);
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
+            string tmpImage = tmpAppDataPath + tmpfilename;
+            string finalImage = Path.ChangeExtension(ofilepath, ".gif");
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
-
-            System.IO.File.Move(inputfilepath, inputbackupfilepath);
-            string outputfilepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(inputfilepath), System.IO.Path.GetFileNameWithoutExtension(inputfilepath)) + ".gif";
-            string tmpoutputfilepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(inputbackupfilepath), System.IO.Path.GetFileNameWithoutExtension(inputbackupfilepath)) + ".gif";
-
-            String cmd_webptogif = $"python_pillow_webp2gif.py \"{inputbackupfilepath}\"";
-            string outputvisibility = "/C ";
-            // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output
-            string arg = outputvisibility + cmd_webptogif;
-
+            System.IO.File.Move(ofilepath, tmpImage);
+            string argdel = "&& del \"{tmpImage}\"";
+            arg = $"/C magick  \"{tmpImage}\" -layers optimizetransparency \"{finalImage}\"";
             Process proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
                     Arguments = arg,
-                    UseShellExecute = false,
-                    CreateNoWindow = false
                 }
             };
 
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
 
-            System.IO.File.Move(tmpoutputfilepath, outputfilepath);
-
-            LoadImage(contextmenufocus, outputfilepath);
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                imageFilesLeftPanel[imageIndexLeftPanel] = outputfilepath;
+                imageFilesLeftPanel[imageIndexLeftPanel] = finalImage;
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                imageFilesRightPanel[imageIndexRightPanel] = outputfilepath;
+                imageFilesRightPanel[imageIndexRightPanel] = finalImage;
             }
+
+            LoadImage(contextmenufocus, finalImage);
         }
 
         private void button_settings_Click(object sender, EventArgs e)
@@ -2493,6 +2489,7 @@ namespace ImageStitcher
             if (npanels == 1)
             {
                 panel_bothimages.Controls.Add(pictureBox_leftpanel);
+                pictureBox_leftpanel.Controls.Add(label_imageindex_leftpanel);
                 numberofimagepanels = 1;
                 splitContainer_bothimages.Hide();
                 button_numberofpanels.Text = "Switch to Dual";
@@ -2501,6 +2498,7 @@ namespace ImageStitcher
             else if (npanels == 2)
             {
                 splitContainer_bothimages.Panel1.Controls.Add(pictureBox_leftpanel);
+                pictureBox_leftpanel.Controls.Add(label_imageindex_leftpanel);
                 Resize_imagepanels();
                 numberofimagepanels = 2;
                 splitContainer_bothimages.Show();
