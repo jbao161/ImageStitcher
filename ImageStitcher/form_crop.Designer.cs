@@ -43,6 +43,7 @@ namespace ImageStitcher
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.button_blurcrop = new System.Windows.Forms.Button();
+            this.button_pixelate = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -55,9 +56,9 @@ namespace ImageStitcher
             // 
             this.button_crop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_crop.BackColor = System.Drawing.Color.Orange;
-            this.button_crop.Location = new System.Drawing.Point(651, 15);
+            this.button_crop.Location = new System.Drawing.Point(688, 15);
             this.button_crop.Name = "button_crop";
-            this.button_crop.Size = new System.Drawing.Size(100, 50);
+            this.button_crop.Size = new System.Drawing.Size(63, 50);
             this.button_crop.TabIndex = 0;
             this.button_crop.Text = "Crop";
             this.button_crop.UseVisualStyleBackColor = false;
@@ -77,6 +78,7 @@ namespace ImageStitcher
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button_pixelate);
             this.panel1.Controls.Add(this.button_blurcrop);
             this.panel1.Controls.Add(this.button_crop);
             this.panel1.Controls.Add(this.button_revert);
@@ -93,7 +95,7 @@ namespace ImageStitcher
             // 
             this.button_revert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_revert.BackColor = System.Drawing.Color.Yellow;
-            this.button_revert.Location = new System.Drawing.Point(464, 15);
+            this.button_revert.Location = new System.Drawing.Point(399, 15);
             this.button_revert.Name = "button_revert";
             this.button_revert.Size = new System.Drawing.Size(75, 50);
             this.button_revert.TabIndex = 3;
@@ -191,13 +193,25 @@ namespace ImageStitcher
             // 
             this.button_blurcrop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_blurcrop.BackColor = System.Drawing.Color.Aqua;
-            this.button_blurcrop.Location = new System.Drawing.Point(545, 15);
+            this.button_blurcrop.Location = new System.Drawing.Point(614, 15);
             this.button_blurcrop.Name = "button_blurcrop";
-            this.button_blurcrop.Size = new System.Drawing.Size(100, 50);
+            this.button_blurcrop.Size = new System.Drawing.Size(68, 50);
             this.button_blurcrop.TabIndex = 6;
             this.button_blurcrop.Text = "Blur";
             this.button_blurcrop.UseVisualStyleBackColor = false;
             this.button_blurcrop.Click += new System.EventHandler(this.button_blurcrop_Click);
+            // 
+            // button_pixelate
+            // 
+            this.button_pixelate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_pixelate.BackColor = System.Drawing.Color.GreenYellow;
+            this.button_pixelate.Location = new System.Drawing.Point(542, 15);
+            this.button_pixelate.Name = "button_pixelate";
+            this.button_pixelate.Size = new System.Drawing.Size(66, 50);
+            this.button_pixelate.TabIndex = 7;
+            this.button_pixelate.Text = "Pixelate";
+            this.button_pixelate.UseVisualStyleBackColor = false;
+            this.button_pixelate.Click += new System.EventHandler(this.button_pixelate_Click);
             // 
             // Form_Crop
             // 
@@ -235,5 +249,6 @@ namespace ImageStitcher
         private System.Windows.Forms.Panel panel_insidetablelayout;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Button button_blurcrop;
+        private System.Windows.Forms.Button button_pixelate;
     }
 }
