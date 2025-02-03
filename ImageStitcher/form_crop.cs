@@ -302,6 +302,93 @@ namespace ImageStitcher
             }
         }
 
+        private void button_blurcrop_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                pictureBox1.Visible = false;
+                pictureBox2.Refresh();
+                //Prepare a new Bitmap on which the cropped image will be drawn
+                Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
+
+                ZoomFactor zoomHelper = new ZoomFactor();
+
+                RectangleF currentSelection = rectCropArea;
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
+
+                int cropAreaWidth = (int)bitmapRect.Width;
+                int cropAreaHeight = (int)bitmapRect.Height;
+                int cropAreaLeft = (int)bitmapRect.Left;
+                int cropAreaTop = (int)bitmapRect.Top;
+
+                string outputvisibility = "/C ";
+
+                if (mainForm.check_if_animated_gif(sourcepath))
+                {
+                    // crop video command example ffmpeg - i input.gif - vf "crop=640:480:0:0" output.gif
+
+
+                    // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output
+
+                    string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpgif.gif";
+                    var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+
+                    string cropgifcommand = "";
+                    // cmd for ffmpeg. quality is bad
+                    //cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
+                    // cmd for imagemagick. good quality
+                    cropgifcommand = $"magick \"{sourcepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize \"{tmpgifpath}\"";
+                    string arg = outputvisibility + cropgifcommand;
+                    Process proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "cmd.exe",
+                            Arguments = arg,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+
+                    proc.Start();
+                    proc.WaitForExit();
+
+                    pictureBox2.ImageLocation = tmpgifpath;
+                    mainForm.LoadImage(source_panel, tmpgifpath);
+                    tmpimgpath = tmpgifpath;
+                }
+                else
+                {
+                    string tmpgJpgName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpgif.jpg";
+                    var tmpJpgPath = mainForm.tmpAppDataPath + tmpgJpgName;
+
+                    var blurredBitmap = new Bitmap((int)OriginalPictureboxImage.Width, (int)OriginalPictureboxImage.Height, OriginalPictureboxImage.PixelFormat);
+                    var magickcommandblur = $"magick \"{sourcepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -blur 0x8 +region \"{tmpJpgPath}\"";
+                    string arg = outputvisibility + magickcommandblur;
+                    Process proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "cmd.exe",
+                            Arguments = arg,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+                    proc.Start();
+                    proc.WaitForExit();
+
+                    pictureBox2.ImageLocation = tmpJpgPath;
+                    mainForm.LoadImage(source_panel, tmpJpgPath);
+                    tmpimgpath = tmpJpgPath;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
         private void button_crop_cancel_Click(object sender, EventArgs e)
         {
             this.Close();

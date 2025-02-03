@@ -42,6 +42,7 @@ namespace ImageStitcher
             this.panel_insidetablelayout = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.button_blurcrop = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -76,6 +77,7 @@ namespace ImageStitcher
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button_blurcrop);
             this.panel1.Controls.Add(this.button_crop);
             this.panel1.Controls.Add(this.button_revert);
             this.panel1.Controls.Add(this.checkBox_overwrite);
@@ -91,7 +93,7 @@ namespace ImageStitcher
             // 
             this.button_revert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_revert.BackColor = System.Drawing.Color.Yellow;
-            this.button_revert.Location = new System.Drawing.Point(570, 15);
+            this.button_revert.Location = new System.Drawing.Point(464, 15);
             this.button_revert.Name = "button_revert";
             this.button_revert.Size = new System.Drawing.Size(75, 50);
             this.button_revert.TabIndex = 3;
@@ -185,6 +187,18 @@ namespace ImageStitcher
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
             // 
+            // button_blurcrop
+            // 
+            this.button_blurcrop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_blurcrop.BackColor = System.Drawing.Color.Aqua;
+            this.button_blurcrop.Location = new System.Drawing.Point(545, 15);
+            this.button_blurcrop.Name = "button_blurcrop";
+            this.button_blurcrop.Size = new System.Drawing.Size(100, 50);
+            this.button_blurcrop.TabIndex = 6;
+            this.button_blurcrop.Text = "Blur";
+            this.button_blurcrop.UseVisualStyleBackColor = false;
+            this.button_blurcrop.Click += new System.EventHandler(this.button_blurcrop_Click);
+            // 
             // Form_Crop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -220,5 +234,6 @@ namespace ImageStitcher
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel_insidetablelayout;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Button button_blurcrop;
     }
 }
