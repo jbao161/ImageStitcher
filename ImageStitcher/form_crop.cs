@@ -307,8 +307,8 @@ namespace ImageStitcher
         {
             try
             {
-                pictureBox1.Visible = false;
-                pictureBox2.Refresh();
+                //pictureBox1.Visible = false;
+                //pictureBox2.Refresh();
                 //Prepare a new Bitmap on which the cropped image will be drawn
                 Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
                 string ext = System.IO.Path.GetExtension(sourcepath);
@@ -346,7 +346,7 @@ namespace ImageStitcher
                     proc.Start();
                     proc.WaitForExit();
 
-                    pictureBox2.ImageLocation = tmpgifpath;
+                    pictureBox1.ImageLocation = tmpgifpath;
                     mainForm.LoadImage(source_panel, tmpgifpath);
                     tmpimgpath = tmpgifpath;
             }
@@ -359,7 +359,7 @@ namespace ImageStitcher
         {
             try
             {
-                pictureBox1.Visible = false;
+                //pictureBox1.Visible = false;
                 pictureBox2.Refresh();
                 //Prepare a new Bitmap on which the cropped image will be drawn
                 Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
@@ -416,8 +416,8 @@ namespace ImageStitcher
         {
             try
             {
-                pictureBox1.Visible = false;
-                pictureBox2.Refresh();
+                //pictureBox1.Visible = false;
+                //pictureBox2.Refresh();
                 //Prepare a new Bitmap on which the cropped image will be drawn
                 Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
                 string ext = System.IO.Path.GetExtension(sourcepath);
@@ -455,7 +455,7 @@ namespace ImageStitcher
                 proc.Start();
                 proc.WaitForExit();
 
-                pictureBox2.ImageLocation = tmpgifpath;
+                pictureBox1.ImageLocation = tmpgifpath;
                 mainForm.LoadImage(source_panel, tmpgifpath);
                 tmpimgpath = tmpgifpath;
             }
