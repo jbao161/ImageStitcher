@@ -412,6 +412,58 @@ namespace ImageStitcher
             }
         }
 
+        private void button_blackbar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                pictureBox1.Visible = false;
+                pictureBox2.Refresh();
+                //Prepare a new Bitmap on which the cropped image will be drawn
+                Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
+                string ext = System.IO.Path.GetExtension(sourcepath);
+                ZoomFactor zoomHelper = new ZoomFactor();
+
+                RectangleF currentSelection = rectCropArea;
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
+
+                int cropAreaWidth = (int)bitmapRect.Width;
+                int cropAreaHeight = (int)bitmapRect.Height;
+                int cropAreaLeft = (int)bitmapRect.Left;
+                int cropAreaTop = (int)bitmapRect.Top;
+
+                string outputvisibility = "/C ";
+
+                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpblur" + ext;
+                var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+
+                string cropgifcommand = "";
+                // cmd for imagemagick. good quality
+                cropgifcommand = $"magick \"{sourcepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -fill black +opaque +region \"{tmpgifpath}\"";
+                string arg = outputvisibility + cropgifcommand;
+                Process proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = arg,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                proc.Start();
+                proc.WaitForExit();
+
+                pictureBox2.ImageLocation = tmpgifpath;
+                mainForm.LoadImage(source_panel, tmpgifpath);
+                tmpimgpath = tmpgifpath;
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
         private void button_crop_cancel_Click(object sender, EventArgs e)
         {
             this.Close();
