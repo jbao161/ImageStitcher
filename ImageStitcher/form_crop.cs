@@ -193,6 +193,46 @@ namespace ImageStitcher
             mRect = new Rectangle(e.X, e.Y, 0, 0);
         }
 
+        private void button_save_Click(object sender, EventArgs e)
+        {
+            if (mainForm.check_if_animated_gif(sourcepath))
+            {
+                if (String.Equals(tmpimgpath, sourcepath)) { return; }
+                mainForm.SaveGifImage(tmpimgpath, sourcepath, checkBox_overwrite.Checked);
+            }
+            else
+            {
+                this.mainForm.cropSaveImage(checkBox_overwrite.Checked, source_panel);
+            }
+        }
+
+        private void Form_Crop_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.CropOverwrite = checkBox_overwrite.Checked;
+            Settings.Default.Save();
+        }
+
+        //check if mouse is down and being draged, then draw rectangle
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            var coordinates = pictureBox1.PointToClient(Cursor.Position);
+            xUp = coordinates.X;
+            yUp = coordinates.Y;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                mRect = new Rectangle(Math.Min(xDown, xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+                pictureBox1.Invalidate();
+            }
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen pen = new Pen(Color.Green, 2))
+            {
+                e.Graphics.DrawRectangle(pen, mRect);
+            }
+        }
         private void btnCrop_Click(object sender, EventArgs e)
         {
             try
@@ -262,46 +302,6 @@ namespace ImageStitcher
             }
         }
 
-        private void button_save_Click(object sender, EventArgs e)
-        {
-            if (mainForm.check_if_animated_gif(sourcepath))
-            {
-                if (String.Equals(tmpimgpath, sourcepath)) { return; }
-                mainForm.SaveGifImage(tmpimgpath, sourcepath, checkBox_overwrite.Checked);
-            }
-            else
-            {
-                this.mainForm.cropSaveImage(checkBox_overwrite.Checked, source_panel);
-            }
-        }
-
-        private void Form_Crop_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Settings.Default.CropOverwrite = checkBox_overwrite.Checked;
-            Settings.Default.Save();
-        }
-
-        //check if mouse is down and being draged, then draw rectangle
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
-        {
-            var coordinates = pictureBox1.PointToClient(Cursor.Position);
-            xUp = coordinates.X;
-            yUp = coordinates.Y;
-
-            if (e.Button == MouseButtons.Left)
-            {
-                mRect = new Rectangle(Math.Min(xDown, xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
-                pictureBox1.Invalidate();
-            }
-        }
-
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
-        {
-            using (Pen pen = new Pen(Color.Green, 2))
-            {
-                e.Graphics.DrawRectangle(pen, mRect);
-            }
-        }
 
         private void button_blurcrop_Click(object sender, EventArgs e)
         {
@@ -359,7 +359,7 @@ namespace ImageStitcher
         {
             try
             {
-                //pictureBox1.Visible = false;
+                pictureBox1.Visible = false;
                 pictureBox2.Refresh();
                 //Prepare a new Bitmap on which the cropped image will be drawn
                 Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
@@ -384,9 +384,18 @@ namespace ImageStitcher
                 var tmpPathPixAreaBackground = mainForm.tmpAppDataPath + DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpPix2" + ext;
                 string cropgifcommand = "";
                 // cmd for imagemagick. good quality
-                cropgifcommand = $"magick \"{sourcepath}\" -scale 5% -scale 2000% \"{tmpPathPixAreaTarget}\" | \"{sourcepath}\" - gamma 0 - fill white | -draw 'rectangle {cropAreaWidth},{cropAreaHeight} {cropAreaLeft},{cropAreaTop}' \"{tmpPathPixAreaBackground}\" |";
+                //cropgifcommand = $"magick \"{sourcepath}\" -scale 2% -scale 5000% ^ -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -fill black +opaque +region \"{tmpgifpath}\"";
+                cropgifcommand = $"magick ^ " +
+                    $"\"{sourcepath}\"  ^" +
+                    $" -page +{cropAreaLeft}+{cropAreaTop} " +
+                    $"( \"{sourcepath}\" +clone -scale 2% -scale 5000%  ^" +
+                    $"-coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize ) ^" +
 
-                //cropgifcommand = $"magick \"{sourcepath}\" \\(+clone - scale 25 % -scale 400 % \\) | (+clone - gamma 0 - fill white \\-draw 'rectangle {cropAreaWidth},{cropAreaHeight} {cropAreaLeft},{cropAreaTop}' - blur  10x4 \\) \\-composite  \"{tmpgifpath}\"";
+                    $"-layers flatten \"{tmpgifpath}\"";
+
+                //cropgifcommand = $"magick \"{sourcepath}\" -scale 5% -scale 2000% \"{tmpPathPixAreaTarget}\" | \"{sourcepath}\" - gamma 0 - fill white | -draw 'rectangle {cropAreaWidth},{cropAreaHeight} {cropAreaLeft},{cropAreaTop}' \"{tmpPathPixAreaBackground}\" |";
+
+                //cropgifcommand = $"magick \"{sourcepath}\" -scale 25 % -scale 400 % \\) ^ (+clone - gamma 0 - fill white ^ -draw 'rectangle {cropAreaWidth},{cropAreaHeight} {cropAreaLeft},{cropAreaTop}' - blur  10x4 \\) ^ -composite  \"{tmpgifpath}\"";
 
                 string arg = outputvisibility + cropgifcommand;
                 Process proc = new Process
