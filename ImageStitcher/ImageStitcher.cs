@@ -246,6 +246,8 @@ namespace ImageStitcher
                 this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
                 this.checkBox_showfilename.Checked = Settings.Default.showinfo;
                 this.checkBox_hotkeyboth.Checked = Settings.Default.HotkeyBoth;
+                this.checkBox_blur.Checked = Settings.Default.BlurCheckbox;
+                this.textBox_blurLevel.Text = Settings.Default.BlurLevel;
 
                 // create tmp folder
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
@@ -2070,7 +2072,49 @@ namespace ImageStitcher
                         targetpicturebox.ImageLocation = imagePath;
                     }
                     targetpicturebox.Size = new Size(bmpTemp.Width, bmpTemp.Height);
-                    targetpicturebox.Image = new Bitmap(bmpTemp);
+                    if (checkBox_blur.Checked)
+                    {
+                        try
+                        {
+
+                            string blurlevel = "15";
+                            var isNumeric = int.TryParse(textBox_blurLevel.Text, out int n);
+                            if (isNumeric) blurlevel = textBox_blurLevel.Text;
+                            string ext = System.IO.Path.GetExtension(imagePath);
+                            string outputvisibility = "/C ";
+
+                            string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpblur" + ext;
+                            var tmpgifpath = tmpAppDataPath + tmpgifname;
+
+                            string cropgifcommand = "";
+                            // cmd for imagemagick. good quality
+                            cropgifcommand = $"magick \"{imagePath}\"  -blur 0x{blurlevel} +region \"{tmpgifpath}\"";
+                            string arg = outputvisibility + cropgifcommand;
+                            Process proc = new Process
+                            {
+                                StartInfo = new ProcessStartInfo
+                                {
+                                    FileName = "cmd.exe",
+                                    Arguments = arg,
+                                    UseShellExecute = false,
+                                    CreateNoWindow = true
+                                }
+                            };
+
+                            proc.Start();
+                            proc.WaitForExit();
+
+                            targetpicturebox.ImageLocation = tmpgifpath;
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }
+                    else
+                    {
+                        targetpicturebox.Image = new Bitmap(bmpTemp);
+                    }
+
                     targetpicturebox.Dock = System.Windows.Forms.DockStyle.Fill;
 
                     return true;
@@ -2126,6 +2170,8 @@ namespace ImageStitcher
                 Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
                 Settings.Default.showinfo = this.checkBox_showfilename.Checked;
                 Settings.Default.HotkeyBoth = this.checkBox_hotkeyboth.Checked;
+                Settings.Default.BlurCheckbox = this.checkBox_blur.Checked;
+                Settings.Default.BlurLevel = this.textBox_blurLevel.Text;
 
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; }
                 else

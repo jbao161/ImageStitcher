@@ -86,6 +86,8 @@
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
+            this.checkBox_blur = new System.Windows.Forms.CheckBox();
+            this.textBox_blurLevel = new System.Windows.Forms.TextBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -232,6 +234,8 @@
             this.panel_controls.Controls.Add(this.button_save);
             this.panel_controls.Controls.Add(this.checkBox_showfilename);
             this.panel_controls.Controls.Add(this.button_settings);
+            this.panel_controls.Controls.Add(this.checkBox_blur);
+            this.panel_controls.Controls.Add(this.textBox_blurLevel);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_controls.Location = new System.Drawing.Point(0, 457);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
@@ -653,6 +657,24 @@
             this.imageList2.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // checkBox_blur
+            // 
+            this.checkBox_blur.AutoSize = true;
+            this.checkBox_blur.Location = new System.Drawing.Point(454, 20);
+            this.checkBox_blur.Name = "checkBox_blur";
+            this.checkBox_blur.Size = new System.Drawing.Size(44, 17);
+            this.checkBox_blur.TabIndex = 22;
+            this.checkBox_blur.Text = "Blur";
+            this.checkBox_blur.UseVisualStyleBackColor = true;
+            // 
+            // textBox_blurLevel
+            // 
+            this.textBox_blurLevel.Location = new System.Drawing.Point(500, 17);
+            this.textBox_blurLevel.Name = "textBox_blurLevel";
+            this.textBox_blurLevel.Size = new System.Drawing.Size(34, 20);
+            this.textBox_blurLevel.TabIndex = 23;
+            this.textBox_blurLevel.Text = "15";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -743,6 +765,8 @@
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ImageList imageList2;
         private System.Windows.Forms.Label label_imageindex_leftpanel;
+        private System.Windows.Forms.CheckBox checkBox_blur;
+        private System.Windows.Forms.TextBox textBox_blurLevel;
     }
 }
 
