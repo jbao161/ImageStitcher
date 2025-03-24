@@ -56,6 +56,8 @@
             this.button_save = new System.Windows.Forms.Button();
             this.checkBox_showfilename = new System.Windows.Forms.CheckBox();
             this.button_settings = new System.Windows.Forms.Button();
+            this.checkBox_blur = new System.Windows.Forms.CheckBox();
+            this.textBox_blurLevel = new System.Windows.Forms.TextBox();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,8 +88,6 @@
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
-            this.checkBox_blur = new System.Windows.Forms.CheckBox();
-            this.textBox_blurLevel = new System.Windows.Forms.TextBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -450,6 +450,24 @@
             this.button_settings.UseVisualStyleBackColor = true;
             this.button_settings.Click += new System.EventHandler(this.button_settings_Click);
             // 
+            // checkBox_blur
+            // 
+            this.checkBox_blur.AutoSize = true;
+            this.checkBox_blur.Location = new System.Drawing.Point(454, 20);
+            this.checkBox_blur.Name = "checkBox_blur";
+            this.checkBox_blur.Size = new System.Drawing.Size(44, 17);
+            this.checkBox_blur.TabIndex = 22;
+            this.checkBox_blur.Text = "Blur";
+            this.checkBox_blur.UseVisualStyleBackColor = true;
+            // 
+            // textBox_blurLevel
+            // 
+            this.textBox_blurLevel.Location = new System.Drawing.Point(500, 17);
+            this.textBox_blurLevel.Name = "textBox_blurLevel";
+            this.textBox_blurLevel.Size = new System.Drawing.Size(34, 20);
+            this.textBox_blurLevel.TabIndex = 23;
+            this.textBox_blurLevel.Text = "15";
+            // 
             // contextMenu_image
             // 
             this.contextMenu_image.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -656,24 +674,6 @@
             this.imageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.imageList2.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // checkBox_blur
-            // 
-            this.checkBox_blur.AutoSize = true;
-            this.checkBox_blur.Location = new System.Drawing.Point(454, 20);
-            this.checkBox_blur.Name = "checkBox_blur";
-            this.checkBox_blur.Size = new System.Drawing.Size(44, 17);
-            this.checkBox_blur.TabIndex = 22;
-            this.checkBox_blur.Text = "Blur";
-            this.checkBox_blur.UseVisualStyleBackColor = true;
-            // 
-            // textBox_blurLevel
-            // 
-            this.textBox_blurLevel.Location = new System.Drawing.Point(500, 17);
-            this.textBox_blurLevel.Name = "textBox_blurLevel";
-            this.textBox_blurLevel.Size = new System.Drawing.Size(34, 20);
-            this.textBox_blurLevel.TabIndex = 23;
-            this.textBox_blurLevel.Text = "15";
             // 
             // MainWindow
             // 
