@@ -30,6 +30,7 @@ namespace ImageStitcher
 
         public string sourcepath = "";
         public string tmpimgpath = "";
+        public string editimgpath = "";
 
         public void Load_img(String img_path, int panelnum)
         {
@@ -204,6 +205,7 @@ namespace ImageStitcher
             {
                 this.mainForm.cropSaveImage(checkBox_overwrite.Checked, source_panel);
             }
+            editimgpath = "";
         }
 
         private void Form_Crop_FormClosing(object sender, FormClosingEventArgs e)
@@ -237,19 +239,25 @@ namespace ImageStitcher
         {
             try
             {
-                pictureBox1.Visible = false;
-                pictureBox2.Refresh();
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
                 //Prepare a new Bitmap on which the cropped image will be drawn
-                Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
+                Bitmap CurrentPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
 
                 ZoomFactor zoomHelper = new ZoomFactor();
 
                 RectangleF currentSelection = rectCropArea;
-                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
-                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, CurrentPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, CurrentPictureboxImage.Size);
 
-                if (mainForm.check_if_animated_gif(sourcepath))
-                {
                     // crop video command example ffmpeg - i input.gif - vf "crop=640:480:0:0" output.gif
                     int cropAreaWidth = (int)bitmapRect.Width;
                     int cropAreaHeight = (int)bitmapRect.Height;
@@ -265,7 +273,7 @@ namespace ImageStitcher
                     // cmd for ffmpeg. quality is bad
                     //cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
                     // cmd for imagemagick. good quality
-                    cropgifcommand = $"magick \"{sourcepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize \"{tmpgifpath}\"";
+                    cropgifcommand = $"magick \"{currentimagepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize \"{tmpgifpath}\"";
                     string arg = outputvisibility + cropgifcommand;
                     Process proc = new Process
                     {
@@ -281,21 +289,12 @@ namespace ImageStitcher
                     proc.Start();
                     proc.WaitForExit();
 
-                    pictureBox2.ImageLocation = tmpgifpath;
+                    pictureBox1.ImageLocation = tmpgifpath;
                     mainForm.LoadImage(source_panel,tmpgifpath);
                     tmpimgpath = tmpgifpath;
-                }
-                else
-                {
-                    var croppedBitmap = new Bitmap((int)bitmapRect.Width, (int)bitmapRect.Height, OriginalPictureboxImage.PixelFormat);
-                    using (var g = Graphics.FromImage(croppedBitmap))
-                    {
-                        g.DrawImage(OriginalPictureboxImage, new Rectangle(Point.Empty, Size.Round(bitmapRect.Size)),
-                                    bitmapRect, GraphicsUnit.Pixel);
-                        pictureBox2.Image = croppedBitmap;
-                        mainForm.LoadImage(source_panel, croppedBitmap);
-                    }
-                }
+                    editimgpath = tmpgifpath;
+                mRect = new Rectangle(0,0,0,0);
+                pictureBox1.Invalidate();
             }
             catch (Exception ex)
             {
@@ -307,16 +306,25 @@ namespace ImageStitcher
         {
             try
             {
-                //pictureBox1.Visible = false;
-                //pictureBox2.Refresh();
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
+
                 //Prepare a new Bitmap on which the cropped image will be drawn
-                Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
-                string ext = System.IO.Path.GetExtension(sourcepath);
+                Bitmap CurrentPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
+                string ext = System.IO.Path.GetExtension(currentimagepath);
                 ZoomFactor zoomHelper = new ZoomFactor();
 
                 RectangleF currentSelection = rectCropArea;
-                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
-                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, CurrentPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, CurrentPictureboxImage.Size);
 
                 int cropAreaWidth = (int)bitmapRect.Width;
                 int cropAreaHeight = (int)bitmapRect.Height;
@@ -330,7 +338,7 @@ namespace ImageStitcher
 
                     string cropgifcommand = "";
                     // cmd for imagemagick. good quality
-                    cropgifcommand = $"magick \"{sourcepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -blur 0x8 +region \"{tmpgifpath}\"";
+                    cropgifcommand = $"magick \"{currentimagepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -blur 0x8 +region \"{tmpgifpath}\"";
                     string arg = outputvisibility + cropgifcommand;
                     Process proc = new Process
                     {
@@ -349,6 +357,7 @@ namespace ImageStitcher
                     pictureBox1.ImageLocation = tmpgifpath;
                     mainForm.LoadImage(source_panel, tmpgifpath);
                     tmpimgpath = tmpgifpath;
+                    editimgpath = tmpgifpath;
             }
             catch (Exception ex)
             {
@@ -359,11 +368,19 @@ namespace ImageStitcher
         {
             try
             {
-                pictureBox1.Visible = false;
-                pictureBox2.Refresh();
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
                 //Prepare a new Bitmap on which the cropped image will be drawn
-                Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
-                string ext = System.IO.Path.GetExtension(sourcepath);
+                Bitmap OriginalPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
+                string ext = System.IO.Path.GetExtension(currentimagepath);
                 ZoomFactor zoomHelper = new ZoomFactor();
 
                 RectangleF currentSelection = rectCropArea;
@@ -383,71 +400,15 @@ namespace ImageStitcher
                 var tmpPathPixAreaTarget = mainForm.tmpAppDataPath + DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpPix1" + ext;
                 var tmpPathPixAreaBackground = mainForm.tmpAppDataPath + DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpPix2" + ext;
                 string cropgifcommand = "";
-                // cmd for imagemagick. good quality
-                //cropgifcommand = $"magick \"{sourcepath}\" -scale 2% -scale 5000% ^ -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -fill black +opaque +region \"{tmpgifpath}\"";
+
                 cropgifcommand = $"magick convert ^ " +
-                    $"\"{sourcepath}\"  ^" +
-                    $"( \"{sourcepath}\"  -scale 2% -scale 5000%  ^" +
+                    $"\"{currentimagepath}\"  ^" +
+                    $"( \"{currentimagepath}\"  -scale 2% -scale 5000%  ^" +
                     $"-coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize ) ^" +
                     $" -geometry {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} ^" +
                     $"-composite \"{tmpgifpath}\"";
 
-                //cropgifcommand = $"magick \"{sourcepath}\" -scale 5% -scale 2000% \"{tmpPathPixAreaTarget}\" | \"{sourcepath}\" - gamma 0 - fill white | -draw 'rectangle {cropAreaWidth},{cropAreaHeight} {cropAreaLeft},{cropAreaTop}' \"{tmpPathPixAreaBackground}\" |";
 
-                //cropgifcommand = $"magick \"{sourcepath}\" -scale 25 % -scale 400 % \\) ^ (+clone - gamma 0 - fill white ^ -draw 'rectangle {cropAreaWidth},{cropAreaHeight} {cropAreaLeft},{cropAreaTop}' - blur  10x4 \\) ^ -composite  \"{tmpgifpath}\"";
-
-                string arg = outputvisibility + cropgifcommand;
-                Process proc = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "cmd.exe",
-                        Arguments = arg,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-
-                proc.Start();
-                proc.WaitForExit();
-
-                pictureBox2.ImageLocation = tmpgifpath;
-                mainForm.LoadImage(source_panel, tmpgifpath);
-                tmpimgpath = tmpgifpath;
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-
-        private void button_blackbar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                //pictureBox1.Visible = false;
-                //pictureBox2.Refresh();
-                //Prepare a new Bitmap on which the cropped image will be drawn
-                Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
-                string ext = System.IO.Path.GetExtension(sourcepath);
-                ZoomFactor zoomHelper = new ZoomFactor();
-
-                RectangleF currentSelection = rectCropArea;
-                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
-                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
-
-                int cropAreaWidth = (int)bitmapRect.Width;
-                int cropAreaHeight = (int)bitmapRect.Height;
-                int cropAreaLeft = (int)bitmapRect.Left;
-                int cropAreaTop = (int)bitmapRect.Top;
-
-                string outputvisibility = "/C ";
-
-                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpblur" + ext;
-                var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
-
-                string cropgifcommand = "";
-                // cmd for imagemagick. good quality
-                cropgifcommand = $"magick \"{sourcepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -fill black +opaque +region \"{tmpgifpath}\"";
                 string arg = outputvisibility + cropgifcommand;
                 Process proc = new Process
                 {
@@ -466,6 +427,68 @@ namespace ImageStitcher
                 pictureBox1.ImageLocation = tmpgifpath;
                 mainForm.LoadImage(source_panel, tmpgifpath);
                 tmpimgpath = tmpgifpath;
+                editimgpath = tmpgifpath;
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void button_blackbar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
+                //Prepare a new Bitmap on which the cropped image will be drawn
+                Bitmap OriginalPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
+                string ext = System.IO.Path.GetExtension(currentimagepath);
+                ZoomFactor zoomHelper = new ZoomFactor();
+
+                RectangleF currentSelection = rectCropArea;
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
+
+                int cropAreaWidth = (int)bitmapRect.Width;
+                int cropAreaHeight = (int)bitmapRect.Height;
+                int cropAreaLeft = (int)bitmapRect.Left;
+                int cropAreaTop = (int)bitmapRect.Top;
+
+                string outputvisibility = "/C ";
+
+                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpblur" + ext;
+                var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+
+                string cropgifcommand = "";
+                // cmd for imagemagick. good quality
+                cropgifcommand = $"magick \"{currentimagepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -fill black +opaque +region \"{tmpgifpath}\"";
+                string arg = outputvisibility + cropgifcommand;
+                Process proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = arg,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                proc.Start();
+                proc.WaitForExit();
+
+                pictureBox1.ImageLocation = tmpgifpath;
+                mainForm.LoadImage(source_panel, tmpgifpath);
+                tmpimgpath = tmpgifpath;
+                editimgpath = tmpgifpath;
             }
             catch (Exception ex)
             {
@@ -474,6 +497,7 @@ namespace ImageStitcher
 
         private void button_crop_cancel_Click(object sender, EventArgs e)
         {
+            editimgpath = "";
             this.Close();
         }
 
@@ -487,7 +511,7 @@ namespace ImageStitcher
             } else {
                 mainForm.LoadImage(source_panel, source_image);
             }
-
+            editimgpath = "";
             pictureBox1.Visible = true;
             Load_img(sourcepath, source_panel);
 
