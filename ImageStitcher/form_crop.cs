@@ -385,13 +385,12 @@ namespace ImageStitcher
                 string cropgifcommand = "";
                 // cmd for imagemagick. good quality
                 //cropgifcommand = $"magick \"{sourcepath}\" -scale 2% -scale 5000% ^ -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -fill black +opaque +region \"{tmpgifpath}\"";
-                cropgifcommand = $"magick ^ " +
+                cropgifcommand = $"magick convert ^ " +
                     $"\"{sourcepath}\"  ^" +
-                    $" -page +{cropAreaLeft}+{cropAreaTop} " +
-                    $"( \"{sourcepath}\" +clone -scale 2% -scale 5000%  ^" +
+                    $"( \"{sourcepath}\"  -scale 2% -scale 5000%  ^" +
                     $"-coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize ) ^" +
-
-                    $"-layers flatten \"{tmpgifpath}\"";
+                    $" -geometry {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} ^" +
+                    $"-composite \"{tmpgifpath}\"";
 
                 //cropgifcommand = $"magick \"{sourcepath}\" -scale 5% -scale 2000% \"{tmpPathPixAreaTarget}\" | \"{sourcepath}\" - gamma 0 - fill white | -draw 'rectangle {cropAreaWidth},{cropAreaHeight} {cropAreaLeft},{cropAreaTop}' \"{tmpPathPixAreaBackground}\" |";
 
