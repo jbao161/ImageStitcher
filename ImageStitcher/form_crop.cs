@@ -1,5 +1,4 @@
 ﻿using ImageStitcher.Properties;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -301,11 +300,16 @@ namespace ImageStitcher
             }
         }
 
+        
 
         private void button_blurcrop_Click(object sender, EventArgs e)
         {
             try
             {
+                string blurlevel = "15";
+                //var isNumeric = int.TryParse(textBox_blurLevel.Text, out int n);
+                //if (isNumeric) blurlevel = textBox_blurLevel.Text;
+
                 string currentimagepath = sourcepath;
                 Image currentimage = source_image;
                 if (!String.IsNullOrEmpty(editimgpath))
@@ -338,7 +342,7 @@ namespace ImageStitcher
 
                     string cropgifcommand = "";
                     // cmd for imagemagick. good quality
-                    cropgifcommand = $"magick \"{currentimagepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -blur 0x8 +region \"{tmpgifpath}\"";
+                    cropgifcommand = $"magick \"{currentimagepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -blur 0x{blurlevel} +region \"{tmpgifpath}\"";
                     string arg = outputvisibility + cropgifcommand;
                     Process proc = new Process
                     {
@@ -494,6 +498,9 @@ namespace ImageStitcher
             {
             }
         }
+
+
+
 
         private void button_crop_cancel_Click(object sender, EventArgs e)
         {

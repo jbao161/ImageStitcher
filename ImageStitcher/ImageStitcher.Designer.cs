@@ -39,6 +39,8 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
+            this.textBox_pixelateLevel = new System.Windows.Forms.TextBox();
+            this.checkBox_pixelate = new System.Windows.Forms.CheckBox();
             this.button_copy = new System.Windows.Forms.Button();
             this.button_crop = new System.Windows.Forms.Button();
             this.button_swapimages = new System.Windows.Forms.Button();
@@ -88,6 +90,7 @@
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
+            this.fileSystemWatcher_ImageFolder = new System.IO.FileSystemWatcher();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -97,6 +100,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_rightpanel)).BeginInit();
             this.panel_controls.SuspendLayout();
             this.contextMenu_image.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher_ImageFolder)).BeginInit();
             this.SuspendLayout();
             // 
             // panel_bothimages
@@ -217,6 +221,8 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.textBox_pixelateLevel);
+            this.panel_controls.Controls.Add(this.checkBox_pixelate);
             this.panel_controls.Controls.Add(this.button_copy);
             this.panel_controls.Controls.Add(this.button_crop);
             this.panel_controls.Controls.Add(this.button_swapimages);
@@ -242,6 +248,24 @@
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(1150, 80);
             this.panel_controls.TabIndex = 7;
+            // 
+            // textBox_pixelateLevel
+            // 
+            this.textBox_pixelateLevel.Location = new System.Drawing.Point(500, 40);
+            this.textBox_pixelateLevel.Name = "textBox_pixelateLevel";
+            this.textBox_pixelateLevel.Size = new System.Drawing.Size(34, 20);
+            this.textBox_pixelateLevel.TabIndex = 25;
+            this.textBox_pixelateLevel.Text = "15";
+            // 
+            // checkBox_pixelate
+            // 
+            this.checkBox_pixelate.AutoSize = true;
+            this.checkBox_pixelate.Location = new System.Drawing.Point(454, 43);
+            this.checkBox_pixelate.Name = "checkBox_pixelate";
+            this.checkBox_pixelate.Size = new System.Drawing.Size(40, 17);
+            this.checkBox_pixelate.TabIndex = 24;
+            this.checkBox_pixelate.Text = "Pix";
+            this.checkBox_pixelate.UseVisualStyleBackColor = true;
             // 
             // button_copy
             // 
@@ -675,6 +699,15 @@
             this.imageList2.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // fileSystemWatcher_ImageFolder
+            // 
+            this.fileSystemWatcher_ImageFolder.EnableRaisingEvents = true;
+            this.fileSystemWatcher_ImageFolder.IncludeSubdirectories = true;
+            this.fileSystemWatcher_ImageFolder.SynchronizingObject = this;
+            this.fileSystemWatcher_ImageFolder.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
+            this.fileSystemWatcher_ImageFolder.Created += new System.IO.FileSystemEventHandler(this.onFileAdded);
+            this.fileSystemWatcher_ImageFolder.Deleted += new System.IO.FileSystemEventHandler(this.OnDeleted);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -702,6 +735,7 @@
             this.panel_controls.ResumeLayout(false);
             this.panel_controls.PerformLayout();
             this.contextMenu_image.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher_ImageFolder)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -767,6 +801,9 @@
         private System.Windows.Forms.Label label_imageindex_leftpanel;
         private System.Windows.Forms.CheckBox checkBox_blur;
         private System.Windows.Forms.TextBox textBox_blurLevel;
+        private System.Windows.Forms.TextBox textBox_pixelateLevel;
+        private System.Windows.Forms.CheckBox checkBox_pixelate;
+        private System.IO.FileSystemWatcher fileSystemWatcher_ImageFolder;
     }
 }
 

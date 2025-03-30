@@ -1,6 +1,7 @@
 ﻿using ImageStitcher.Properties;
 
 using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -10,10 +11,14 @@ using System.Drawing;
 
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using Path = System.IO.Path;
 
@@ -38,6 +43,7 @@ namespace ImageStitcher
         private readonly bool debugflag = true;
         public int activePanel = 0;
         private static readonly int bluramount = 10;
+        private static readonly int pixelateamount = 10;
 
         // private static readonly int maxLengthFileList = (int)1.0e9;
         private void MsgDebug(string message)
@@ -183,7 +189,9 @@ namespace ImageStitcher
                     label_imageindex_leftpanel.Show();
                     label_imageindex_rightpanel.Show();
                 }
-                catch { }
+                catch (Exception ex) {
+                    Debug.WriteLine(ex.ToString()); ;
+                }
             }
             else
             {
@@ -248,6 +256,8 @@ namespace ImageStitcher
                 this.checkBox_hotkeyboth.Checked = Settings.Default.HotkeyBoth;
                 this.checkBox_blur.Checked = Settings.Default.BlurCheckbox;
                 this.textBox_blurLevel.Text = Settings.Default.BlurLevel;
+                this.checkBox_pixelate.Checked = Settings.Default.PixelateCheckbox;
+                this.textBox_pixelateLevel.Text = Settings.Default.PixelateLevel;
 
                 // create tmp folder
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
@@ -284,7 +294,9 @@ namespace ImageStitcher
                 else
                     Process.GetCurrentProcess().Kill();
                 // avoid the inevitable crash
+                Debug.WriteLine(ex.ToString());
             }
+
         }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
@@ -304,7 +316,11 @@ namespace ImageStitcher
         // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
-            DragDropHandler(targetPanel, filepaths, Settings.Default.LoadSubfolders);
+            try
+            {
+                DragDropHandler(targetPanel, filepaths, Settings.Default.LoadSubfolders);
+            }
+            catch (Exception ex) { Debug.WriteLine(ex); }
         }
 
         private void DragDropHandler(int targetPanel, string[] filepaths, bool loadsubfolders)
@@ -314,68 +330,77 @@ namespace ImageStitcher
             {
                 string testpath = System.IO.Path.GetDirectoryName(filepaths[0]);
             }
-            catch { return; }
-            bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
-            bool isImage = defaultallowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
-            string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
-            if (isFolder) { folderPath = filepaths[0]; }
-            List<string> imageList = new List<string>(); ;
-            List<string> sublist = null;
-
-            if (isFolder | isImage)
+            catch { Debug.WriteLine("dragdrop can't testpath"); return; }
+            try
             {
-                // set the pseudo-focus on the left or right panel
-                // then enumerate a list of all image files in the same directory as the loaded image
-                // then store the position of the loaded image in that list
-                if (isFolder)
-                {
-                    for (int i = 0; i < filepaths.Length; i++)
-                    {
-                        sublist = EnumerateImageFiles(filepaths[i], allowedImageExtensions, loadsubfolders);
-                        imageList.AddRange(sublist);
-                    }
-                    if (imageList.Count == 0)
-                    {
-                        ClearPanel(targetPanel);
-                        return;
-                    }
-                }
-                else if (isImage) // if opening an image, never load subfolders in its directory
-                {
-                    imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
-                }
-                imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
-                if (Settings.Default.ReverseFileOrder) imageList.Reverse();
-                int imageCount = imageList.Count();
-                int imageIndex = 0;
-                string imagepath = filepaths[0];
 
-                if (isFolder) { imageIndex = 0; imagepath = imageList[0]; }
-                if (!allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith)) { imagepath = imageList[0]; }
-                if (LoadImage(targetPanel, imagepath))
-                {
-                    for (int i = 0; i < imageCount; i++)
-                    {
-                        if (imageList[i] == imagepath) { imageIndex = i; }
-                    }
+                bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
+                bool isImage = defaultallowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
+                string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
+                if (isFolder) { folderPath = filepaths[0]; }
+                List<string> imageList = new List<string>(); ;
+                List<string> sublist = null;
 
-                    if (targetPanel == 0)
+                if (isFolder | isImage)
+                {
+                    // set the pseudo-focus on the left or right panel
+                    // then enumerate a list of all image files in the same directory as the loaded image
+                    // then store the position of the loaded image in that list
+                    if (isFolder)
                     {
-                        imageFilesLeftPanel = imageList;
-                        imageCountLeftPanel = imageCount;
-                        imageIndexLeftPanel = imageIndex;
-                        priorimageIndexLeftPanel = imageIndex;
+                        for (int i = 0; i < filepaths.Length; i++)
+                        {
+                            sublist = EnumerateImageFiles(filepaths[i], allowedImageExtensions, loadsubfolders);
+                            imageList.AddRange(sublist);
+                        }
+                        if (imageList.Count == 0)
+                        {
+                            ClearPanel(targetPanel);
+                            return;
+                        }
                     }
-                    if (targetPanel == 1)
+                    else if (isImage) // if opening an image, never load subfolders in its directory
                     {
-                        imageFilesRightPanel = imageList;
-                        imageCountRightPanel = imageCount;
-                        imageIndexRightPanel = imageIndex;
-                        priorimageIndexRightPanel = imageIndex;
+                        imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
                     }
+                    imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
+                    if (Settings.Default.ReverseFileOrder) imageList.Reverse();
+                    int imageCount = imageList.Count();
+                    int imageIndex = 0;
+                    string imagepath = filepaths[0];
+
+                    if (isFolder) { imageIndex = 0; imagepath = imageList[0]; }
+                    if (!allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith)) { imagepath = imageList[0]; }
+                    if (LoadImage(targetPanel, imagepath))
+                    {
+                        for (int i = 0; i < imageCount; i++)
+                        {
+                            if (imageList[i] == imagepath) { imageIndex = i; }
+                        }
+
+                        if (targetPanel == 0)
+                        {
+                            imageFilesLeftPanel = imageList;
+                            imageCountLeftPanel = imageCount;
+                            imageIndexLeftPanel = imageIndex;
+                            priorimageIndexLeftPanel = imageIndex;
+                        }
+                        if (targetPanel == 1)
+                        {
+                            imageFilesRightPanel = imageList;
+                            imageCountRightPanel = imageCount;
+                            imageIndexRightPanel = imageIndex;
+                            priorimageIndexRightPanel = imageIndex;
+                        }
+                    }
+                    Resize_imagepanels();
+                    UpdateLabelImageIndex();
+
                 }
-                Resize_imagepanels();
-                UpdateLabelImageIndex();
+            }
+            catch (Exception ex) 
+            {
+                Debug.WriteLine("failed in dragdrophandler: " + ex);
             }
         }
 
@@ -409,31 +434,35 @@ namespace ImageStitcher
         * should take up. Put a divider there and the two images in 'Zoom' display will be of same height
         */
 
-        private void Resize_imagepanels()
+        public void Resize_imagepanels()
         {
-            if (pictureBox_leftpanel.Image is null) splitContainer_bothimages.SplitterDistance = 0;
-            if (pictureBox_rightpanel.Image is null) splitContainer_bothimages.SplitterDistance = panel_bothimages.Width;
-
-            if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
+            try
             {
-                if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
+                if (pictureBox_leftpanel.Image is null) splitContainer_bothimages.SplitterDistance = 0;
+                if (pictureBox_rightpanel.Image is null) splitContainer_bothimages.SplitterDistance = panel_bothimages.Width;
+
+                if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
                 {
-                    int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
-                    int stitched_leftimg_width = (int)(pictureBox_leftpanel.Image.Width * min_height / (double)pictureBox_leftpanel.Image.Height);
-                    int stitched_rightimg_width = (int)(pictureBox_rightpanel.Image.Width * min_height / (double)pictureBox_rightpanel.Image.Height);
-                    int result_width = stitched_leftimg_width + stitched_rightimg_width;
-                    this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Width * stitched_leftimg_width / result_width;
+                    if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
+                    {
+                        int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
+                        int stitched_leftimg_width = (int)(pictureBox_leftpanel.Image.Width * min_height / (double)pictureBox_leftpanel.Image.Height);
+                        int stitched_rightimg_width = (int)(pictureBox_rightpanel.Image.Width * min_height / (double)pictureBox_rightpanel.Image.Height);
+                        int result_width = stitched_leftimg_width + stitched_rightimg_width;
+                        this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Width * stitched_leftimg_width / result_width;
+                    }
+                    if (this.splitContainer_bothimages.Orientation == Orientation.Horizontal)
+                    {
+                        int min_width = Math.Min(pictureBox_leftpanel.Image.Width, pictureBox_rightpanel.Image.Width);
+                        int stitched_leftimg_height = (int)(min_width * pictureBox_leftpanel.Image.Height / (double)pictureBox_leftpanel.Image.Width);
+                        int stitched_rightimg_height = (int)(min_width * pictureBox_rightpanel.Image.Height / (double)pictureBox_rightpanel.Image.Width);
+                        int result_height = stitched_leftimg_height + stitched_rightimg_height;
+                        this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Height * stitched_leftimg_height / result_height;
+                    }
                 }
-                if (this.splitContainer_bothimages.Orientation == Orientation.Horizontal)
-                {
-                    int min_width = Math.Min(pictureBox_leftpanel.Image.Width, pictureBox_rightpanel.Image.Width);
-                    int stitched_leftimg_height = (int)(min_width * pictureBox_leftpanel.Image.Height / (double)pictureBox_leftpanel.Image.Width);
-                    int stitched_rightimg_height = (int)(min_width * pictureBox_rightpanel.Image.Height / (double)pictureBox_rightpanel.Image.Width);
-                    int result_height = stitched_leftimg_height + stitched_rightimg_height;
-                    this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Height * stitched_leftimg_height / result_height;
-                }
+                cleanupmemory();
+            } catch (Exception ex)   { Debug.WriteLine(ex);
             }
-            cleanupmemory();
         }
 
         /*  Create a new image by stitching the two panel images together
@@ -939,7 +968,7 @@ namespace ImageStitcher
                         LoadImage(targetPanel, imagelist[imageIndex]);
                     }
                 }
-                catch { };
+                catch (Exception ex) { Debug.WriteLine(ex); };
             }
         }
 
@@ -1621,7 +1650,7 @@ namespace ImageStitcher
                         savedYes = true;
                     }
                 }
-                catch { }
+                catch (Exception ex) { Debug.WriteLine(ex); }
             }
             if (!(targetimage is null) && savedialog) try
                 {
@@ -1670,7 +1699,7 @@ namespace ImageStitcher
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex);
+                    Debug.WriteLine(ex.ToString());
                 }
             // Opens Fle Directory if checkbox enabled
             if (checkBox_openaftersave.Checked && savedYes)
@@ -1723,7 +1752,7 @@ namespace ImageStitcher
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex);
+                    Debug.WriteLine(ex.ToString());
                 }
             // Opens Fle Directory if checkbox enabled
             if (checkBox_openaftersave.Checked && savedYes)
@@ -1747,7 +1776,7 @@ namespace ImageStitcher
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex);
+                    Debug.WriteLine(ex.ToString());
                 }
             }
         }
@@ -2108,6 +2137,7 @@ namespace ImageStitcher
                         }
                         catch (Exception ex)
                         {
+                            Debug.WriteLine(ex);
                         }
                     }
                     else
@@ -2116,11 +2146,12 @@ namespace ImageStitcher
                     }
 
                     targetpicturebox.Dock = System.Windows.Forms.DockStyle.Fill;
+                    String imageFolder = Path.GetDirectoryName(imagePath);
 
                     return true;
                 }
             }
-            catch (Exception)
+            catch (Exception er)
             {
                 string loaderrormsg = "Failed to load image: " + imagePath;
                 if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, loaderrormsg); }
@@ -2130,8 +2161,8 @@ namespace ImageStitcher
                     //   DragDropHandler(targetPanel, new String[] { GetCurrentImage(targetPanel) }); ;
                     return true;
                 }
-                catch (Exception) { return false; }
-
+                catch (Exception ex) { Debug.WriteLine(ex.ToString()); return false; }
+                Debug.WriteLine(er.ToString());
                 return false; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
             }
         }
@@ -2172,6 +2203,8 @@ namespace ImageStitcher
                 Settings.Default.HotkeyBoth = this.checkBox_hotkeyboth.Checked;
                 Settings.Default.BlurCheckbox = this.checkBox_blur.Checked;
                 Settings.Default.BlurLevel = this.textBox_blurLevel.Text;
+                Settings.Default.PixelateCheckbox = this.checkBox_pixelate.Checked;
+                Settings.Default.PixelateLevel = this.textBox_pixelateLevel.Text;
 
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; }
                 else
@@ -2590,6 +2623,135 @@ namespace ImageStitcher
 
         private bool firstload = true;
 
+        private void watchFolder(String folderPath)
+        {
+            fileSystemWatcher_ImageFolder.Path = folderPath;
+            fileSystemWatcher_ImageFolder.SynchronizingObject = this;
+
+            fileSystemWatcher_ImageFolder.Filter = "*.*";
+            fileSystemWatcher_ImageFolder.Created += new FileSystemEventHandler(onFileAdded);
+            if (Settings.Default.LoadSubfolders) { Debug.WriteLine("subdirectories added"); fileSystemWatcher_ImageFolder.IncludeSubdirectories = true; }
+
+            fileSystemWatcher_ImageFolder.Deleted += new FileSystemEventHandler(OnDeleted);
+
+            Debug.WriteLine("watcher added");
+            fileSystemWatcher_ImageFolder.EnableRaisingEvents = true;
+        }
+
+        private async void onFileAdded(object source, FileSystemEventArgs e)
+        {
+            string fileAddedPath= e.FullPath;
+            if (Settings.Default.loadNewFile == false) return;
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"File  created: {fileAddedPath}");
+
+                bool isImage = defaultallowedImageExtensions.Any(fileAddedPath.ToLower().EndsWith);
+                if (fileAddedPath.EndsWith(".path"))
+                {
+
+                    //DragDropHandler(activePanel, new string[] { fileAddedPath.Remove(fileAddedPath.Length - 5, 5) });
+                    Debug.WriteLine("part file detected.");
+                    //LoadImage(activePanel, fileAddedPath.Remove(fileAddedPath.Length - 5, 5));
+                }
+                else
+                 if (isImage)
+                {
+                    int timeout = 10000;
+                    while (timeout > 0)
+                    {
+                        try
+                        {
+                            this.Invoke((MethodInvoker)delegate
+                            {
+                                DragDropHandler(activePanel, new string[] { fileAddedPath });
+                            });
+
+
+                            //don't forget to either return from the function or break out fo the while loop
+                            break;
+                        }
+                        catch (IOException ex)
+                        {
+                            //you could do the sleep in here, but its probably a good idea to exit the error handler as soon as possible
+                            Debug.WriteLine(ex);
+                        }
+                        Thread.Sleep(100);
+
+                        //if its a very long wait this will acumulate very small errors. 
+                        //For most things it's probably fine, but if you need precision over a long time span, consider
+                        //   using some sort of timer or DateTime.Now as a better alternative
+                        timeout -= 100;
+                    }
+                    Debug.WriteLine("image file detected.");
+                    //LoadImage(activePanel, fileAddedPath);
+                }
+
+                if (Settings.Default.bringToFront) bringToFront();
+            }
+            catch (Exception ex)
+            {
+                //check here why it failed and ask user to retry if the file is in use.
+               System.Diagnostics.Debug.WriteLine($"File error created: {e.FullPath}");
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
+        // https://stackoverflow.com/questions/2636721/bring-another-processes-window-to-foreground-when-it-has-showintaskbar-false
+        [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+        public static extern IntPtr FindWindow(String lpClassName, String lpWindowName);
+
+        [DllImport("USER32.DLL")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        public static void bringToFront(string title)
+        {
+            // Get a handle to the Calculator application.
+            IntPtr handle = FindWindow(null, title);
+
+            // Verify is a running process.
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            // Make the foreground application
+            SetForegroundWindow(handle);
+        }
+        public static void bringToFront()
+        {
+
+            Process currentProcess = Process.GetCurrentProcess();
+            IntPtr hWnd = currentProcess.MainWindowHandle;
+            SetForegroundWindow(hWnd);
+
+            // Get a handle to the application.
+            IntPtr handle = hWnd;
+
+            // Verify is a running process.
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            // Make the foreground application
+            SetForegroundWindow(handle);
+        }
+        // end window to foreground
+
+        private void OnDeleted(object source, FileSystemEventArgs e)
+        {
+
+            if( Settings.Default.loadNewFile)DragDropHandler(activePanel,new string[] { Path.GetDirectoryName(e.FullPath) });
+            Debug.WriteLine($"File deleted: {e.FullPath}");
+
+        }
+
+        public void DisposeWatch()
+        {
+            // avoiding resource leak
+
+
+        }
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             // try to load the last opened file, or its directory if file could not be opened
@@ -2628,11 +2790,20 @@ namespace ImageStitcher
                     }
                     DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
                     DragDropHandler(1, new string[] { Settings.Default.DefaultDirectory });
+
+
+                    watchFolder(Settings.Default.DefaultDirectory);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Debug.WriteLine(ex.ToString());
                 }
             }
+        }
+
+        private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
+        {
+
         }
     } // end MainWindow : Form
 }

@@ -48,6 +48,8 @@ namespace ImageStitcher
             this.label_openinwindows = new System.Windows.Forms.Label();
             this.label_defaulteditor = new System.Windows.Forms.Label();
             this.textBox_defaulteditor = new System.Windows.Forms.TextBox();
+            this.checkBox_bringToFront = new System.Windows.Forms.CheckBox();
+            this.checkBox_loadNewFile = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_reversefileorder
@@ -57,9 +59,9 @@ namespace ImageStitcher
             this.checkBox_reversefileorder.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_reversefileorder.Location = new System.Drawing.Point(12, 12);
             this.checkBox_reversefileorder.Name = "checkBox_reversefileorder";
-            this.checkBox_reversefileorder.Size = new System.Drawing.Size(115, 17);
+            this.checkBox_reversefileorder.Size = new System.Drawing.Size(114, 17);
             this.checkBox_reversefileorder.TabIndex = 16;
-            this.checkBox_reversefileorder.Text = "Reverse FIle Order";
+            this.checkBox_reversefileorder.Text = "Reverse File Order";
             this.checkBox_reversefileorder.UseVisualStyleBackColor = true;
             // 
             // checkBox_rememberlastfile
@@ -75,7 +77,7 @@ namespace ImageStitcher
             // checkBox_defaultdirectory
             // 
             this.checkBox_defaultdirectory.AutoSize = true;
-            this.checkBox_defaultdirectory.Location = new System.Drawing.Point(12, 58);
+            this.checkBox_defaultdirectory.Location = new System.Drawing.Point(12, 81);
             this.checkBox_defaultdirectory.Name = "checkBox_defaultdirectory";
             this.checkBox_defaultdirectory.Size = new System.Drawing.Size(212, 17);
             this.checkBox_defaultdirectory.TabIndex = 19;
@@ -84,7 +86,7 @@ namespace ImageStitcher
             // 
             // textBox_defaultdir
             // 
-            this.textBox_defaultdir.Location = new System.Drawing.Point(12, 81);
+            this.textBox_defaultdir.Location = new System.Drawing.Point(12, 104);
             this.textBox_defaultdir.Name = "textBox_defaultdir";
             this.textBox_defaultdir.Size = new System.Drawing.Size(224, 20);
             this.textBox_defaultdir.TabIndex = 20;
@@ -94,7 +96,7 @@ namespace ImageStitcher
             this.button_browsedir.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_browsedir.BackgroundImage")));
             this.button_browsedir.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_browsedir.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_browsedir.Location = new System.Drawing.Point(242, 70);
+            this.button_browsedir.Location = new System.Drawing.Point(242, 93);
             this.button_browsedir.Name = "button_browsedir";
             this.button_browsedir.Size = new System.Drawing.Size(35, 31);
             this.button_browsedir.TabIndex = 21;
@@ -116,7 +118,7 @@ namespace ImageStitcher
             // checkBox_script
             // 
             this.checkBox_script.AutoSize = true;
-            this.checkBox_script.Location = new System.Drawing.Point(11, 107);
+            this.checkBox_script.Location = new System.Drawing.Point(11, 130);
             this.checkBox_script.Name = "checkBox_script";
             this.checkBox_script.Size = new System.Drawing.Size(132, 17);
             this.checkBox_script.TabIndex = 23;
@@ -125,7 +127,7 @@ namespace ImageStitcher
             // 
             // textBox_scriptloc
             // 
-            this.textBox_scriptloc.Location = new System.Drawing.Point(12, 130);
+            this.textBox_scriptloc.Location = new System.Drawing.Point(12, 153);
             this.textBox_scriptloc.Name = "textBox_scriptloc";
             this.textBox_scriptloc.Size = new System.Drawing.Size(224, 20);
             this.textBox_scriptloc.TabIndex = 24;
@@ -135,7 +137,7 @@ namespace ImageStitcher
             this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
             this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button1.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(242, 119);
+            this.button1.Location = new System.Drawing.Point(242, 142);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(35, 31);
             this.button1.TabIndex = 25;
@@ -146,7 +148,7 @@ namespace ImageStitcher
             // checkBox_scriptwait
             // 
             this.checkBox_scriptwait.AutoSize = true;
-            this.checkBox_scriptwait.Location = new System.Drawing.Point(149, 107);
+            this.checkBox_scriptwait.Location = new System.Drawing.Point(149, 130);
             this.checkBox_scriptwait.Name = "checkBox_scriptwait";
             this.checkBox_scriptwait.Size = new System.Drawing.Size(124, 17);
             this.checkBox_scriptwait.TabIndex = 26;
@@ -168,7 +170,7 @@ namespace ImageStitcher
             // 
             // textBox_openinwindows
             // 
-            this.textBox_openinwindows.Location = new System.Drawing.Point(12, 171);
+            this.textBox_openinwindows.Location = new System.Drawing.Point(12, 194);
             this.textBox_openinwindows.Name = "textBox_openinwindows";
             this.textBox_openinwindows.Size = new System.Drawing.Size(224, 20);
             this.textBox_openinwindows.TabIndex = 28;
@@ -176,7 +178,7 @@ namespace ImageStitcher
             // label_openinwindows
             // 
             this.label_openinwindows.AutoSize = true;
-            this.label_openinwindows.Location = new System.Drawing.Point(12, 155);
+            this.label_openinwindows.Location = new System.Drawing.Point(12, 178);
             this.label_openinwindows.Name = "label_openinwindows";
             this.label_openinwindows.Size = new System.Drawing.Size(122, 13);
             this.label_openinwindows.TabIndex = 29;
@@ -185,7 +187,7 @@ namespace ImageStitcher
             // label_defaulteditor
             // 
             this.label_defaulteditor.AutoSize = true;
-            this.label_defaulteditor.Location = new System.Drawing.Point(12, 194);
+            this.label_defaulteditor.Location = new System.Drawing.Point(12, 217);
             this.label_defaulteditor.Name = "label_defaulteditor";
             this.label_defaulteditor.Size = new System.Drawing.Size(71, 13);
             this.label_defaulteditor.TabIndex = 30;
@@ -193,16 +195,39 @@ namespace ImageStitcher
             // 
             // textBox_defaulteditor
             // 
-            this.textBox_defaulteditor.Location = new System.Drawing.Point(11, 210);
+            this.textBox_defaulteditor.Location = new System.Drawing.Point(11, 233);
             this.textBox_defaulteditor.Name = "textBox_defaulteditor";
             this.textBox_defaulteditor.Size = new System.Drawing.Size(224, 20);
             this.textBox_defaulteditor.TabIndex = 31;
+            // 
+            // checkBox_bringToFront
+            // 
+            this.checkBox_bringToFront.AutoSize = true;
+            this.checkBox_bringToFront.Location = new System.Drawing.Point(182, 58);
+            this.checkBox_bringToFront.Name = "checkBox_bringToFront";
+            this.checkBox_bringToFront.Size = new System.Drawing.Size(111, 17);
+            this.checkBox_bringToFront.TabIndex = 32;
+            this.checkBox_bringToFront.Text = "Show Immediately";
+            this.checkBox_bringToFront.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_loadNewFile
+            // 
+            this.checkBox_loadNewFile.AutoSize = true;
+            this.checkBox_loadNewFile.Location = new System.Drawing.Point(12, 58);
+            this.checkBox_loadNewFile.Name = "checkBox_loadNewFile";
+            this.checkBox_loadNewFile.Size = new System.Drawing.Size(131, 17);
+            this.checkBox_loadNewFile.TabIndex = 33;
+            this.checkBox_loadNewFile.Text = "Auto-Update Directory";
+            this.checkBox_loadNewFile.UseVisualStyleBackColor = true;
+            this.checkBox_loadNewFile.CheckedChanged += new System.EventHandler(this.checkBox_loadNewFile_CheckedChanged);
             // 
             // form_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(329, 262);
+            this.ClientSize = new System.Drawing.Size(329, 303);
+            this.Controls.Add(this.checkBox_loadNewFile);
+            this.Controls.Add(this.checkBox_bringToFront);
             this.Controls.Add(this.textBox_defaulteditor);
             this.Controls.Add(this.label_defaulteditor);
             this.Controls.Add(this.label_openinwindows);
@@ -244,5 +269,7 @@ namespace ImageStitcher
         private System.Windows.Forms.Label label_openinwindows;
         private System.Windows.Forms.Label label_defaulteditor;
         private System.Windows.Forms.TextBox textBox_defaulteditor;
+        private System.Windows.Forms.CheckBox checkBox_bringToFront;
+        private System.Windows.Forms.CheckBox checkBox_loadNewFile;
     }
 }

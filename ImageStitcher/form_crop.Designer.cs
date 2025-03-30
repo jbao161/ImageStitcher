@@ -34,6 +34,7 @@ namespace ImageStitcher
             this.button_crop = new System.Windows.Forms.Button();
             this.button_crop_no = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button_blackbar = new System.Windows.Forms.Button();
             this.button_pixelate = new System.Windows.Forms.Button();
             this.button_blurcrop = new System.Windows.Forms.Button();
             this.button_revert = new System.Windows.Forms.Button();
@@ -44,7 +45,10 @@ namespace ImageStitcher
             this.panel_insidetablelayout = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.button_blackbar = new System.Windows.Forms.Button();
+            this.textBox_pixelateLevel = new System.Windows.Forms.TextBox();
+            this.label_pixelateLevel = new System.Windows.Forms.Label();
+            this.label_blurLevel = new System.Windows.Forms.Label();
+            this.textBox_blurLevel = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -87,11 +91,27 @@ namespace ImageStitcher
             this.panel1.Controls.Add(this.checkBox_overwrite);
             this.panel1.Controls.Add(this.button_accept);
             this.panel1.Controls.Add(this.button_crop_no);
+            this.panel1.Controls.Add(this.label_blurLevel);
+            this.panel1.Controls.Add(this.textBox_blurLevel);
+            this.panel1.Controls.Add(this.label_pixelateLevel);
+            this.panel1.Controls.Add(this.textBox_pixelateLevel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 615);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(950, 77);
             this.panel1.TabIndex = 3;
+            // 
+            // button_blackbar
+            // 
+            this.button_blackbar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_blackbar.BackColor = System.Drawing.Color.GreenYellow;
+            this.button_blackbar.Location = new System.Drawing.Point(470, 15);
+            this.button_blackbar.Name = "button_blackbar";
+            this.button_blackbar.Size = new System.Drawing.Size(66, 50);
+            this.button_blackbar.TabIndex = 8;
+            this.button_blackbar.Text = "Black Bar";
+            this.button_blackbar.UseVisualStyleBackColor = false;
+            this.button_blackbar.Click += new System.EventHandler(this.button_blackbar_Click);
             // 
             // button_pixelate
             // 
@@ -121,7 +141,7 @@ namespace ImageStitcher
             // 
             this.button_revert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_revert.BackColor = System.Drawing.Color.Yellow;
-            this.button_revert.Location = new System.Drawing.Point(125, 15);
+            this.button_revert.Location = new System.Drawing.Point(358, 15);
             this.button_revert.Name = "button_revert";
             this.button_revert.Size = new System.Drawing.Size(75, 50);
             this.button_revert.TabIndex = 3;
@@ -215,17 +235,42 @@ namespace ImageStitcher
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
             // 
-            // button_blackbar
+            // textBox_pixelateLevel
             // 
-            this.button_blackbar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_blackbar.BackColor = System.Drawing.Color.GreenYellow;
-            this.button_blackbar.Location = new System.Drawing.Point(470, 15);
-            this.button_blackbar.Name = "button_blackbar";
-            this.button_blackbar.Size = new System.Drawing.Size(66, 50);
-            this.button_blackbar.TabIndex = 8;
-            this.button_blackbar.Text = "Black Bar";
-            this.button_blackbar.UseVisualStyleBackColor = false;
-            this.button_blackbar.Click += new System.EventHandler(this.button_blackbar_Click);
+            this.textBox_pixelateLevel.Location = new System.Drawing.Point(187, 36);
+            this.textBox_pixelateLevel.Name = "textBox_pixelateLevel";
+            this.textBox_pixelateLevel.Size = new System.Drawing.Size(34, 20);
+            this.textBox_pixelateLevel.TabIndex = 9;
+
+            // 
+            // label_pixelateLevel
+            // 
+            this.label_pixelateLevel.AutoSize = true;
+            this.label_pixelateLevel.Location = new System.Drawing.Point(139, 39);
+            this.label_pixelateLevel.Name = "label_pixelateLevel";
+            this.label_pixelateLevel.Size = new System.Drawing.Size(42, 13);
+            this.label_pixelateLevel.TabIndex = 10;
+            this.label_pixelateLevel.Text = "Pix LvL";
+
+            // 
+            // label_blurLevel
+            // 
+            this.label_blurLevel.AutoSize = true;
+            this.label_blurLevel.Location = new System.Drawing.Point(240, 39);
+            this.label_blurLevel.Name = "label_blurLevel";
+            this.label_blurLevel.Size = new System.Drawing.Size(46, 13);
+            this.label_blurLevel.TabIndex = 12;
+            this.label_blurLevel.Text = "Blur LvL";
+            this.label_blurLevel.UseMnemonic = false;
+
+            // 
+            // textBox_blurLevel
+            // 
+            this.textBox_blurLevel.Location = new System.Drawing.Point(288, 36);
+            this.textBox_blurLevel.Name = "textBox_blurLevel";
+            this.textBox_blurLevel.Size = new System.Drawing.Size(34, 20);
+            this.textBox_blurLevel.TabIndex = 11;
+
             // 
             // Form_Crop
             // 
@@ -265,5 +310,9 @@ namespace ImageStitcher
         private System.Windows.Forms.Button button_blurcrop;
         private System.Windows.Forms.Button button_pixelate;
         private System.Windows.Forms.Button button_blackbar;
+        private System.Windows.Forms.Label label_blurLevel;
+        private System.Windows.Forms.TextBox textBox_blurLevel;
+        private System.Windows.Forms.Label label_pixelateLevel;
+        private System.Windows.Forms.TextBox textBox_pixelateLevel;
     }
 }

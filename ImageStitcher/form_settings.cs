@@ -68,6 +68,8 @@ namespace ImageStitcher
             checkBox_loadsubfolders.Checked = Settings.Default.LoadSubfolders;
             textBox_openinwindows.Text = Settings.Default.DefaultWindowsOpen;
             textBox_defaulteditor.Text = Settings.Default.DefaultEditor;
+            checkBox_bringToFront.Checked = Settings.Default.bringToFront;
+            checkBox_loadNewFile.Checked = Settings.Default.loadNewFile;
         }
 
         private void form_settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -83,6 +85,8 @@ namespace ImageStitcher
             Settings.Default.LoadSubfolders = checkBox_loadsubfolders.Checked;
             Settings.Default.DefaultWindowsOpen = textBox_openinwindows.Text;
             Settings.Default.DefaultEditor = textBox_defaulteditor.Text;
+            Settings.Default.bringToFront = checkBox_bringToFront.Checked;
+            Settings.Default.loadNewFile = checkBox_loadNewFile.Checked ;
         }
 
         private void checkBox_darkskin_CheckedChanged(object sender, EventArgs e)
@@ -107,6 +111,11 @@ namespace ImageStitcher
         private void checkBox_loadsubfolders_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.LoadSubfolders = checkBox_loadsubfolders.Checked;
+        }
+
+        private void checkBox_loadNewFile_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

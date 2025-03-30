@@ -418,5 +418,53 @@ namespace ImageStitcher.Properties {
                 this["BlurLevel"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PixelateCheckbox {
+            get {
+                return ((bool)(this["PixelateCheckbox"]));
+            }
+            set {
+                this["PixelateCheckbox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PixelateLevel {
+            get {
+                return ((string)(this["PixelateLevel"]));
+            }
+            set {
+                this["PixelateLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool bringToFront {
+            get {
+                return ((bool)(this["bringToFront"]));
+            }
+            set {
+                this["bringToFront"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool loadNewFile {
+            get {
+                return ((bool)(this["loadNewFile"]));
+            }
+            set {
+                this["loadNewFile"] = value;
+            }
+        }
     }
 }
