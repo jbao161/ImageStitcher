@@ -466,5 +466,17 @@ namespace ImageStitcher.Properties {
                 this["loadNewFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string openFolderOnCut {
+            get {
+                return ((string)(this["openFolderOnCut"]));
+            }
+            set {
+                this["openFolderOnCut"] = value;
+            }
+        }
     }
 }

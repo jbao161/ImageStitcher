@@ -1865,7 +1865,8 @@ namespace ImageStitcher
             if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, "bitmap", false); return true; }
 
             // Ctrl + Alt + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); return true; }
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut); } catch (Exception ex) { Debug.WriteLine(ex); }  
+                return true; }
 
             // Alt + Spacebar to toggle if hotkeys affect both panels
             if (keyData == (Keys.Alt | Keys.Space))

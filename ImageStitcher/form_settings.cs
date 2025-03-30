@@ -24,15 +24,7 @@ namespace ImageStitcher
 
         private void button_browsedir_Click(object sender, EventArgs e)
         {
-            var dialog = new FolderSelectDialog
-            {
-                InitialDirectory = textBox_defaultdir.Text,
-                Title = "Select a default directory to open on load"
-            };
-            if (dialog.Show(Handle))
-            {
-                textBox_defaultdir.Text = dialog.FileName;
-            }
+            chooseFileOrFolder(textBox_defaultdir, false);
         }
 
         private void CheckBounds()
@@ -70,6 +62,7 @@ namespace ImageStitcher
             textBox_defaulteditor.Text = Settings.Default.DefaultEditor;
             checkBox_bringToFront.Checked = Settings.Default.bringToFront;
             checkBox_loadNewFile.Checked = Settings.Default.loadNewFile;
+            textBox_openFolderOnCut.Text = Settings.Default.openFolderOnCut;
         }
 
         private void form_settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -87,6 +80,7 @@ namespace ImageStitcher
             Settings.Default.DefaultEditor = textBox_defaulteditor.Text;
             Settings.Default.bringToFront = checkBox_bringToFront.Checked;
             Settings.Default.loadNewFile = checkBox_loadNewFile.Checked ;
+            Settings.Default.openFolderOnCut = textBox_openFolderOnCut.Text;
         }
 
         private void checkBox_darkskin_CheckedChanged(object sender, EventArgs e)
@@ -97,15 +91,7 @@ namespace ImageStitcher
 
         private void button_script_click(object sender, EventArgs e)
         {
-            var dialog = new OpenFileDialog()
-            {
-                InitialDirectory = textBox_scriptloc.Text,
-                Title = "Select a file to run at startup"
-            };
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                textBox_scriptloc.Text = dialog.FileName;
-            }
+                chooseFileOrFolder(textBox_scriptloc,true);
         }
 
         private void checkBox_loadsubfolders_CheckedChanged(object sender, EventArgs e)
@@ -115,6 +101,49 @@ namespace ImageStitcher
 
         private void checkBox_loadNewFile_CheckedChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void button_openOnCut_Click(object sender, EventArgs e)
+        {
+            chooseFileOrFolder(textBox_openFolderOnCut, false);
+        }
+
+        private void button_defaultEditor_Click(object sender, EventArgs e)
+        {
+            chooseFileOrFolder(textBox_defaulteditor, true);
+        }
+
+        private void button_openInWindows_Click(object sender, EventArgs e)
+        {
+            chooseFileOrFolder(textBox_openinwindows, true);
+        }
+        private void chooseFileOrFolder(TextBox textBoxToChange, bool isFile)
+        {
+            if (isFile)
+            {
+                var dialog = new OpenFileDialog()
+                {
+                    InitialDirectory = textBoxToChange.Text,
+                    Title = "Select a file"
+                };
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    textBoxToChange.Text = dialog.FileName;
+                }
+            }
+            else
+            {
+                var dialog = new FolderSelectDialog
+                {
+                    InitialDirectory = textBoxToChange.Text,
+                    Title = "Select a directory"
+                };
+                if (dialog.Show(Handle))
+                {
+                    textBoxToChange.Text = dialog.FileName;
+                }
+            }
 
         }
     }

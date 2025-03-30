@@ -41,7 +41,7 @@ namespace ImageStitcher
             this.checkBox_darkskin = new System.Windows.Forms.CheckBox();
             this.checkBox_script = new System.Windows.Forms.CheckBox();
             this.textBox_scriptloc = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_startupscript = new System.Windows.Forms.Button();
             this.checkBox_scriptwait = new System.Windows.Forms.CheckBox();
             this.checkBox_loadsubfolders = new System.Windows.Forms.CheckBox();
             this.textBox_openinwindows = new System.Windows.Forms.TextBox();
@@ -50,6 +50,11 @@ namespace ImageStitcher
             this.textBox_defaulteditor = new System.Windows.Forms.TextBox();
             this.checkBox_bringToFront = new System.Windows.Forms.CheckBox();
             this.checkBox_loadNewFile = new System.Windows.Forms.CheckBox();
+            this.textBox_openFolderOnCut = new System.Windows.Forms.TextBox();
+            this.label_openFolderOnCut = new System.Windows.Forms.Label();
+            this.button_openOnCut = new System.Windows.Forms.Button();
+            this.button_openInWindows = new System.Windows.Forms.Button();
+            this.button_defaultEditor = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // checkBox_reversefileorder
@@ -132,18 +137,18 @@ namespace ImageStitcher
             this.textBox_scriptloc.Size = new System.Drawing.Size(224, 20);
             this.textBox_scriptloc.TabIndex = 24;
             // 
-            // button1
+            // button_startupscript
             // 
-            this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
-            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button1.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(242, 142);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(35, 31);
-            this.button1.TabIndex = 25;
-            this.button1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button_script_click);
+            this.button_startupscript.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_startupscript.BackgroundImage")));
+            this.button_startupscript.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_startupscript.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_startupscript.Location = new System.Drawing.Point(242, 151);
+            this.button_startupscript.Name = "button_startupscript";
+            this.button_startupscript.Size = new System.Drawing.Size(35, 31);
+            this.button_startupscript.TabIndex = 25;
+            this.button_startupscript.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button_startupscript.UseVisualStyleBackColor = true;
+            this.button_startupscript.Click += new System.EventHandler(this.button_script_click);
             // 
             // checkBox_scriptwait
             // 
@@ -221,11 +226,71 @@ namespace ImageStitcher
             this.checkBox_loadNewFile.UseVisualStyleBackColor = true;
             this.checkBox_loadNewFile.CheckedChanged += new System.EventHandler(this.checkBox_loadNewFile_CheckedChanged);
             // 
+            // textBox_openFolderOnCut
+            // 
+            this.textBox_openFolderOnCut.Location = new System.Drawing.Point(11, 272);
+            this.textBox_openFolderOnCut.Name = "textBox_openFolderOnCut";
+            this.textBox_openFolderOnCut.Size = new System.Drawing.Size(224, 20);
+            this.textBox_openFolderOnCut.TabIndex = 35;
+            // 
+            // label_openFolderOnCut
+            // 
+            this.label_openFolderOnCut.AutoSize = true;
+            this.label_openFolderOnCut.Location = new System.Drawing.Point(12, 256);
+            this.label_openFolderOnCut.Name = "label_openFolderOnCut";
+            this.label_openFolderOnCut.Size = new System.Drawing.Size(99, 13);
+            this.label_openFolderOnCut.TabIndex = 34;
+            this.label_openFolderOnCut.Text = "Open Folder on Cut";
+            // 
+            // button_openOnCut
+            // 
+            this.button_openOnCut.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_openOnCut.BackgroundImage")));
+            this.button_openOnCut.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_openOnCut.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_openOnCut.Location = new System.Drawing.Point(242, 265);
+            this.button_openOnCut.Name = "button_openOnCut";
+            this.button_openOnCut.Size = new System.Drawing.Size(35, 31);
+            this.button_openOnCut.TabIndex = 36;
+            this.button_openOnCut.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button_openOnCut.UseVisualStyleBackColor = true;
+            this.button_openOnCut.Click += new System.EventHandler(this.button_openOnCut_Click);
+            // 
+            // button_openInWindows
+            // 
+            this.button_openInWindows.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_openInWindows.BackgroundImage")));
+            this.button_openInWindows.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_openInWindows.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_openInWindows.Location = new System.Drawing.Point(242, 188);
+            this.button_openInWindows.Name = "button_openInWindows";
+            this.button_openInWindows.Size = new System.Drawing.Size(35, 31);
+            this.button_openInWindows.TabIndex = 37;
+            this.button_openInWindows.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button_openInWindows.UseVisualStyleBackColor = true;
+            this.button_openInWindows.Click += new System.EventHandler(this.button_openInWindows_Click);
+            // 
+            // button_defaultEditor
+            // 
+            this.button_defaultEditor.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_defaultEditor.BackgroundImage")));
+            this.button_defaultEditor.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button_defaultEditor.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_defaultEditor.Location = new System.Drawing.Point(242, 228);
+            this.button_defaultEditor.Name = "button_defaultEditor";
+            this.button_defaultEditor.Size = new System.Drawing.Size(35, 31);
+            this.button_defaultEditor.TabIndex = 38;
+            this.button_defaultEditor.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button_defaultEditor.UseVisualStyleBackColor = true;
+            this.button_defaultEditor.Click += new System.EventHandler(this.button_defaultEditor_Click);
+            // 
             // form_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(329, 303);
+            this.ClientSize = new System.Drawing.Size(306, 308);
+            this.Controls.Add(this.button_defaultEditor);
+            this.Controls.Add(this.button_openInWindows);
+            this.Controls.Add(this.button_openOnCut);
+            this.Controls.Add(this.textBox_openFolderOnCut);
+            this.Controls.Add(this.label_openFolderOnCut);
             this.Controls.Add(this.checkBox_loadNewFile);
             this.Controls.Add(this.checkBox_bringToFront);
             this.Controls.Add(this.textBox_defaulteditor);
@@ -234,7 +299,7 @@ namespace ImageStitcher
             this.Controls.Add(this.textBox_openinwindows);
             this.Controls.Add(this.checkBox_loadsubfolders);
             this.Controls.Add(this.checkBox_scriptwait);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.button_startupscript);
             this.Controls.Add(this.textBox_scriptloc);
             this.Controls.Add(this.checkBox_script);
             this.Controls.Add(this.checkBox_darkskin);
@@ -262,7 +327,7 @@ namespace ImageStitcher
         private System.Windows.Forms.CheckBox checkBox_darkskin;
         private System.Windows.Forms.CheckBox checkBox_script;
         private System.Windows.Forms.TextBox textBox_scriptloc;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_startupscript;
         private System.Windows.Forms.CheckBox checkBox_scriptwait;
         private System.Windows.Forms.CheckBox checkBox_loadsubfolders;
         private System.Windows.Forms.TextBox textBox_openinwindows;
@@ -271,5 +336,10 @@ namespace ImageStitcher
         private System.Windows.Forms.TextBox textBox_defaulteditor;
         private System.Windows.Forms.CheckBox checkBox_bringToFront;
         private System.Windows.Forms.CheckBox checkBox_loadNewFile;
+        private System.Windows.Forms.TextBox textBox_openFolderOnCut;
+        private System.Windows.Forms.Label label_openFolderOnCut;
+        private System.Windows.Forms.Button button_openOnCut;
+        private System.Windows.Forms.Button button_openInWindows;
+        private System.Windows.Forms.Button button_defaultEditor;
     }
 }
