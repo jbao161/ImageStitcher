@@ -919,7 +919,7 @@ namespace ImageStitcher
                 imageFilesLeftPanel = null;
                 imageCountLeftPanel = 0;
                 imageIndexLeftPanel = 0;
-                priorimageIndexLeftPanel = imageIndexLeftPanel;
+                priorimageIndexLeftPanel = 0;
                 currentFoldersListLeft = null;
             }
             if (targetPanel == 1)
@@ -928,7 +928,7 @@ namespace ImageStitcher
                 imageFilesRightPanel = null;
                 imageCountRightPanel = 0;
                 imageIndexRightPanel = 0;
-                priorimageIndexRightPanel = imageIndexRightPanel;
+                priorimageIndexRightPanel = 0;
                 currentFoldersListRight = null;
             }
             Resize_imagepanels();
@@ -2752,17 +2752,26 @@ namespace ImageStitcher
             int imageIndexActivePanel = getCurrentIndex();
             string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
             string[] currentFoldersList = getCurrentFoldersList();
-            if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel])
+
+            int restorepriorimageindex = getPreviousIndex();
+            int restorecurrentimageindex = getCurrentIndex();
+
+
+            if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel] && currentFoldersList != null)
             {
-                DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
+                DragDropHandler(activePanel, imageFilesActivePanel[getPreviousIndex()], currentFoldersList);
+                if (restorepriorimageindex < restorecurrentimageindex) restorecurrentimageindex -= 1;
+                    setPreviousIndex(restorecurrentimageindex);
             }
             else if (currentFoldersList != null) {
                 DragDropHandler(activePanel, currentImagePath, currentFoldersList);
+                if (restorepriorimageindex > restorecurrentimageindex) restorepriorimageindex -= 1;
+                setPreviousIndex(restorepriorimageindex);
             } else
             {
-                DragDropHandler(activePanel, new string[] { currentImagePath });
+                DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
             }
-                Debug.WriteLine($"File deleted: {e.FullPath}");
+            
 
         }
         private List<String> getCurrentPanel()
@@ -2796,6 +2805,22 @@ namespace ImageStitcher
             if (activePanel == 1)
                  currentFoldersListRight = foldersList;
             return;
+        }
+        private int getPreviousIndex()
+        {
+            if (activePanel == 0)
+                return priorimageIndexLeftPanel;
+            if(activePanel == 1)
+                return priorimageIndexRightPanel;
+            return -1;  
+
+        }
+        private void setPreviousIndex(int i)
+        {
+            if (activePanel == 0)
+                 priorimageIndexLeftPanel = i;
+            if (activePanel == 1)
+                 priorimageIndexRightPanel = i;
         }
         string[] currentFoldersListLeft = null;
         string[] currentFoldersListRight = null;
