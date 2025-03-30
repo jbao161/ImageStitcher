@@ -2757,7 +2757,7 @@ namespace ImageStitcher
                 DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
             }
             else if (currentFoldersList != null) {
-                DragDropHandler(activePanel, currentFoldersList);
+                DragDropHandler(activePanel, currentImagePath, currentFoldersList);
             } else
             {
                 DragDropHandler(activePanel, new string[] { currentImagePath });
