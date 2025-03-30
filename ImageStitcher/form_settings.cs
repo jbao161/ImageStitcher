@@ -124,7 +124,7 @@ namespace ImageStitcher
             {
                 var dialog = new OpenFileDialog()
                 {
-                    InitialDirectory = textBoxToChange.Text,
+                    InitialDirectory = System.IO.Path.GetDirectoryName(textBoxToChange.Text),
                     Title = "Select a file"
                 };
                 if (dialog.ShowDialog() == DialogResult.OK)
