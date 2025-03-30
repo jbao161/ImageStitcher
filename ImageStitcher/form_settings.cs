@@ -1,5 +1,6 @@
 ﻿using ImageStitcher.Properties;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 
 using System.Windows.Forms;
@@ -122,11 +123,17 @@ namespace ImageStitcher
         {
             if (isFile)
             {
-                var dialog = new OpenFileDialog()
+                string initpath = "";
+                if (String.IsNullOrEmpty(textBoxToChange.Text)) initpath = "C:";
+                else
                 {
-                    InitialDirectory = System.IO.Path.GetDirectoryName(textBoxToChange.Text),
-                    Title = "Select a file"
-                };
+                    try { System.IO.Path.GetDirectoryName(textBoxToChange.Text); } catch (Exception ex) { Debug.WriteLine(ex); }
+                }
+                    var dialog = new OpenFileDialog()
+                    {
+                        InitialDirectory = initpath,
+                        Title = "Select a file"
+                    };
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     textBoxToChange.Text = dialog.FileName;
