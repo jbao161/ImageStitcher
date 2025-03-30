@@ -322,8 +322,11 @@ namespace ImageStitcher
             }
             catch (Exception ex) { Debug.WriteLine(ex); }
         }
-
-        private void DragDropHandler(int targetPanel, string[] filepaths, bool loadsubfolders)
+        private void DragDropHandler(int targetPanel, string startfile, string[] filepaths)
+        {
+            DragDropHandler(targetPanel, startfile, filepaths, Settings.Default.LoadSubfolders);
+        }
+        private void DragDropHandler(int targetPanel, string startfile, string[] filepaths,  bool loadsubfolders)
         {
             //if (String.IsNullOrEmpty(filepaths[0])) return;
             try
@@ -375,7 +378,7 @@ namespace ImageStitcher
                     {
                         for (int i = 0; i < imageCount; i++)
                         {
-                            if (imageList[i] == imagepath) { imageIndex = i; }
+                            if (imageList[i] == startfile) { imageIndex = i; LoadImage(targetPanel, startfile); }
                         }
 
                         if (targetPanel == 0)
@@ -395,13 +398,17 @@ namespace ImageStitcher
                     }
                     Resize_imagepanels();
                     UpdateLabelImageIndex();
-
+                    setCurrentFoldersList(filepaths);
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Debug.WriteLine("failed in dragdrophandler: " + ex);
             }
+        }
+        private void DragDropHandler(int targetPanel, string[] filepaths, bool loadsubfolders)
+        {
+            DragDropHandler(targetPanel, "", filepaths,  Settings.Default.LoadSubfolders);
         }
 
         private static bool HasExtension(string filename, string extension)
@@ -913,6 +920,7 @@ namespace ImageStitcher
                 imageCountLeftPanel = 0;
                 imageIndexLeftPanel = 0;
                 priorimageIndexLeftPanel = imageIndexLeftPanel;
+                currentFoldersListLeft = null;
             }
             if (targetPanel == 1)
             {
@@ -921,6 +929,7 @@ namespace ImageStitcher
                 imageCountRightPanel = 0;
                 imageIndexRightPanel = 0;
                 priorimageIndexRightPanel = imageIndexRightPanel;
+                currentFoldersListRight = null;
             }
             Resize_imagepanels();
             UpdateLabelImageIndex();
@@ -2650,10 +2659,7 @@ namespace ImageStitcher
                 bool isImage = defaultallowedImageExtensions.Any(fileAddedPath.ToLower().EndsWith);
                 if (fileAddedPath.EndsWith(".path"))
                 {
-
-                    //DragDropHandler(activePanel, new string[] { fileAddedPath.Remove(fileAddedPath.Length - 5, 5) });
                     Debug.WriteLine("part file detected.");
-                    //LoadImage(activePanel, fileAddedPath.Remove(fileAddedPath.Length - 5, 5));
                 }
                 else
                  if (isImage)
@@ -2665,9 +2671,8 @@ namespace ImageStitcher
                         {
                             this.Invoke((MethodInvoker)delegate
                             {
-                                DragDropHandler(activePanel, new string[] { fileAddedPath });
+                                DragDropHandler(activePanel, fileAddedPath, getCurrentFoldersList());
                             });
-
 
                             //don't forget to either return from the function or break out fo the while loop
                             break;
@@ -2741,18 +2746,60 @@ namespace ImageStitcher
 
         private void OnDeleted(object source, FileSystemEventArgs e)
         {
-
-            if( Settings.Default.loadNewFile)DragDropHandler(activePanel,new string[] { Path.GetDirectoryName(e.FullPath) });
-            Debug.WriteLine($"File deleted: {e.FullPath}");
+            if (!Settings.Default.loadNewFile) return;
+            string deletedfilepath = e.FullPath;
+            List<String> imageFilesActivePanel = getCurrentPanel();
+            int imageIndexActivePanel = getCurrentIndex();
+            string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
+            string[] currentFoldersList = getCurrentFoldersList();
+            if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel])
+            {
+                DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
+            }
+            else if (currentFoldersList != null) {
+                DragDropHandler(activePanel, currentFoldersList);
+            } else
+            {
+                DragDropHandler(activePanel, new string[] { currentImagePath });
+            }
+                Debug.WriteLine($"File deleted: {e.FullPath}");
 
         }
-
-        public void DisposeWatch()
+        private List<String> getCurrentPanel()
         {
-            // avoiding resource leak
-
-
+            if (activePanel == 0)
+            return imageFilesLeftPanel;
+            if (activePanel == 1)
+                return imageFilesRightPanel;
+            return null;
         }
+        private int getCurrentIndex()
+        {
+            if (activePanel == 0)
+                return imageIndexLeftPanel;
+            if (activePanel == 1)
+                return imageIndexRightPanel;
+            return -1;
+        }
+        private string[] getCurrentFoldersList()
+        {
+            if (activePanel == 0)
+                return currentFoldersListLeft;
+            if (activePanel == 1)
+                return currentFoldersListRight;
+            return null;
+        }
+        private void setCurrentFoldersList(string[] foldersList)
+        {
+            if (activePanel == 0)
+                 currentFoldersListLeft = foldersList;
+            if (activePanel == 1)
+                 currentFoldersListRight = foldersList;
+            return;
+        }
+        string[] currentFoldersListLeft = null;
+        string[] currentFoldersListRight = null;
+
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             // try to load the last opened file, or its directory if file could not be opened

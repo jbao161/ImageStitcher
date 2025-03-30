@@ -123,9 +123,6 @@ namespace ImageStitcher
         {
             if (isFile)
             {
-
-
-
                 string initpath = "";
                 if (String.IsNullOrEmpty(textBoxToChange.Text)) initpath = "C:";
                 else
