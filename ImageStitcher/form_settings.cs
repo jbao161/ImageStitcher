@@ -123,11 +123,14 @@ namespace ImageStitcher
         {
             if (isFile)
             {
+
+
+
                 string initpath = "";
                 if (String.IsNullOrEmpty(textBoxToChange.Text)) initpath = "C:";
                 else
                 {
-                    try { System.IO.Path.GetDirectoryName(textBoxToChange.Text); } catch (Exception ex) { Debug.WriteLine(ex); }
+                    try { initpath = System.IO.Path.GetDirectoryName(textBoxToChange.Text); } catch (Exception ex) { Debug.WriteLine(ex); }
                 }
                     var dialog = new OpenFileDialog()
                     {
