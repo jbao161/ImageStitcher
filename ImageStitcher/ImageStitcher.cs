@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Path = System.IO.Path;
@@ -1874,7 +1875,7 @@ namespace ImageStitcher
             if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, "bitmap", false); return true; }
 
             // Ctrl + Alt + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut); } catch (Exception ex) { Debug.WriteLine(ex); }  
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut); sendToBack(); } catch (Exception ex) { Debug.WriteLine(ex); }  
                 return true; }
 
             // Alt + Spacebar to toggle if hotkeys affect both panels
@@ -2728,7 +2729,6 @@ namespace ImageStitcher
 
             Process currentProcess = Process.GetCurrentProcess();
             IntPtr hWnd = currentProcess.MainWindowHandle;
-            SetForegroundWindow(hWnd);
 
             // Get a handle to the application.
             IntPtr handle = hWnd;
@@ -2743,6 +2743,46 @@ namespace ImageStitcher
             SetForegroundWindow(handle);
         }
         // end window to foreground
+
+        //https://stackoverflow.com/questions/1181336/how-to-send-a-wpf-window-to-the-back
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(
+    IntPtr hWnd,
+    IntPtr hWndInsertAfter,
+    int X,
+    int Y,
+    int cx,
+    int cy,
+    uint uFlags);
+
+        const UInt32 SWP_NOSIZE = 0x0001;
+        const UInt32 SWP_NOMOVE = 0x0002;
+
+        static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+
+        static void SendWpfWindowBack(System.Windows.Window window)
+        {
+            var hWnd = new WindowInteropHelper(window).Handle;
+            SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        }
+        public static void sendToBack()
+        {
+
+            Process currentProcess = Process.GetCurrentProcess();
+            IntPtr hWnd = currentProcess.MainWindowHandle;
+
+            // Get a handle to the application.
+            IntPtr handle = hWnd;
+
+            // Verify is a running process.
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        }
+        // end send window to back
 
         private void OnDeleted(object source, FileSystemEventArgs e)
         {
