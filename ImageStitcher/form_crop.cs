@@ -236,6 +236,7 @@ namespace ImageStitcher
         }
         private void btnCrop_Click(object sender, EventArgs e)
         {
+
             try
             {
                 string currentimagepath = sourcepath;
@@ -263,16 +264,22 @@ namespace ImageStitcher
                     int cropAreaLeft = (int)bitmapRect.Left;
                     int cropAreaTop = (int)bitmapRect.Top;
                     string outputvisibility = "/C ";
-                    // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output
+                // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output
 
-                    string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpgif.gif";
+                string imgext = System.IO.Path.GetExtension(currentimagepath);
+
+                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpimg"+ $".{imgext}";
                     var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
 
                     string cropgifcommand = "";
-                    // cmd for ffmpeg. quality is bad
-                    //cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
-                    // cmd for imagemagick. good quality
-                    cropgifcommand = $"magick \"{currentimagepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize \"{tmpgifpath}\"";
+                // cmd for ffmpeg. quality is bad
+                //cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
+                // cmd for imagemagick. good quality
+                double filesizemb = new System.IO.FileInfo(currentimagepath).Length/1024.0;
+                double animatedgifminfilesize = 1.0;
+                string ifgifimagecmd = "";
+                if (imgext == "gif" && filesizemb > animatedgifminfilesize) ifgifimagecmd = " +repage -layers optimize";
+                    cropgifcommand = $"magick \"{currentimagepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop}{ifgifimagecmd} \"{tmpgifpath}\"";
                     string arg = outputvisibility + cropgifcommand;
                     Process proc = new Process
                     {
