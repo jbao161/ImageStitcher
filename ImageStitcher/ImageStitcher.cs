@@ -365,6 +365,7 @@ namespace ImageStitcher
                     }
                     else if (isImage) // if opening an image, never load subfolders in its directory
                     {
+                        startfile = filepaths[0];
                         imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
                     }
                     imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
@@ -2655,10 +2656,8 @@ namespace ImageStitcher
             if (Settings.Default.loadNewFile == false) return;
             try
             {
-                System.Diagnostics.Debug.WriteLine($"File  created: {fileAddedPath}");
-
                 bool isImage = defaultallowedImageExtensions.Any(fileAddedPath.ToLower().EndsWith);
-                if (fileAddedPath.EndsWith(".path"))
+                if (fileAddedPath.EndsWith(".part"))
                 {
                     Debug.WriteLine("part file detected.");
                 }

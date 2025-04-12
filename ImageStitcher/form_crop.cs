@@ -268,7 +268,7 @@ namespace ImageStitcher
 
                 string imgext = System.IO.Path.GetExtension(currentimagepath);
 
-                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpimg"+ $".{imgext}";
+                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpimg"+ $"{imgext}";
                     var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
 
                     string cropgifcommand = "";
@@ -278,7 +278,7 @@ namespace ImageStitcher
                 double filesizemb = new System.IO.FileInfo(currentimagepath).Length/1024.0;
                 double animatedgifminfilesize = 1.0;
                 string ifgifimagecmd = "";
-                if (imgext == "gif" && filesizemb > animatedgifminfilesize) ifgifimagecmd = " +repage -layers optimize";
+                if (imgext == ".gif" && filesizemb > animatedgifminfilesize) ifgifimagecmd = " +repage -layers optimize";
                     cropgifcommand = $"magick \"{currentimagepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop}{ifgifimagecmd} \"{tmpgifpath}\"";
                     string arg = outputvisibility + cropgifcommand;
                     Process proc = new Process
