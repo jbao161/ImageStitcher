@@ -329,7 +329,7 @@ namespace ImageStitcher
         }
         private void DragDropHandler(int targetPanel, string startfile, string[] filepaths,  bool loadsubfolders)
         {
-            //if (String.IsNullOrEmpty(filepaths[0])) return;
+            if (String.IsNullOrEmpty(filepaths[0])) return;
             try
             {
                 string testpath = System.IO.Path.GetDirectoryName(filepaths[0]);
@@ -2648,6 +2648,19 @@ namespace ImageStitcher
 
             Debug.WriteLine("watcher added");
             fileSystemWatcher_ImageFolder.EnableRaisingEvents = true;
+
+            if (activePanel == 0)
+            {
+                if (currentFoldersListLeft == null) { currentFoldersListLeft = new string[1]; return; }
+                Array.Resize<string>(ref currentFoldersListLeft, currentFoldersListLeft.Length +1);
+                currentFoldersListLeft[currentFoldersListLeft.Length] = folderPath;
+            }
+            if (activePanel == 1)
+            {
+                if (currentFoldersListLeft == null) { currentFoldersListRight = new string[1]; return; }
+                Array.Resize<string>(ref currentFoldersListRight, currentFoldersListRight.Length + 1);
+                currentFoldersListRight[currentFoldersListRight.Length] = folderPath;
+            }
         }
 
         private async void onFileAdded(object source, FileSystemEventArgs e)
@@ -2669,12 +2682,21 @@ namespace ImageStitcher
                     {
                         try
                         {
+                            string[] foldersList = getCurrentFoldersList(); ;
+                            if (foldersList == null) { 
+                                foldersList =  new string[1]; 
+
+                            }
+                            if (foldersList[0]== null)
+                            {
+                                foldersList[0] = (Path.GetDirectoryName(fileAddedPath));
+                            }
                             this.Invoke((MethodInvoker)delegate
                             {
-                                DragDropHandler(activePanel, fileAddedPath, getCurrentFoldersList());
+                                DragDropHandler(activePanel, fileAddedPath, foldersList);
                             });
 
-                            //don't forget to either return from the function or break out fo the while loop
+                            //don't forget to either return from the function or break out of the while loop
                             break;
                         }
                         catch (IOException ex)
@@ -2788,13 +2810,20 @@ namespace ImageStitcher
             if (!Settings.Default.loadNewFile) return;
             string deletedfilepath = e.FullPath;
             List<String> imageFilesActivePanel = getCurrentPanel();
+            if (imageFilesActivePanel == null) { ClearPanel(activePanel); return; } // imageFilesActivePanel was null when directory is empty. this fixed the error.
+            int imagecountActivePanel = imageFilesActivePanel.Count;
+            if (imagecountActivePanel == 0) { ClearPanel(activePanel); return; }
             int imageIndexActivePanel = getCurrentIndex();
+            if (imageIndexActivePanel < 0) { ClearPanel(activePanel); return; }
             string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
             string[] currentFoldersList = getCurrentFoldersList();
 
             int restorepriorimageindex = getPreviousIndex();
             int restorecurrentimageindex = getCurrentIndex();
 
+
+
+   
 
             if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel] && currentFoldersList != null)
             {
