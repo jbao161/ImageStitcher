@@ -400,7 +400,7 @@ namespace ImageStitcher
                     }
                     Resize_imagepanels();
                     UpdateLabelImageIndex();
-                    setCurrentFoldersList(filepaths);
+
                 }
             }
             catch (Exception ex)
@@ -2839,7 +2839,6 @@ namespace ImageStitcher
             {
                 DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
             }
-            
 
         }
         private List<String> getCurrentPanel()
