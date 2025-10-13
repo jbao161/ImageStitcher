@@ -1876,7 +1876,20 @@ namespace ImageStitcher
             if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, "bitmap", false); return true; }
 
             // Ctrl + Alt + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut); sendToBack(); } catch (Exception ex) { Debug.WriteLine(ex); }  
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { 
+                        string windowTitle = Path.GetFileName(Settings.Default.openFolderOnCut) + " - File Explorer";
+                        
+                        IntPtr hWnd = FindWindow(null, windowTitle);
+                        if (hWnd != IntPtr.Zero)
+                        {
+                            SetForegroundWindow(hWnd);
+                        }
+                        else
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut);
+                        }
+                        sendToBack(); 
+              } catch (Exception ex) { throw ex; }  
                 return true; }
 
             // Alt + Spacebar to toggle if hotkeys affect both panels
