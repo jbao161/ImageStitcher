@@ -221,8 +221,6 @@
             // 
             // panel_controls
             // 
-            this.panel_controls.Controls.Add(this.textBox_pixelateLevel);
-            this.panel_controls.Controls.Add(this.checkBox_pixelate);
             this.panel_controls.Controls.Add(this.button_copy);
             this.panel_controls.Controls.Add(this.button_crop);
             this.panel_controls.Controls.Add(this.button_swapimages);
@@ -242,6 +240,8 @@
             this.panel_controls.Controls.Add(this.button_settings);
             this.panel_controls.Controls.Add(this.checkBox_blur);
             this.panel_controls.Controls.Add(this.textBox_blurLevel);
+            this.panel_controls.Controls.Add(this.textBox_pixelateLevel);
+            this.panel_controls.Controls.Add(this.checkBox_pixelate);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_controls.Location = new System.Drawing.Point(0, 457);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
