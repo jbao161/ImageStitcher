@@ -2164,6 +2164,45 @@ namespace ImageStitcher
                         {
                             Debug.WriteLine(ex);
                         }
+                    } else if (checkBox_pixelate.Checked)
+                    {
+                        try
+                        {
+
+                            string pixlevel = "15";
+                            var isNumeric = int.TryParse(textBox_pixelateLevel.Text, out int npixlevel);
+                            int resize = 100 / npixlevel * 100;
+                            if (isNumeric) pixlevel = textBox_pixelateLevel.Text;
+                            string ext = System.IO.Path.GetExtension(imagePath);
+                            string outputvisibility = "/C ";
+
+                            string tmpimagename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmppixel" + ext;
+                            var tmpimagepath = tmpAppDataPath + tmpimagename;
+
+                            string cropgifcommand = "";
+                            // cmd for imagemagick. good quality
+                            cropgifcommand = $"magick \"{imagePath}\"  -scale {pixlevel}% -scale {resize}% \"{tmpimagepath}\"";
+                            string arg = outputvisibility + cropgifcommand;
+                            Process proc = new Process
+                            {
+                                StartInfo = new ProcessStartInfo
+                                {
+                                    FileName = "cmd.exe",
+                                    Arguments = arg,
+                                    UseShellExecute = false,
+                                    CreateNoWindow = true
+                                }
+                            };
+
+                            proc.Start();
+                            proc.WaitForExit();
+
+                            targetpicturebox.ImageLocation = tmpimagepath;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                        }
                     }
                     else
                     {
