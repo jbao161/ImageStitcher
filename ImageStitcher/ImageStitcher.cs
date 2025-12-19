@@ -1365,16 +1365,31 @@ namespace ImageStitcher
             }
         }
 
-        //https://stackoverflow.com/questions/9646114/open-file-location
+        //https://stackoverflow.com/questions/9646114/open-file-location this fails if filename has symbols
+        //https://stackoverflow.com/questions/334630/opening-a-folder-in-explorer-and-selecting-a-file
         private void OpenFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+
+            string p = null;
+
             if (contextmenufocus == 0 && imageFilesLeftPanel != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
+                p = imageFilesLeftPanel[imageIndexLeftPanel];
+                //Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
             }
             if (contextmenufocus == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
+                p = imageFilesRightPanel[imageIndexRightPanel];
+                //Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
+            }
+            if (p != null) { 
+            string args = string.Format("/e, /select, \"{0}\"", Path.GetFullPath(p));
+
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.FileName = "explorer";
+            info.Arguments = args;
+            Process.Start(info);
             }
         }
 
@@ -2723,7 +2738,14 @@ namespace ImageStitcher
                         {
                             this.Invoke((MethodInvoker)delegate
                             {
-                                DragDropHandler(activePanel, fileAddedPath, getCurrentFoldersList());
+                                if (getCurrentFoldersList() != null)
+                                {
+                                    DragDropHandler(activePanel, fileAddedPath, getCurrentFoldersList());
+                                }
+                                else
+                                {
+                                    DragDropHandler(activePanel, new string[] { fileAddedPath });
+                                }
                             });
 
                             //don't forget to either return from the function or break out fo the while loop
@@ -2841,28 +2863,35 @@ namespace ImageStitcher
             string deletedfilepath = e.FullPath;
             List<String> imageFilesActivePanel = getCurrentPanel();
             int imageIndexActivePanel = getCurrentIndex();
-            string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
             string[] currentFoldersList = getCurrentFoldersList();
-
-            int restorepriorimageindex = getPreviousIndex();
-            int restorecurrentimageindex = getCurrentIndex();
-
-
-            if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel] && currentFoldersList != null)
+            if (currentFoldersList == null) { currentFoldersList = new string[] { Path.GetDirectoryName(deletedfilepath) } ; }
+            if (imageIndexActivePanel >= 0 )
             {
-                DragDropHandler(activePanel, imageFilesActivePanel[getPreviousIndex()], currentFoldersList);
-                if (restorepriorimageindex < restorecurrentimageindex) restorecurrentimageindex -= 1;
+
+                string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
+
+
+                int restorepriorimageindex = getPreviousIndex();
+                int restorecurrentimageindex = getCurrentIndex();
+
+
+                if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel] && currentFoldersList != null)
+                {
+                    DragDropHandler(activePanel, imageFilesActivePanel[getPreviousIndex()], currentFoldersList);
+                    if (restorepriorimageindex < restorecurrentimageindex) restorecurrentimageindex -= 1;
                     setPreviousIndex(restorecurrentimageindex);
+                }
+                else if (currentFoldersList != null)
+                {
+                    DragDropHandler(activePanel, currentImagePath, currentFoldersList);
+                    if (restorepriorimageindex > restorecurrentimageindex) restorepriorimageindex -= 1;
+                    setPreviousIndex(restorepriorimageindex);
+                }
+                else
+                {
+                    DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
+                }
             }
-            else if (currentFoldersList != null) {
-                DragDropHandler(activePanel, currentImagePath, currentFoldersList);
-                if (restorepriorimageindex > restorecurrentimageindex) restorepriorimageindex -= 1;
-                setPreviousIndex(restorepriorimageindex);
-            } else
-            {
-                DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
-            }
-            
 
         }
         private List<String> getCurrentPanel()
@@ -2875,10 +2904,14 @@ namespace ImageStitcher
         }
         private int getCurrentIndex()
         {
-            if (activePanel == 0)
-                return imageIndexLeftPanel;
+            if (activePanel == 0) { 
+                if (imageFilesLeftPanel == null) { return -1; }
+                return imageIndexLeftPanel; }
             if (activePanel == 1)
+            {
+                if (imageFilesRightPanel == null) { return -1; }
                 return imageIndexRightPanel;
+            }
             return -1;
         }
         private string[] getCurrentFoldersList()
