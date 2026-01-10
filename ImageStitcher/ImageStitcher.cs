@@ -1,7 +1,6 @@
 ﻿using ImageStitcher.Properties;
 
 using Microsoft.VisualBasic.FileIO;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -11,15 +10,11 @@ using System.Drawing;
 
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Interop;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using Path = System.IO.Path;
 
@@ -1016,6 +1011,9 @@ namespace ImageStitcher
 
         private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // reset label
+            toolStripTextBox_gotopic.Text = "Go to index...";
+
             // disable 'fix webp image' when not applicable
             fixCorruptedImageToolStripMenuItem.Enabled = !(contextmenufocus == 0 && imageCountLeftPanel == 0) ||
                 (contextmenufocus == 1 && imageCountRightPanel == 0) ||
@@ -3001,6 +2999,54 @@ namespace ImageStitcher
         private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
         {
 
+        }
+
+        private void toolStripTextBox_gotopic_Click(object sender, EventArgs e)
+        {
+            toolStripTextBox_gotopic.Text = "";
+        }
+
+
+
+        private void toolStripTextBox_gotopic_TextChanged(object sender, EventArgs e)
+        {
+          
+            string gotopic_text = toolStripTextBox_gotopic.Text;
+            if (String.IsNullOrEmpty(gotopic_text)) return;
+            int goto_index = -1;
+            int.TryParse(gotopic_text, out goto_index);
+            if (goto_index > 0)
+            {
+
+                if (activePanel == 0 && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+                {
+                    if (goto_index < imageCountLeftPanel)
+                    {
+                        LoadImage(activePanel, imageFilesLeftPanel[goto_index - 1]);
+                        priorimageIndexLeftPanel = imageIndexLeftPanel;
+                        imageIndexLeftPanel = goto_index - 1;
+                        Resize_imagepanels();
+                        UpdateLabelImageIndex();
+                    }
+                }
+                if (activePanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+                {
+                    if (goto_index < imageCountRightPanel)
+                    {
+                        LoadImage(activePanel, imageFilesRightPanel[goto_index - 1]);
+                        priorimageIndexRightPanel = imageIndexRightPanel;
+                        imageIndexRightPanel = goto_index - 1;
+                        Resize_imagepanels();
+                        UpdateLabelImageIndex();
+                    }
+                }
+
+            }
+        }
+
+        private void toolStripTextBox_gotopic_Leave(object sender, EventArgs e)
+        {
+            toolStripTextBox_gotopic.Text = "Go to index...";
         }
     } // end MainWindow : Form
 }
