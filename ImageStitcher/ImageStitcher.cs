@@ -1073,7 +1073,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexLeftPanel;
                 imageIndexLeftPanel -= 1;
-                if (imageIndexLeftPanel < 0) imageIndexLeftPanel = 0;
+                if (imageIndexLeftPanel < 0) imageIndexLeftPanel = imageCountLeftPanel-1; // loop around to bottom of image list
                 LoadNextImage(targetpanel);
                 priorimageIndexLeftPanel = restorepriorimageindex;
             }
@@ -1087,7 +1087,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexRightPanel;
                 imageIndexRightPanel -= 1;
-                if (imageIndexRightPanel < 0) imageIndexRightPanel = 0;
+                if (imageIndexRightPanel < 0) imageIndexRightPanel = imageCountRightPanel-1;
                 LoadNextImage(targetpanel);
                 priorimageIndexRightPanel = restorepriorimageindex;
             }
