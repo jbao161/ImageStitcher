@@ -1893,6 +1893,7 @@ namespace ImageStitcher
                         string windowTitle = Path.GetFileName(Settings.Default.openFolderOnCut) + " - File Explorer";
                         
                         IntPtr hWnd = FindWindow(null, windowTitle);
+                        Thread.Sleep(300);
                         if (hWnd != IntPtr.Zero)
                         {
                             SetForegroundWindow(hWnd);
@@ -2745,7 +2746,7 @@ namespace ImageStitcher
                                     DragDropHandler(activePanel, new string[] { fileAddedPath });
                                 }
                             });
-
+                            UpdateLabelImageIndex();
                             //don't forget to either return from the function or break out fo the while loop
                             break;
                         }
@@ -2889,6 +2890,7 @@ namespace ImageStitcher
                 {
                     DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
                 }
+                UpdateLabelImageIndex();
             }
 
         }

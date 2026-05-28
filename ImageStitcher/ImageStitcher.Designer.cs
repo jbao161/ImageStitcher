@@ -82,9 +82,9 @@
             this.mirrorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripTextBox_gotopic = new System.Windows.Forms.ToolStripTextBox();
             this.previousLeftArrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nextRightArrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox_gotopic = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -656,15 +656,6 @@
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.ClearToolStripMenuItem_Click);
             // 
-            // toolStripTextBox_gotopic
-            // 
-            this.toolStripTextBox_gotopic.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.toolStripTextBox_gotopic.Name = "toolStripTextBox_gotopic";
-            this.toolStripTextBox_gotopic.Size = new System.Drawing.Size(100, 23);
-            this.toolStripTextBox_gotopic.Text = "Go to index...";
-            this.toolStripTextBox_gotopic.Click += new System.EventHandler(this.toolStripTextBox_gotopic_Click);
-            this.toolStripTextBox_gotopic.TextChanged += new System.EventHandler(this.toolStripTextBox_gotopic_TextChanged);
-            // 
             // previousLeftArrowToolStripMenuItem
             // 
             this.previousLeftArrowToolStripMenuItem.Name = "previousLeftArrowToolStripMenuItem";
@@ -678,6 +669,15 @@
             this.nextRightArrowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.nextRightArrowToolStripMenuItem.Text = "Next (Right Arrow)";
             this.nextRightArrowToolStripMenuItem.Click += new System.EventHandler(this.NextRightArrowToolStripMenuItem_Click);
+            // 
+            // toolStripTextBox_gotopic
+            // 
+            this.toolStripTextBox_gotopic.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox_gotopic.Name = "toolStripTextBox_gotopic";
+            this.toolStripTextBox_gotopic.Size = new System.Drawing.Size(100, 23);
+            this.toolStripTextBox_gotopic.Text = "Go to index...";
+            this.toolStripTextBox_gotopic.Click += new System.EventHandler(this.toolStripTextBox_gotopic_Click);
+            this.toolStripTextBox_gotopic.TextChanged += new System.EventHandler(this.toolStripTextBox_gotopic_TextChanged);
             // 
             // toolStripSeparator2
             // 
