@@ -1893,15 +1893,17 @@ namespace ImageStitcher
                         string windowTitle = Path.GetFileName(Settings.Default.openFolderOnCut) + " - File Explorer";
                         
                         IntPtr hWnd = FindWindow(null, windowTitle);
-                        Thread.Sleep(300);
+  
                         if (hWnd != IntPtr.Zero)
                         {
                             SetForegroundWindow(hWnd);
+
                         }
                         else
                         {
                             System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut);
                         }
+                        Thread.Sleep(500);
                         sendToBack(); 
               } catch (Exception ex) { throw ex; }  
                 return true; }
