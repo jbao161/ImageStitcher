@@ -314,8 +314,9 @@ namespace ImageStitcher
             try
             {
                 string blurlevel = "15";
-                //var isNumeric = int.TryParse(textBox_blurLevel.Text, out int n);
-                //if (isNumeric) blurlevel = textBox_blurLevel.Text;
+                int number;
+                bool success = int.TryParse(textBox_blurLevel.Text, out number);
+                if (success) blurlevel = textBox_blurLevel.Text;
 
                 string currentimagepath = sourcepath;
                 Image currentimage = source_image;
@@ -379,6 +380,26 @@ namespace ImageStitcher
         {
             try
             {
+                int image_height = source_image.Height;
+                int image_width = source_image.Width;
+                double image_area = image_height * image_width;
+                Debug.Print(image_area.ToString());
+                double proportionalPixelRatio = 100000;
+                double minPixelLevel = 20;
+                double proportionalpixlevel = image_area / proportionalPixelRatio+ minPixelLevel;
+                Debug.Print(proportionalpixlevel.ToString());
+                string resize = "4";
+                string pixlevel= "25";
+                string pixpercentage = "2500";
+                double number = proportionalpixlevel;
+                bool success = double.TryParse(textBox_pixelateLevel.Text, out number);
+                if (!success)
+                {
+                    number = proportionalpixlevel;
+                }
+                pixpercentage = ((double)number * 100.0).ToString("0.##");
+                resize = (100.0 / (double)number).ToString("0.##");
+                textBox_pixelateLevel.Text = number.ToString("0.##");
                 string currentimagepath = sourcepath;
                 Image currentimage = source_image;
                 if (!String.IsNullOrEmpty(editimgpath))
@@ -398,10 +419,10 @@ namespace ImageStitcher
                 RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
                 RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
 
-                int cropAreaWidth = (int)bitmapRect.Width;
-                int cropAreaHeight = (int)bitmapRect.Height;
-                int cropAreaLeft = (int)bitmapRect.Left;
-                int cropAreaTop = (int)bitmapRect.Top;
+                string cropAreaWidth = ((int)bitmapRect.Width).ToString();
+                string cropAreaHeight = ((int)bitmapRect.Height).ToString();
+                string  cropAreaLeft = ((int)bitmapRect.Left).ToString();
+                string cropAreaTop = ((int)bitmapRect.Top).ToString();
 
                 string outputvisibility = "/C ";
 
@@ -412,14 +433,16 @@ namespace ImageStitcher
                 var tmpPathPixAreaBackground = mainForm.tmpAppDataPath + DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpPix2" + ext;
                 string cropgifcommand = "";
 
-                cropgifcommand = $"magick convert ^ " +
+
+
+                cropgifcommand = $"magick ^ " +
                     $"\"{currentimagepath}\"  ^" +
-                    $"( \"{currentimagepath}\"  -scale 2% -scale 5000%  ^" +
-                    $"-coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage -layers optimize ) ^" +
-                    $" -geometry {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} ^" +
+                    $"( +clone -scale {resize}% -scale {pixpercentage}%  ^" +
+                    $" -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage ) ^" +
+                    $" -geometry +{cropAreaLeft}+{cropAreaTop} ^" +
                     $"-composite \"{tmpgifpath}\"";
 
-
+                Debug.WriteLine(cropgifcommand);
                 string arg = outputvisibility + cropgifcommand;
                 Process proc = new Process
                 {
