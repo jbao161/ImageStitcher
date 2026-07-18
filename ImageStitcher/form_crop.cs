@@ -1,12 +1,8 @@
 ﻿using ImageStitcher.Properties;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using System.Windows.Forms;
 
 namespace ImageStitcher
@@ -15,32 +11,46 @@ namespace ImageStitcher
     {
         public Point pntLocation;
         private MainWindow mainForm = null;
+
         public Form_Crop(MainWindow callingForm)
         { // https://stackoverflow.com/questions/1665533/communicate-between-two-windows-forms-in-c-sharp
             mainForm = callingForm as MainWindow;
             InitializeComponent();
         }
+
         public Image source_image;
+        public int source_panel;
+
         public Form_Crop()
         {
             InitializeComponent();
             //Set crop control for each picturebox
-
-        }
-        public void Load_img(Image img)
-        {
-            source_image = img;
-            Update();
         }
 
-        public void Load_img(String img_path)
+        public string sourcepath = "";
+        public string tmpimgpath = "";
+        public string editimgpath = "";
+
+        public void Load_img(String img_path, int panelnum)
         {
-            using (Bitmap bm = new Bitmap(img_path))
-            { // does not lock image file
-                source_image = new Bitmap(bm);
+            if (String.IsNullOrEmpty(sourcepath)) { sourcepath = img_path; } else { tmpimgpath = img_path; }
+            if (source_image == null){
+                using (Bitmap bm = new Bitmap(img_path))
+                { // does not lock image file
+                    source_image = new Bitmap(bm);
+                }
+            }
+            source_panel = panelnum;
+            if (System.IO.Path.GetExtension(img_path).ToLower().Equals(".gif"))
+            {
+                pictureBox1.ImageLocation = img_path;
+            } else
+            {
+                pictureBox1.Image = source_image;
             }
             Update();
         }
+
         private void CheckBounds()
         { //https://social.msdn.microsoft.com/Forums/vstudio/en-US/aa5e617a-6955-47f5-8b8b-6839f38944ba/how-to-restrict-a-window-move-and-grow-within-screen-in-wpf?forum=wpf
             var height = System.Windows.SystemParameters.PrimaryScreenHeight;
@@ -57,7 +67,7 @@ namespace ImageStitcher
         }
 
         private void resize_to_picturebox()
-        {
+        { // resizes the crop form window on load to match the size of the source picture
             int[] cropWindowPositions = this.mainForm.getCropWindowPositions();
             int pblw, pblh, pbll, pblt, pbrw, pbrh, pbrl, pbrt;
             pblw = cropWindowPositions[0];
@@ -73,8 +83,12 @@ namespace ImageStitcher
             {
                 this.Left = pbll;
                 this.Top = pblt;
-                this.Width = pblw;
-                this.Height = pblh;
+
+                if (this.mainForm.numberofimagepanels == 2)
+                {
+                    this.Width = pblw;
+                    this.Height = pblh;
+                }
             }
             if (targetpicturebox == 1)
             {
@@ -84,6 +98,7 @@ namespace ImageStitcher
                 this.Height = pbrh;
             }
         }
+
         private void form_crop_load(object sender, EventArgs e)
         {
             pntLocation.X -= this.Size.Width / 2;
@@ -91,11 +106,12 @@ namespace ImageStitcher
             this.Location = pntLocation;
             CheckBounds();
 
-            pictureBox1.Image = source_image;
+            //pictureBox1.Image = source_image; // already handled in image load
             resize_to_picturebox();
 
             checkBox_overwrite.Checked = Settings.Default.CropOverwrite;
 
+            DarkModeRefresh();
         }
 
         private Size GetDisplayedImageSize(PictureBox pictureBox)
@@ -119,24 +135,25 @@ namespace ImageStitcher
             return result;
         }
 
-        int xUp, yUp, xDown, yDown;
-        Rectangle rectCropArea;
-        void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-        {
-            xUp = e.X;
-            yUp = e.Y;
+        private int xUp, yUp, xDown, yDown;
+        private Rectangle rectCropArea;
+        private Rectangle mRect;
 
-            Rectangle rec = new Rectangle(xDown, yDown, Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+            var coordinates = pictureBox1.PointToClient(Cursor.Position);
+            xUp = coordinates.X;
+            yUp = coordinates.Y;
+
+            Rectangle rec = new Rectangle(Math.Min(xDown, xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
 
             using (Pen pen = new Pen(Color.Green, 2))
             {
-
                 pictureBox1.CreateGraphics().DrawRectangle(pen, rec);
             }
 
             Size pbsize = GetDisplayedImageSize(pictureBox1);
 
-    
             double xscale, yscale;
             xscale = (double)source_image.Width / (double)pbsize.Width;
             yscale = (double)source_image.Height / (double)pbsize.Height;
@@ -147,7 +164,7 @@ namespace ImageStitcher
             scaledheight = (int)(Math.Abs(yUp - yDown) * yscale);
 
             int offsetxDown = xDown;
-            int offsetyDown = yDown; 
+            int offsetyDown = yDown;
 
             if (source_image.Height > source_image.Width)
             {
@@ -161,54 +178,33 @@ namespace ImageStitcher
             int offsetxUp = xUp - (int)((double)(source_image.Width - pbsize.Width) * 0.5);
             int offsetyUp = yUp - (int)((double)(source_image.Height - pbsize.Height) * 0.5);
 
-            rectCropArea = new Rectangle(offsetxDown, offsetyDown, scaledwidth, scaledheight);
-            rectCropArea = new Rectangle(xDown, yDown, Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+            //rectCropArea = new Rectangle(offsetxDown, offsetyDown, scaledwidth, scaledheight);
+            // allow crop area to be dragged from any corner, always start rectangle from top left corner
+            rectCropArea = new Rectangle(Math.Min(xUp, xDown), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
         }
-        void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             pictureBox1.Invalidate();
+            var coordinates = pictureBox1.PointToClient(Cursor.Position);
+            xDown = coordinates.X;
+            yDown = coordinates.Y;
 
-            xDown = e.X;
-            yDown = e.Y;
-        }
-        
-        private void btnCrop_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                pictureBox1.Visible = false;
-                pictureBox2.Refresh();
-                //Prepare a new Bitmap on which the cropped image will be drawn
-                Bitmap OriginalPictureboxImage = new Bitmap(source_image, source_image.Width, source_image.Height);
-
-                ZoomFactor zoomHelper = new ZoomFactor();
-
-
-                RectangleF currentSelection = rectCropArea;
-                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
-                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
-
-
-
-                var croppedBitmap = new Bitmap((int)bitmapRect.Width, (int)bitmapRect.Height, OriginalPictureboxImage.PixelFormat);
-                using (var g = Graphics.FromImage(croppedBitmap))
-                {
-                    g.DrawImage(OriginalPictureboxImage, new Rectangle(Point.Empty, Size.Round(bitmapRect.Size)),
-                                bitmapRect, GraphicsUnit.Pixel);
-                    pictureBox2.Image = croppedBitmap;
-                    mainForm.LoadActiveImage(croppedBitmap);
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-            }
+            mRect = new Rectangle(e.X, e.Y, 0, 0);
         }
 
-        private void button_accept_Click(object sender, EventArgs e)
+        private void button_save_Click(object sender, EventArgs e)
         {
-            this.mainForm.cropSaveImage(checkBox_overwrite.Checked);
+            if (mainForm.check_if_animated_gif(sourcepath))
+            {
+                if (String.Equals(tmpimgpath, sourcepath)) { return; }
+                mainForm.SaveGifImage(tmpimgpath, sourcepath, checkBox_overwrite.Checked);
+            }
+            else
+            {
+                this.mainForm.cropSaveImage(checkBox_overwrite.Checked, source_panel);
+            }
+            editimgpath = "";
         }
 
         private void Form_Crop_FormClosing(object sender, FormClosingEventArgs e)
@@ -217,17 +213,391 @@ namespace ImageStitcher
             Settings.Default.Save();
         }
 
+        //check if mouse is down and being draged, then draw rectangle
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            var coordinates = pictureBox1.PointToClient(Cursor.Position);
+            xUp = coordinates.X;
+            yUp = coordinates.Y;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                mRect = new Rectangle(Math.Min(xDown, xUp), Math.Min(yUp, yDown), Math.Abs(xUp - xDown), Math.Abs(yUp - yDown));
+                pictureBox1.Invalidate();
+            }
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen pen = new Pen(Color.Green, 2))
+            {
+                e.Graphics.DrawRectangle(pen, mRect);
+            }
+        }
+        private void btnCrop_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
+                //Prepare a new Bitmap on which the cropped image will be drawn
+                Bitmap CurrentPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
+
+                ZoomFactor zoomHelper = new ZoomFactor();
+
+                RectangleF currentSelection = rectCropArea;
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, CurrentPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, CurrentPictureboxImage.Size);
+
+                    // crop video command example ffmpeg - i input.gif - vf "crop=640:480:0:0" output.gif
+                    int cropAreaWidth = (int)bitmapRect.Width;
+                    int cropAreaHeight = (int)bitmapRect.Height;
+                    int cropAreaLeft = (int)bitmapRect.Left;
+                    int cropAreaTop = (int)bitmapRect.Top;
+                    string outputvisibility = "/C ";
+                // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output
+
+                string imgext = System.IO.Path.GetExtension(currentimagepath);
+
+                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpimg"+ $"{imgext}";
+                    var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+
+                    string cropgifcommand = "";
+                // cmd for ffmpeg. quality is bad
+                //cropgifcommand = $"ffmpeg -i \"{sourcepath}\" -vf \"crop={cropAreaWidth}:{cropAreaHeight}:{cropAreaLeft}:{cropAreaTop}\" \"{tmpgifpath}\"";
+                // cmd for imagemagick. good quality
+                double filesizemb = new System.IO.FileInfo(currentimagepath).Length/1024.0;
+                double animatedgifminfilesize = 1.0;
+                string ifgifimagecmd = "";
+                if (imgext == ".gif" && filesizemb > animatedgifminfilesize) ifgifimagecmd = " +repage -layers optimize";
+                    cropgifcommand = $"magick \"{currentimagepath}\" -coalesce -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop}{ifgifimagecmd} \"{tmpgifpath}\"";
+                    string arg = outputvisibility + cropgifcommand;
+                    Process proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "cmd.exe",
+                            Arguments = arg,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+
+                    proc.Start();
+                    proc.WaitForExit();
+
+                    pictureBox1.ImageLocation = tmpgifpath;
+                    mainForm.LoadImage(source_panel,tmpgifpath);
+                    tmpimgpath = tmpgifpath;
+                    editimgpath = tmpgifpath;
+                mRect = new Rectangle(0,0,0,0);
+                pictureBox1.Invalidate();
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        
+
+        private void button_blurcrop_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string blurlevel = "15";
+                int number;
+                bool success = int.TryParse(textBox_blurLevel.Text, out number);
+                if (success) blurlevel = textBox_blurLevel.Text;
+
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
+
+                //Prepare a new Bitmap on which the cropped image will be drawn
+                Bitmap CurrentPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
+                string ext = System.IO.Path.GetExtension(currentimagepath);
+                ZoomFactor zoomHelper = new ZoomFactor();
+
+                RectangleF currentSelection = rectCropArea;
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, CurrentPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, CurrentPictureboxImage.Size);
+
+                int cropAreaWidth = (int)bitmapRect.Width;
+                int cropAreaHeight = (int)bitmapRect.Height;
+                int cropAreaLeft = (int)bitmapRect.Left;
+                int cropAreaTop = (int)bitmapRect.Top;
+
+                string outputvisibility = "/C ";
+
+                    string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpblur"+ ext;
+                    var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+
+                    string cropgifcommand = "";
+                    // cmd for imagemagick. good quality
+                    cropgifcommand = $"magick \"{currentimagepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -blur 0x{blurlevel} +region \"{tmpgifpath}\"";
+                    string arg = outputvisibility + cropgifcommand;
+                    Process proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "cmd.exe",
+                            Arguments = arg,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+
+                    proc.Start();
+                    proc.WaitForExit();
+
+                    pictureBox1.ImageLocation = tmpgifpath;
+                    mainForm.LoadImage(source_panel, tmpgifpath);
+                    tmpimgpath = tmpgifpath;
+                    editimgpath = tmpgifpath;
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void button_pixelate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int image_height = source_image.Height;
+                int image_width = source_image.Width;
+                double image_area = image_height * image_width;
+                Debug.Print(image_area.ToString());
+                double proportionalPixelRatio = 100000;
+                double minPixelLevel = 20;
+                double proportionalpixlevel = image_area / proportionalPixelRatio+ minPixelLevel;
+                Debug.Print(proportionalpixlevel.ToString());
+                string resize = "4";
+                string pixlevel= "25";
+                string pixpercentage = "2500";
+                double number = proportionalpixlevel;
+                bool success = double.TryParse(textBox_pixelateLevel.Text, out number);
+                if (!success)
+                {
+                    number = proportionalpixlevel;
+                }
+                pixpercentage = ((double)number * 100.0).ToString("0.##");
+                resize = (100.0 / (double)number).ToString("0.##");
+                textBox_pixelateLevel.Text = number.ToString("0.##");
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
+                //Prepare a new Bitmap on which the cropped image will be drawn
+                Bitmap OriginalPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
+                string ext = System.IO.Path.GetExtension(currentimagepath);
+                ZoomFactor zoomHelper = new ZoomFactor();
+
+                RectangleF currentSelection = rectCropArea;
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
+
+                string cropAreaWidth = ((int)bitmapRect.Width).ToString();
+                string cropAreaHeight = ((int)bitmapRect.Height).ToString();
+                string  cropAreaLeft = ((int)bitmapRect.Left).ToString();
+                string cropAreaTop = ((int)bitmapRect.Top).ToString();
+
+                string outputvisibility = "/C ";
+
+                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpPix" + ext;
+                var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+
+                var tmpPathPixAreaTarget = mainForm.tmpAppDataPath + DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpPix1" + ext;
+                var tmpPathPixAreaBackground = mainForm.tmpAppDataPath + DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpPix2" + ext;
+                string cropgifcommand = "";
+
+
+
+                cropgifcommand = $"magick ^ " +
+                    $"\"{currentimagepath}\"  ^" +
+                    $"( +clone -scale {resize}% -scale {pixpercentage}%  ^" +
+                    $" -crop {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} +repage ) ^" +
+                    $" -geometry +{cropAreaLeft}+{cropAreaTop} ^" +
+                    $"-composite \"{tmpgifpath}\"";
+
+                Debug.WriteLine(cropgifcommand);
+                string arg = outputvisibility + cropgifcommand;
+                Process proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = arg,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                proc.Start();
+                proc.WaitForExit();
+
+                pictureBox1.ImageLocation = tmpgifpath;
+                mainForm.LoadImage(source_panel, tmpgifpath);
+                tmpimgpath = tmpgifpath;
+                editimgpath = tmpgifpath;
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void button_blackbar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string currentimagepath = sourcepath;
+                Image currentimage = source_image;
+                if (!String.IsNullOrEmpty(editimgpath))
+                {
+                    using (Bitmap bm = new Bitmap(editimgpath))
+                    { // does not lock image file
+                        currentimage = new Bitmap(bm);
+                    }
+                    currentimagepath = editimgpath;
+                }
+                //Prepare a new Bitmap on which the cropped image will be drawn
+                Bitmap OriginalPictureboxImage = new Bitmap(currentimage, currentimage.Width, currentimage.Height);
+                string ext = System.IO.Path.GetExtension(currentimagepath);
+                ZoomFactor zoomHelper = new ZoomFactor();
+
+                RectangleF currentSelection = rectCropArea;
+                RectangleF bitmapRectt = zoomHelper.TranslateZoomSelection(currentSelection, pictureBox1.Size, OriginalPictureboxImage.Size);
+                RectangleF bitmapRect = zoomHelper.ConstrainCropAreaToImage(bitmapRectt, OriginalPictureboxImage.Size);
+
+                int cropAreaWidth = (int)bitmapRect.Width;
+                int cropAreaHeight = (int)bitmapRect.Height;
+                int cropAreaLeft = (int)bitmapRect.Left;
+                int cropAreaTop = (int)bitmapRect.Top;
+
+                string outputvisibility = "/C ";
+
+                string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpblur" + ext;
+                var tmpgifpath = mainForm.tmpAppDataPath + tmpgifname;
+
+                string cropgifcommand = "";
+                // cmd for imagemagick. good quality
+                cropgifcommand = $"magick \"{currentimagepath}\" -region  {cropAreaWidth}X{cropAreaHeight}+{cropAreaLeft}+{cropAreaTop} -fill black +opaque +region \"{tmpgifpath}\"";
+                string arg = outputvisibility + cropgifcommand;
+                Process proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = arg,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                proc.Start();
+                proc.WaitForExit();
+
+                pictureBox1.ImageLocation = tmpgifpath;
+                mainForm.LoadImage(source_panel, tmpgifpath);
+                tmpimgpath = tmpgifpath;
+                editimgpath = tmpgifpath;
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+
+
 
         private void button_crop_cancel_Click(object sender, EventArgs e)
         {
+            editimgpath = "";
             this.Close();
         }
 
         private void button_revert_Click(object sender, EventArgs e)
         {
-            mainForm.LoadActiveImage(source_image);
+            if (mainForm.check_if_animated_gif(sourcepath))
+            {
+                mainForm.ReloadPanel(source_panel);
+                tmpimgpath = sourcepath;
+                //rectCropArea = new Rectangle(0,0, source_image.Width, source_image.Height);
+            } else {
+                mainForm.LoadImage(source_panel, source_image);
+            }
+            editimgpath = "";
             pictureBox1.Visible = true;
-            pictureBox1.Image = source_image;
+            Load_img(sourcepath, source_panel);
+
+            //pictureBox1.Image = source_image;
+        }
+
+        private void DarkModeRefresh()
+        {
+            if (Settings.Default.DarkMode == true)
+            {
+                Color darkcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColor);
+                Color darkaccentcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorAccent);
+
+                this.BackColor = darkaccentcolor;
+
+                Color darkcolortext = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorText);
+
+                foreach (Control subC in panel1.Controls)
+                {
+                    subC.BackColor = darkaccentcolor;
+                    subC.ForeColor = darkcolortext;
+
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Flat;
+                        ((Button)subC).FlatAppearance.BorderColor = darkcolor;
+                        ((Button)subC).ForeColor = darkcolortext;
+                    }
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, true);
+            }
+            if (Settings.Default.DarkMode == false)
+            {
+                Color lightbackground = SystemColors.Control;
+                this.BackColor = lightbackground;
+                foreach (Control subC in panel1.Controls)
+                {
+                    subC.BackColor = lightbackground;
+                    subC.ForeColor = Color.Black;
+
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Standard;
+                        ((Button)subC).FlatAppearance.BorderColor = SystemColors.Control;
+                    }
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, false);
+                this.BackColor = SystemColors.Control;
+            }
         }
     }
 }

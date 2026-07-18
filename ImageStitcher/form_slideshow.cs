@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ImageStitcher
@@ -104,14 +97,14 @@ namespace ImageStitcher
 
         private void form_slideshow_Load(object sender, EventArgs e)
         {
-            pntLocation.X -= this.Size.Width/2;
-            pntLocation.Y -= this.Size.Height ;
+            pntLocation.X -= this.Size.Width / 2;
+            pntLocation.Y -= this.Size.Height;
             this.Location = pntLocation;
 
-            if (String.Equals(Properties.Settings.Default.SlideLmode, "ordered")){ radioButton_leftordered.Checked = true; }
-            if (String.Equals(Properties.Settings.Default.SlideLmode, "random")){ radioButton_leftrandom.Checked = true; }
-            if (String.Equals(Properties.Settings.Default.SlideRmode, "ordered")){ radioButton_rightordered.Checked = true; }
-            if (String.Equals(Properties.Settings.Default.SlideRmode, "random")){ radioButton_rightrandom.Checked = true; }
+            if (String.Equals(Properties.Settings.Default.SlideLmode, "ordered")) { radioButton_leftordered.Checked = true; }
+            if (String.Equals(Properties.Settings.Default.SlideLmode, "random")) { radioButton_leftrandom.Checked = true; }
+            if (String.Equals(Properties.Settings.Default.SlideRmode, "ordered")) { radioButton_rightordered.Checked = true; }
+            if (String.Equals(Properties.Settings.Default.SlideRmode, "random")) { radioButton_rightrandom.Checked = true; }
 
             comboBox1.Text = Properties.Settings.Default.SlideTimeInterval;
         }

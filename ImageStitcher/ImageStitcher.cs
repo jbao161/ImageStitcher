@@ -11,14 +11,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Shapes;
+using System.Windows.Interop;
 using System.Windows.Threading;
-
-using CRNG = System.Security.Cryptography.RandomNumberGenerator;
+using Path = System.IO.Path;
 
 namespace ImageStitcher
 {
@@ -39,8 +37,9 @@ namespace ImageStitcher
         // end https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
 
         private readonly bool debugflag = true;
-        private static int activePanel = 0;
+        public int activePanel = 0;
         private static readonly int bluramount = 10;
+        private static readonly int pixelateamount = 10;
 
         // private static readonly int maxLengthFileList = (int)1.0e9;
         private void MsgDebug(string message)
@@ -75,6 +74,7 @@ namespace ImageStitcher
                 return FindControlAtPoint(form, form.PointToClient(pos));
             return null;
         } // end Section 1
+
         private void FocusPanelAtCursor(Form form)
         {
             if (FindControlAtCursor(form) is PictureBox box)
@@ -88,6 +88,7 @@ namespace ImageStitcher
                 if (panel == splitContainer_bothimages.Panel2) activePanel = 1;
             }
         }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -101,19 +102,97 @@ namespace ImageStitcher
 
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath });
+            firstload = false;
+        }
+
+        public MainWindow(string filepath, bool loadsubfolders)
+        {
+            InitializeComponent();
+
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { filepath }, loadsubfolders);
+            firstload = false;
+        }
+
+        public MainWindow(string leftfilepath, string rightfilepath)
+        {
+            InitializeComponent();
+
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { leftfilepath });
+            DragDropHandler(1, new String[] { rightfilepath });
+            firstload = false;
+        }
+
+        public MainWindow(string leftfilepath, string rightfilepath, bool loadsubfolders)
+        {
+            InitializeComponent();
+
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { leftfilepath }, loadsubfolders);
+            DragDropHandler(1, new String[] { rightfilepath }, loadsubfolders);
+            firstload = false;
+        }
+
+        public MainWindow(string leftfilepath, string rightfilepath, bool lsub, bool rsub)
+        {
+            InitializeComponent();
+
+            UpdateLabelImageIndex();
+            DragDropHandler(0, new String[] { leftfilepath }, lsub);
+            DragDropHandler(1, new String[] { rightfilepath }, rsub);
+            firstload = false;
         }
 
         private void UpdateLabelImageIndex()
         {
             label_imageindex_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : ((imageIndexLeftPanel + 1) + "/" + imageCountLeftPanel);
             label_imageindex_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : ((imageIndexRightPanel + 1) + "/" + imageCountRightPanel);
+
             if (checkBox_showfilename.Checked)
             {
-                label_filename_leftpanel.Text = (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0) ? "" : " "+(System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]));
-                label_filename_rightpanel.Text = (imageIndexRightPanel == 0 && imageCountRightPanel == 0) ? "" : " "+(System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]));
+                string imagepathL = "";
+                string imagepathR = "";
+                try
+                {
+                    if (imageCountLeftPanel == 0)
+                    {
+                        label_filename_leftpanel.Text = "";
+                    }
+                    else
+                    {
+                        imagepathL = imageFilesLeftPanel[imageIndexLeftPanel];
+                        label_filename_leftpanel.Text = " " +
+                        Directory.GetParent(imagepathL) + "\\" +
+                        Path.GetFileName(imagepathL) + " " +
+                        Utils.GetFileSizeString(imagepathL) + " " +
+                        Utils.GetDimensionString(pictureBox_leftpanel.Image);
+                    }
+                    if (imageCountRightPanel == 0)
+                    {
+                        label_filename_rightpanel.Text = "";
+                    }
+                    else
+                    {
+                        imagepathR = imageFilesRightPanel[imageIndexRightPanel];
+                        label_filename_rightpanel.Text = " " +
+                        Directory.GetParent(imagepathR) + "\\" +
+                        Path.GetFileName(imagepathR) + " " +
+                        Utils.GetFileSizeString(imagepathR) + " " +
+                        Utils.GetDimensionString(pictureBox_rightpanel.Image);
+                    }
+
+                    label_imageindex_leftpanel.Show();
+                    label_imageindex_rightpanel.Show();
+                }
+                catch (Exception ex) {
+                    Debug.WriteLine(ex.ToString()); ;
+                }
             }
             else
             {
+                label_imageindex_leftpanel.Hide();
+                label_imageindex_rightpanel.Hide();
                 label_filename_leftpanel.Text = "";
                 label_filename_rightpanel.Text = "";
             }
@@ -133,11 +212,9 @@ namespace ImageStitcher
             //label_filename_rightpanel.BackColor = System.Drawing.Color.Transparent;
             label_filename_rightpanel.Text = "";
 
-
-        // Load settings
+            // Load settings
             try
             {// https://www.codeproject.com/Articles/30216/Handling-Corrupt-user-config-Settings
-
                 if (Settings.Default.NeedsUpgrade)
                 { // https://stackoverflow.com/questions/13772936/c-sharp-settings-file-how-to-load
                     Settings.Default.Upgrade();
@@ -147,12 +224,16 @@ namespace ImageStitcher
 
                 Settings.Default.Reload();
 
-
                 //https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
                 // Set window location
                 if (Settings.Default.WindowLocation != null)
                 {
                     this.Location = Settings.Default.WindowLocation;
+                    // If window location settings are corrupted, put the window back on screen
+                    if (!Screen.FromControl(this).Bounds.Contains(this.Location))
+                    {
+                        this.DesktopLocation = new Point(0, 0);
+                    }
                 }
 
                 // Set window size
@@ -163,41 +244,26 @@ namespace ImageStitcher
 
                 this.splitContainer_bothimages.SplitterDistance = Settings.Default.SplitContainerSplitterDistance;
                 savesplitterdistance = Settings.Default.SplitContainerSplitterDistance;
+
+                // load checkbox settings
                 this.checkBox_randomOnClick.Checked = Settings.Default.RandomizeOnClick;
                 this.checkBox_openaftersave.Checked = Settings.Default.OpenFolderAfterSave;
+                this.checkBox_showfilename.Checked = Settings.Default.showinfo;
+                this.checkBox_hotkeyboth.Checked = Settings.Default.HotkeyBoth;
+                this.checkBox_blur.Checked = Settings.Default.BlurCheckbox;
+                this.textBox_blurLevel.Text = Settings.Default.BlurLevel;
+                this.checkBox_pixelate.Checked = Settings.Default.PixelateCheckbox;
+                this.textBox_pixelateLevel.Text = Settings.Default.PixelateLevel;
 
+                // create tmp folder
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
+                if (!Directory.Exists(tmpAppDataPath)) Directory.CreateDirectory(tmpAppDataPath);
 
-                // try to load the last opened file, or if its directory if file could not be opened
-                if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel ==0)
-                { 
-                    try
-                    {
-                        DragDropHandler(0, new string[] { Settings.Default.LastFile });
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            DragDropHandler(0, new string[] { System.IO.Path.GetDirectoryName(Settings.Default.LastFile) });
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                    }
-                }
-                // load default directory
-                if (Settings.Default.loaddefaultdir && !String.IsNullOrEmpty(Settings.Default.DefaultDirectory) && imageCountLeftPanel == 0)
-                {
-                    try
-                    {
-                        DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
+                // set number of image panels
+                set_NumberOfPanels(Settings.Default.NumberOfPanels);
+
+                // apply dark light colors
+                DarkModeRefresh();
             }
             catch (ConfigurationErrorsException ex)
             { //(requires System.Configuration)
@@ -224,7 +290,9 @@ namespace ImageStitcher
                 else
                     Process.GetCurrentProcess().Kill();
                 // avoid the inevitable crash
+                Debug.WriteLine(ex.ToString());
             }
+
         }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
@@ -240,56 +308,111 @@ namespace ImageStitcher
         /* Drag and drop
          * picture files from Windows explorer onto the panel to load the image
          */
-        // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
 
+        // https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
         private void DragDropHandler(int targetPanel, string[] filepaths)
         {
-           //if (String.IsNullOrEmpty(filepaths[0])) return;
-            bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
-            bool isImage = allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
-            string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
-            if (isFolder) { folderPath = filepaths[0]; }
-            List<string> imageList = null;
-            if (isFolder | isImage)
+            try
             {
-                // set the pseudo-focus on the left or right panel
-                // then enumerate a list of all image files in the same directory as the loaded image
-                // then store the position of the loaded image in that list
-
-                imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
-                imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
-                if (Settings.Default.ReverseFileOrder) imageList.Reverse();
-                int imageCount = imageList.Count();
-                int imageIndex = 0;
-                string imagepath = filepaths[0];
-
-                if (isFolder) { imageIndex = 0; imagepath = imageList[0]; }
-
-                if (LoadImage(targetPanel, imagepath))
-                {
-                    for (int i = 0; i < imageCount; i++)
-                    {
-                        if (imageList[i] == filepaths[0]) { imageIndex = i; }
-                    }
-
-                    if (targetPanel == 0)
-                    {
-                        imageFilesLeftPanel = imageList;
-                        imageCountLeftPanel = imageCount;
-                        imageIndexLeftPanel = imageIndex;
-                        priorimageIndexLeftPanel = imageIndex;
-                    }
-                    if (targetPanel == 1)
-                    {
-                        imageFilesRightPanel = imageList;
-                        imageCountRightPanel = imageCount;
-                        imageIndexRightPanel = imageIndex;
-                        priorimageIndexRightPanel = imageIndex;
-                    }
-                }
-                Resize_imagepanels();
-                UpdateLabelImageIndex();
+                DragDropHandler(targetPanel, filepaths, Settings.Default.LoadSubfolders);
             }
+            catch (Exception ex) { Debug.WriteLine(ex); }
+        }
+        private void DragDropHandler(int targetPanel, string startfile, string[] filepaths)
+        {
+            DragDropHandler(targetPanel, startfile, filepaths, Settings.Default.LoadSubfolders);
+        }
+        private void DragDropHandler(int targetPanel, string startfile, string[] filepaths,  bool loadsubfolders)
+        {
+            //if (String.IsNullOrEmpty(filepaths[0])) return;
+            try
+            {
+                string testpath = System.IO.Path.GetDirectoryName(filepaths[0]);
+            }
+            catch { Debug.WriteLine("dragdrop can't testpath"); return; }
+            try
+            {
+
+                bool isFolder = File.GetAttributes(filepaths[0]).HasFlag(FileAttributes.Directory);
+                bool isImage = defaultallowedImageExtensions.Any(filepaths[0].ToLower().EndsWith);
+                string folderPath = System.IO.Path.GetDirectoryName(filepaths[0]);
+                if (isFolder) { folderPath = filepaths[0]; }
+                List<string> imageList = new List<string>(); ;
+                List<string> sublist = null;
+
+                if (isFolder | isImage)
+                {
+                    // set the pseudo-focus on the left or right panel
+                    // then enumerate a list of all image files in the same directory as the loaded image
+                    // then store the position of the loaded image in that list
+                    if (isFolder)
+                    {
+                        for (int i = 0; i < filepaths.Length; i++)
+                        {
+                            sublist = EnumerateImageFiles(filepaths[i], allowedImageExtensions, loadsubfolders);
+                            imageList.AddRange(sublist);
+                        }
+                        if (imageList.Count == 0)
+                        {
+                            ClearPanel(targetPanel);
+                            return;
+                        }
+                    }
+                    else if (isImage) // if opening an image, never load subfolders in its directory
+                    {
+                        startfile = filepaths[0];
+                        imageList = EnumerateImageFiles(folderPath, allowedImageExtensions, false);
+                    }
+                    imageList = imageList.OrderBy(System.IO.Path.GetFileName, StringComparer.InvariantCultureIgnoreCase).ToList();
+                    if (Settings.Default.ReverseFileOrder) imageList.Reverse();
+                    int imageCount = imageList.Count();
+                    int imageIndex = 0;
+                    string imagepath = filepaths[0];
+
+                    if (isFolder) { imageIndex = 0; imagepath = imageList[0]; }
+                    if (!allowedImageExtensions.Any(filepaths[0].ToLower().EndsWith)) { imagepath = imageList[0]; }
+                    if (LoadImage(targetPanel, imagepath))
+                    {
+                        for (int i = 0; i < imageCount; i++)
+                        {
+                            if (imageList[i] == startfile) { imageIndex = i; LoadImage(targetPanel, startfile); }
+                        }
+
+                        if (targetPanel == 0)
+                        {
+                            imageFilesLeftPanel = imageList;
+                            imageCountLeftPanel = imageCount;
+                            imageIndexLeftPanel = imageIndex;
+                            priorimageIndexLeftPanel = imageIndex;
+                        }
+                        if (targetPanel == 1)
+                        {
+                            imageFilesRightPanel = imageList;
+                            imageCountRightPanel = imageCount;
+                            imageIndexRightPanel = imageIndex;
+                            priorimageIndexRightPanel = imageIndex;
+                        }
+                    }
+                    Resize_imagepanels();
+                    UpdateLabelImageIndex();
+                    setCurrentFoldersList(filepaths);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("failed in dragdrophandler: " + ex);
+            }
+        }
+        private void DragDropHandler(int targetPanel, string[] filepaths, bool loadsubfolders)
+        {
+            DragDropHandler(targetPanel, "", filepaths,  Settings.Default.LoadSubfolders);
+        }
+
+        private static bool HasExtension(string filename, string extension)
+        {
+            // add other possible extensions here
+            return Path.GetExtension(filename).Equals(extension, StringComparison.InvariantCultureIgnoreCase)
+                || Path.GetExtension(filename).Equals(extension, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private void PictureBox_DragDrop(object sender, DragEventArgs e)
@@ -315,26 +438,34 @@ namespace ImageStitcher
         * should take up. Put a divider there and the two images in 'Zoom' display will be of same height
         */
 
-        private void Resize_imagepanels()
+        public void Resize_imagepanels()
         {
-            if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
+            try
             {
-                if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
+                if (pictureBox_leftpanel.Image is null) splitContainer_bothimages.SplitterDistance = 0;
+                if (pictureBox_rightpanel.Image is null) splitContainer_bothimages.SplitterDistance = panel_bothimages.Width;
+
+                if (!(pictureBox_leftpanel.Image is null || pictureBox_rightpanel.Image is null))
                 {
-                    int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
-                    int stitched_leftimg_width = (int)(pictureBox_leftpanel.Image.Width * min_height / (double)pictureBox_leftpanel.Image.Height);
-                    int stitched_rightimg_width = (int)(pictureBox_rightpanel.Image.Width * min_height / (double)pictureBox_rightpanel.Image.Height);
-                    int result_width = stitched_leftimg_width + stitched_rightimg_width;
-                    this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Width * stitched_leftimg_width / result_width;
+                    if (this.splitContainer_bothimages.Orientation == Orientation.Vertical)
+                    {
+                        int min_height = Math.Min(pictureBox_leftpanel.Image.Height, pictureBox_rightpanel.Image.Height);
+                        int stitched_leftimg_width = (int)(pictureBox_leftpanel.Image.Width * min_height / (double)pictureBox_leftpanel.Image.Height);
+                        int stitched_rightimg_width = (int)(pictureBox_rightpanel.Image.Width * min_height / (double)pictureBox_rightpanel.Image.Height);
+                        int result_width = stitched_leftimg_width + stitched_rightimg_width;
+                        this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Width * stitched_leftimg_width / result_width;
+                    }
+                    if (this.splitContainer_bothimages.Orientation == Orientation.Horizontal)
+                    {
+                        int min_width = Math.Min(pictureBox_leftpanel.Image.Width, pictureBox_rightpanel.Image.Width);
+                        int stitched_leftimg_height = (int)(min_width * pictureBox_leftpanel.Image.Height / (double)pictureBox_leftpanel.Image.Width);
+                        int stitched_rightimg_height = (int)(min_width * pictureBox_rightpanel.Image.Height / (double)pictureBox_rightpanel.Image.Width);
+                        int result_height = stitched_leftimg_height + stitched_rightimg_height;
+                        this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Height * stitched_leftimg_height / result_height;
+                    }
                 }
-                if (this.splitContainer_bothimages.Orientation == Orientation.Horizontal)
-                {
-                    int min_width = Math.Min(pictureBox_leftpanel.Image.Width, pictureBox_rightpanel.Image.Width);
-                    int stitched_leftimg_height = (int)(min_width * pictureBox_leftpanel.Image.Height / (double)pictureBox_leftpanel.Image.Width);
-                    int stitched_rightimg_height = (int)(min_width * pictureBox_rightpanel.Image.Height / (double)pictureBox_rightpanel.Image.Width);
-                    int result_height = stitched_leftimg_height + stitched_rightimg_height;
-                    this.splitContainer_bothimages.SplitterDistance = panel_bothimages.Height * stitched_leftimg_height / result_height;
-                }
+                cleanupmemory();
+            } catch (Exception ex)   { Debug.WriteLine(ex);
             }
         }
 
@@ -438,6 +569,7 @@ namespace ImageStitcher
 
         private void Button_preview_Click(object sender, EventArgs e)
         {
+            cleanupmemory();
             Bitmap stitchedimage = Stitch_images();
             Form form = new Form
             {
@@ -508,8 +640,9 @@ namespace ImageStitcher
          *  feature 1: automatically generate a filename with a sortable and copypaste friendly timestamp
          */
 
-        private void Button_save_Click(object sender, EventArgs e)
+        private void Button_stitch_Click(object sender, EventArgs e)
         {
+            cleanupmemory();
             Bitmap stitchedimage = Stitch_images();
             if (!(stitchedimage is null))
             {
@@ -520,20 +653,30 @@ namespace ImageStitcher
                     saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
                     saveFileDialog1.Title = "Save an Image File";
                     saveFileDialog1.FileName = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " combined";                     // feature 1: timestamp
-                    saveFileDialog1.RestoreDirectory = true;
+                    if (string.IsNullOrEmpty(Settings.Default.lastsavedfolderStitch))
+                    {
+                        this.saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    }
+                    else
+                    {
+                        this.saveFileDialog1.InitialDirectory = Settings.Default.lastsavedfolderStitch;
+                    }
+                    saveFileDialog1.RestoreDirectory = false;
                     bool isanimatedgif = false;
                     if (!(imageFilesLeftPanel is null) && imageCountLeftPanel != 0 && !(imageFilesRightPanel is null) && imageCountRightPanel != 0)
                     {
-
                         if (check_if_animated_gif(imageFilesLeftPanel[imageIndexLeftPanel])
                             || check_if_animated_gif(imageFilesRightPanel[imageIndexRightPanel]))
                         {
                             isanimatedgif = true;
                             saveFileDialog1.FilterIndex = 3;
                         }
+                        else saveFileDialog1.FilterIndex = 1;
                     }
+                    bool result = false;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                     {
+                        result = true;
                         // Saves the Image via a FileStream created by the OpenFile method.
                         System.IO.FileStream fs =
                            (System.IO.FileStream)saveFileDialog1.OpenFile();
@@ -543,26 +686,30 @@ namespace ImageStitcher
                             // Saves the Image in the appropriate ImageFormat based upon the
                             // File type selected in the dialog box.
                             // NOTE that the FilterIndex property is one-based.
+
+                            var encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+                            encoderParameters.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.ImageSaveQuality);
+
                             switch (saveFileDialog1.FilterIndex)
                             {
                                 case 1:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Jpeg);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                       System.Drawing.Imaging.ImageFormat.Jpeg), encoderParameters);
                                     break;
 
                                 case 2:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Bmp);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                       System.Drawing.Imaging.ImageFormat.Bmp), encoderParameters);
                                     break;
 
                                 case 3:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Gif);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                          System.Drawing.Imaging.ImageFormat.Gif), encoderParameters);
                                     break;
 
                                 case 4:
-                                    stitchedimage.Save(fs,
-                                       System.Drawing.Imaging.ImageFormat.Png);
+                                    stitchedimage.Save(fs, GetEncoder(
+                                          System.Drawing.Imaging.ImageFormat.Png), encoderParameters);
                                     break;
                             }
                         }
@@ -584,6 +731,12 @@ namespace ImageStitcher
                             Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
                             Process.Start(info);
                         }
+
+                        if (result)
+                        {
+                            Settings.Default.lastsavedfolderStitch = Path.GetDirectoryName(this.saveFileDialog1.FileName);
+                            Settings.Default.Save();
+                        }
                     } // if dialog OK
                 }
                 catch (Exception ex)
@@ -591,18 +744,21 @@ namespace ImageStitcher
                     Console.WriteLine("{0}", ex);
                 }
         }
-        private bool check_if_animated_gif(string imagepath)
+
+        public bool check_if_animated_gif(string imagepath)
         {
             // https://stackoverflow.com/questions/2848689/c-sharp-tell-static-gifs-apart-from-animated-ones
             using (Image image = Image.FromFile(imagepath))
             {
                 if (ImageAnimator.CanAnimate(image))
                 {
+                    image.Dispose();
                     // GIF is animated
                     return true;
                 }
                 else
                 {
+                    image.Dispose();
                     // GIF is not animated
                     return false;
                 }
@@ -611,6 +767,7 @@ namespace ImageStitcher
 
         private Bitmap Screen_stitch()
         { // stitches a screenshot of the images as displayed in the viewer (i.e. with zoom, unsaved edit effects)
+            cleanupmemory();
             Panel leftpanel = splitContainer_bothimages.Panel1;
             Panel rightpanel = splitContainer_bothimages.Panel2;
             Bitmap bmp1 = new Bitmap(leftpanel.Width, leftpanel.Height);
@@ -680,7 +837,7 @@ namespace ImageStitcher
             TimeSpan durationl = TimeSpan.Zero;
             if (check_if_animated_gif(leftimagepath))
             {
-                 durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
+                durationl = (TimeSpan)GifExtension.GetGifDuration(pictureBox_leftpanel.Image);
             }
             TimeSpan durationr = TimeSpan.Zero;
             if (check_if_animated_gif(rightimagepath))
@@ -695,7 +852,6 @@ namespace ImageStitcher
             string rightloop = String.Empty;
             if (durationl > durationr) rightloop = loopthisvideo;
             if (durationr > durationl) leftloop = loopthisvideo;
-
 
             // If there is a still image, first convert it to a video with nonzero duration
             String stillimagepath = "";
@@ -728,9 +884,9 @@ namespace ImageStitcher
 
             // https://superuser.com/a/1256459 ffmpeg .mp4 to gif
 
-            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale=iw:ih:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=sierra2_4a \" \"{fileOutPath}\"";
+            String converttogif = $" && ffmpeg -y -i \"{tmpfilepath}\" -filter_complex \"fps=10,scale=iw:ih:flags=lanczos, split [o1] [o2];[o1] palettegen=stats_mode=diff [p]; [o2] fifo [o3];[o3] [p] paletteuse=dither=sierra2_4a \" -r 10 \"{fileOutPath}\""; // -r 10 reduce sample rate for smaller file size
             string outputvisibility = "/C ";
-            // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
+            // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output
             string arg = outputvisibility + ifstillimagepresent + joinasvideo + converttogif + deletetempfiles;
 
             Process proc = new Process
@@ -760,7 +916,8 @@ namespace ImageStitcher
                 imageFilesLeftPanel = null;
                 imageCountLeftPanel = 0;
                 imageIndexLeftPanel = 0;
-                priorimageIndexLeftPanel = imageIndexLeftPanel;
+                priorimageIndexLeftPanel = 0;
+                currentFoldersListLeft = null;
             }
             if (targetPanel == 1)
             {
@@ -768,9 +925,72 @@ namespace ImageStitcher
                 imageFilesRightPanel = null;
                 imageCountRightPanel = 0;
                 imageIndexRightPanel = 0;
-                priorimageIndexRightPanel = imageIndexRightPanel;
+                priorimageIndexRightPanel = 0;
+                currentFoldersListRight = null;
             }
+            Resize_imagepanels();
             UpdateLabelImageIndex();
+        }
+
+        public void ReloadPanel(int targetPanel)
+        {
+            List<string> imagelist = targetPanel == 0 ? imageFilesLeftPanel : imageFilesRightPanel;
+            string imagepath = "";
+            int imageIndex = 0;
+            if (imagelist != null)
+            {
+                try
+                {
+                    if (allowedImageExtensions.Any(GetCurrentImage(targetPanel).ToLower().EndsWith)) // save filepath of current image if it matches filter
+                    { imagepath = GetCurrentImage(targetPanel); }
+
+                    if (!string.IsNullOrEmpty(textBox_extfilter.Text)) filterImageListByExt(imagelist); // filter the image list
+
+                    // need to get the matched image index and set it
+                    for (int i = 0;
+                        i < imagelist.Count; i++)
+                    {
+                        if (imagelist[i] == imagepath) { imageIndex = i; }
+                    }
+
+                    if (targetPanel == 0)
+                    {
+                        imageFilesLeftPanel = imagelist;
+                        imageCountLeftPanel = imagelist.Count;
+                        imageIndexLeftPanel = imageIndex;
+                        priorimageIndexLeftPanel = imageIndex;
+                    }
+                    if (targetPanel == 1)
+                    {
+                        imageFilesRightPanel = imagelist;
+                        imageCountRightPanel = imagelist.Count;
+                        imageIndexRightPanel = imageIndex;
+                        priorimageIndexRightPanel = imageIndex;
+                    }
+                    UpdateLabelImageIndex();
+                    if (imagelist.Count() == 0) { ClearPanel(targetPanel); }
+                    else
+                    {
+                        LoadImage(targetPanel, imagelist[imageIndex]);
+                    }
+                }
+                catch (Exception ex) { Debug.WriteLine(ex); };
+            }
+        }
+
+        private void filterImageListByExt(List<string> imagelist)
+        {
+            List<string> newList = new List<string>(imagelist);
+            int k = 0;
+            for (int i = 0; i < newList.Count; i++)
+            {
+                if (allowedImageExtensions.Any(newList[i].ToLower().EndsWith))
+                {
+                    continue;
+                }
+                imagelist.RemoveAt(i - k);
+                k++;
+            }
         }
 
         private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
@@ -791,6 +1011,9 @@ namespace ImageStitcher
 
         private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // reset label
+            toolStripTextBox_gotopic.Text = "Go to index...";
+
             // disable 'fix webp image' when not applicable
             fixCorruptedImageToolStripMenuItem.Enabled = !(contextmenufocus == 0 && imageCountLeftPanel == 0) ||
                 (contextmenufocus == 1 && imageCountRightPanel == 0) ||
@@ -837,7 +1060,7 @@ namespace ImageStitcher
 
         private void Removefromlist(int targetpanel)
         {
-            if (targetpanel == 0 && imageCountLeftPanel == 0 || targetpanel == 1 && imageCountRightPanel == 0) { return; }
+            if (targetpanel == 0 && imageCountLeftPanel == 0 || targetpanel == 1 && imageCountRightPanel == 0) { ClearPanel(activePanel); return; }
             if (targetpanel == 0)
             {
                 try
@@ -848,6 +1071,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexLeftPanel;
                 imageIndexLeftPanel -= 1;
+                if (imageIndexLeftPanel < 0) imageIndexLeftPanel = imageCountLeftPanel-1; // loop around to bottom of image list
                 LoadNextImage(targetpanel);
                 priorimageIndexLeftPanel = restorepriorimageindex;
             }
@@ -861,6 +1085,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexRightPanel;
                 imageIndexRightPanel -= 1;
+                if (imageIndexRightPanel < 0) imageIndexRightPanel = imageCountRightPanel-1;
                 LoadNextImage(targetpanel);
                 priorimageIndexRightPanel = restorepriorimageindex;
             }
@@ -907,7 +1132,6 @@ namespace ImageStitcher
                         dobj.SetData(DataFormats.Bitmap, true, thispicturebox.Image);
                         Clipboard.SetDataObject(dobj, true); // if shift is held, store in clipboard as image content
                         break;
-
                 }
             }
         }
@@ -923,7 +1147,9 @@ namespace ImageStitcher
         }
 
         //https://stackoverflow.com/questions/2953254/cgetting-all-image-files-in-folder
-        private static readonly String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif", "webp" };
+        private String[] allowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif", "webp" };
+
+        private readonly String[] defaultallowedImageExtensions = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "jfif", "webp" };
 
         public static List<String> EnumerateImageFiles(String searchFolder, String[] filters, bool isRecursive)
         {
@@ -979,8 +1205,28 @@ namespace ImageStitcher
             RotateImage(activePanel);
         }
 
+        private string GetCurrentImage(int targetPanel)
+        {
+            if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
+            {
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+                {
+                    return imageFilesLeftPanel[imageIndexLeftPanel];
+                }
+            }
+            if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
+            {
+                if (imageFilesRightPanel != null && imageCountRightPanel != 0)
+                {
+                    return imageFilesRightPanel[imageIndexRightPanel];
+                }
+            }
+            return null;
+        }
+
         private void LoadPreviousImage(int targetPanel)
         {
+            if (loadprevattempts > maxloadattempts) { return; }
             if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
@@ -992,6 +1238,7 @@ namespace ImageStitcher
                         priorimageIndexLeftPanel = imageIndexLeftPanel;
                         imageIndexLeftPanel = nextImageIndex;
                     }
+                    else { loadprevattempts++; LoadPreviousImage(targetPanel); }
                 }
                 Resize_imagepanels();
             }
@@ -1007,6 +1254,7 @@ namespace ImageStitcher
                         priorimageIndexRightPanel = imageIndexRightPanel;
                         imageIndexRightPanel = nextImageIndex;
                     }
+                    else { loadprevattempts++; LoadPreviousImage(targetPanel); }
                 }
                 Resize_imagepanels();
             }
@@ -1018,8 +1266,13 @@ namespace ImageStitcher
             LoadPreviousImage(activePanel);
         }
 
+        private int loadnextattempts = 0;
+        private int loadprevattempts = 0;
+        private static readonly int maxloadattempts = 1;
+
         private void LoadNextImage(int targetPanel)
         {
+            if (loadnextattempts > maxloadattempts) { Console.WriteLine(loadnextattempts.ToString()); return; }
             if (targetPanel == 0 && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0)
@@ -1032,7 +1285,9 @@ namespace ImageStitcher
                         priorimageIndexLeftPanel = imageIndexLeftPanel;
                         imageIndexLeftPanel = nextImageIndex;
                     }
+                    else { loadnextattempts++; LoadNextImage(targetPanel); }
                 }
+                if (imageCountLeftPanel == 0) pictureBox_leftpanel.Image = null;
             }
             if (targetPanel == 1 && pictureBox_rightpanel.Image != null)
             {
@@ -1045,7 +1300,9 @@ namespace ImageStitcher
                         priorimageIndexRightPanel = imageIndexRightPanel;
                         imageIndexRightPanel = nextImageIndex;
                     }
+                    else { loadnextattempts++; LoadNextImage(targetPanel); }
                 }
+                if (imageCountRightPanel == 0) pictureBox_rightpanel.Image = null;
             }
             Resize_imagepanels();
             UpdateLabelImageIndex();
@@ -1080,17 +1337,25 @@ namespace ImageStitcher
         //https://stackoverflow.com/questions/16022188/open-an-image-with-the-windows-default-editor-in-c-sharp
         private void EditToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string imagepath = "";
+            string editorPath = "";
+
             if (contextmenufocus == 0 && pictureBox_leftpanel.Image != null && imageCountLeftPanel != 0)
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesLeftPanel[imageIndexLeftPanel])
-                {
-                    Verb = "edit"
-                };
-                Process.Start(startInfo);
+                imagepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
-            if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
+            else if (contextmenufocus == 1 && pictureBox_rightpanel.Image != null && imageCountRightPanel != 0)
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo(imageFilesRightPanel[imageIndexRightPanel])
+                imagepath = imageFilesRightPanel[imageIndexRightPanel];
+            }
+            if (!String.IsNullOrEmpty(Settings.Default.DefaultEditor))
+            {
+                editorPath = Settings.Default.DefaultEditor;
+                Process.Start(editorPath, "\"" + imagepath + "\"");
+            }
+            else
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(imagepath)
                 {
                     Verb = "edit"
                 };
@@ -1098,16 +1363,31 @@ namespace ImageStitcher
             }
         }
 
-        //https://stackoverflow.com/questions/9646114/open-file-location
+        //https://stackoverflow.com/questions/9646114/open-file-location this fails if filename has symbols
+        //https://stackoverflow.com/questions/334630/opening-a-folder-in-explorer-and-selecting-a-file
         private void OpenFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+
+            string p = null;
+
             if (contextmenufocus == 0 && imageFilesLeftPanel != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
+                p = imageFilesLeftPanel[imageIndexLeftPanel];
+                //Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
             }
             if (contextmenufocus == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
+                p = imageFilesRightPanel[imageIndexRightPanel];
+                //Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
+            }
+            if (p != null) { 
+            string args = string.Format("/e, /select, \"{0}\"", Path.GetFullPath(p));
+
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.FileName = "explorer";
+            info.Arguments = args;
+            Process.Start(info);
             }
         }
 
@@ -1189,21 +1469,28 @@ namespace ImageStitcher
             if (!String.Equals("", tempFileName))
             {
                 // create our startup process and argument
-                var psi = new ProcessStartInfo(
-                    "rundll32.exe",
-                    String.Format(
-                        "\"{0}{1}\", ImageView_Fullscreen {2}",
-                        Environment.Is64BitOperatingSystem ?
-                            path.Replace(" (x86)", "") :
-                            path
-                            ,
-                        @"\Windows Photo Viewer\PhotoViewer.dll",
-                        tempFileName)
-                    );
+                //var psi = new ProcessStartInfo(
+                //    "rundll32.exe",
+                //    String.Format(
+                //        "\"{0}{1}\", ImageView_Fullscreen {2}",
+                //        Environment.Is64BitOperatingSystem ?
+                //            path.Replace(" (x86)", "") :
+                //            path
+                //            ,
+                //        @"\Windows Photo Viewer\PhotoViewer.dll",
+                //        tempFileName)
+                //    );
 
-                psi.UseShellExecute = false;
+                //psi.UseShellExecute = false;
 
-                var viewer = Process.Start(psi);
+                //var viewer = Process.Start(psi);
+
+                string iePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
+                if (!String.IsNullOrEmpty(Settings.Default.DefaultWindowsOpen))
+                {
+                    iePath = Settings.Default.DefaultWindowsOpen;
+                }
+                Process.Start(iePath, "\"" + tempFileName + "\"");
             }
         }
 
@@ -1213,49 +1500,35 @@ namespace ImageStitcher
         }
 
         //https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
-        private static readonly Random getrandom = new Random();
+        private static readonly System.Random getrandom = new System.Random();
+
+        private static RandomLCG rng = new RandomLCG();
 
         public static int GetRandomNumber(int min, int max, int exclude)
         {
             int maxattempts = 3;
             int result = exclude;
-            for (int i =0; i < maxattempts && result==exclude; i++)
+            for (int i = 0; i < maxattempts && result == exclude; i++)
             {
-                result = RandomNumber.Between(min, max-1);
+                result = (int)(rng.Next(max - min) + min);
             }
+            if (result == exclude) result = (exclude + 1) % max;
             return result;
-
         }
-        // https://scottlilly.com/create-better-random-numbers-in-c/
-        public static class RandomNumber
+
+        private void cleanupmemory()
         {
-            private static readonly RNGCryptoServiceProvider _generator = new RNGCryptoServiceProvider();
-            public static int Between(int minimumValue, int maximumValue)
-            {
-                byte[] randomNumber = new byte[1];
-                _generator.GetBytes(randomNumber);
-                double asciiValueOfRandomCharacter = Convert.ToDouble(randomNumber[0]);
-                // We are using Math.Max, and substracting 0.00000000001, 
-                // to ensure "multiplier" will always be between 0.0 and .99999999999
-                // Otherwise, it's possible for it to be "1", which causes problems in our rounding.
-                double multiplier = Math.Max(0, (asciiValueOfRandomCharacter / 255d) - 0.00000000001d);
-                // We need to add one to the range, to allow for the rounding done with Math.Floor
-                int range = maximumValue - minimumValue + 1;
-                double randomValueInRange = Math.Floor(multiplier * range);
-                return (int)(minimumValue + randomValueInRange);
-            }
+            //Force garbage collection.
+            GC.Collect();
+            // Wait for all finalizers to complete before continuing.
+            GC.WaitForPendingFinalizers();
         }
-
 
         private void LoadRandomImage(int targetPanel)
         {
             if (targetPanel == 0 && imageCountLeftPanel > 1)
             {
-                int randomindex = imageIndexLeftPanel;
-                for (int i = 0; i < 10 && randomindex == imageIndexLeftPanel; i++)
-                {
-                    randomindex = GetRandomNumber(0, imageCountLeftPanel, imageIndexLeftPanel);
-                }
+                int randomindex = GetRandomNumber(0, imageCountLeftPanel, imageIndexLeftPanel);
                 if (LoadImage(targetPanel, imageFilesLeftPanel[randomindex]))
                 {
                     priorimageIndexLeftPanel = imageIndexLeftPanel;
@@ -1264,11 +1537,7 @@ namespace ImageStitcher
             }
             if (targetPanel == 1 && imageCountRightPanel > 1)
             {
-                int randomindex = imageIndexRightPanel;
-                for (int i = 0; i < 10 && randomindex == imageIndexRightPanel; i++)
-                {
-                    randomindex = GetRandomNumber(0, imageCountRightPanel, imageIndexRightPanel);
-                }
+                int randomindex = GetRandomNumber(0, imageCountRightPanel, imageIndexRightPanel);
                 if (LoadImage(targetPanel, imageFilesRightPanel[randomindex]))
                 {
                     priorimageIndexRightPanel = imageIndexRightPanel;
@@ -1328,9 +1597,11 @@ namespace ImageStitcher
             string fileExt = System.IO.Path.GetExtension(ofilepath);
             string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
             string tmpImage = tmpAppDataPath + tmpfilename;
+            string finalImage = Path.ChangeExtension(ofilepath, ".jpg");
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
             System.IO.File.Move(ofilepath, tmpImage);
-            arg = $"/C ffmpeg.exe -nostdin -i \"{tmpImage}\"  \"{ofilepath}\" && del \"{tmpImage}\"";
+            string argdel = "&& del \"{tmpImage}\"";
+            arg = $"/C magick  \"{tmpImage}\"  \"{finalImage}\"";
             Process proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -1343,65 +1614,116 @@ namespace ImageStitcher
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
 
-            LoadImage(contextmenufocus, ofilepath);
+            if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+            {
+                imageFilesLeftPanel[imageIndexLeftPanel] = finalImage;
+            }
+            if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+            {
+                imageFilesRightPanel[imageIndexRightPanel] = finalImage;
+            }
+
+            LoadImage(contextmenufocus, finalImage);
         }
 
         private void SaveImage(Image targetimage, string filename, string directorypath, Boolean savedialog)
         {
             bool savedYes = false;
             string newfilepath = System.IO.Path.Combine(directorypath, filename);
+
+            var encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+            encoderParameters.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.ImageSaveQuality);
+
             if (!(targetimage is null) && !savedialog)
             {
-                targetimage.Save(newfilepath);
-                savedYes = true;
+                try
+                {
+                    using (FileStream fs = System.IO.File.Create(newfilepath))
+
+                    {
+                        string extension = Path.GetExtension(filename);
+                        switch (extension.ToLower())
+                        {
+                            case ".jpeg":
+                            case ".jpg":
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Jpeg), encoderParameters);
+                                break;
+
+                            case ".bmp":
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Bmp), encoderParameters);
+                                break;
+
+                            case ".gif":
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Gif), encoderParameters);
+                                break;
+
+                            case ".png":
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Png), encoderParameters);
+                                break;
+
+                            default:
+                                throw new NotSupportedException(
+                                    "Unknown file extension " + extension);
+                        }
+
+                        fs.Close();
+                        savedYes = true;
+                    }
+                }
+                catch (Exception ex) { Debug.WriteLine(ex); }
             }
             if (!(targetimage is null) && savedialog) try
                 {
                     // Displays a SaveFileDialog so the user can save the Image
-                    saveFileDialog1.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
-                    saveFileDialog1.Title = "Save an Image File";
-                    saveFileDialog1.FileName = System.IO.Path.GetFileNameWithoutExtension(filename);
-                    saveFileDialog1.RestoreDirectory = false;
-                    saveFileDialog1.InitialDirectory = directorypath;
-                    if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                    saveFileDialog2.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif|Png Image|*.png";
+                    saveFileDialog2.Title = "Save an Image File";
+                    saveFileDialog2.FileName = System.IO.Path.GetFileNameWithoutExtension(filename);
+                    saveFileDialog2.RestoreDirectory = false;
+                    saveFileDialog2.InitialDirectory = directorypath;
+                    if (saveFileDialog2.ShowDialog() == DialogResult.OK)
                     {
                         // Saves the Image via a FileStream created by the OpenFile method.
                         System.IO.FileStream fs =
-                           (System.IO.FileStream)saveFileDialog1.OpenFile();
+                           (System.IO.FileStream)saveFileDialog2.OpenFile();
                         // Saves the Image in the appropriate ImageFormat based upon the
                         // File type selected in the dialog box.
                         // NOTE that the FilterIndex property is one-based.
-                        switch (saveFileDialog1.FilterIndex)
+
+                        switch (saveFileDialog2.FilterIndex)
                         {
                             case 1:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Jpeg);
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Jpeg), encoderParameters);
                                 break;
 
                             case 2:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Bmp);
+                                targetimage.Save(fs, GetEncoder(
+                                   System.Drawing.Imaging.ImageFormat.Bmp), encoderParameters);
                                 break;
 
                             case 3:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Gif);
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Gif), encoderParameters);
                                 break;
 
                             case 4:
-                                targetimage.Save(fs,
-                                   System.Drawing.Imaging.ImageFormat.Png);
+                                targetimage.Save(fs, GetEncoder(
+                                      System.Drawing.Imaging.ImageFormat.Png), encoderParameters);
                                 break;
                         }
 
                         fs.Close();
                         savedYes = true;
-                        newfilepath = System.IO.Path.GetFullPath(saveFileDialog1.FileName);
+                        newfilepath = System.IO.Path.GetFullPath(saveFileDialog2.FileName);
                     } // if dialog OK
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex);
+                    Debug.WriteLine(ex.ToString());
                 }
             // Opens Fle Directory if checkbox enabled
             if (checkBox_openaftersave.Checked && savedYes)
@@ -1415,6 +1737,71 @@ namespace ImageStitcher
                 };
                 Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
                 Process.Start(info);
+            }
+        }
+
+        public void SaveGifImage(string tmpgifpath, string targetpath, Boolean savedialog)
+        {
+            bool savedYes = false;
+            string newfilepath = "";
+            if (savedialog)
+            {
+                try
+                {
+                    File.Copy(tmpgifpath, targetpath, savedialog);
+                    newfilepath = targetpath;
+                    savedYes = true;
+                }
+                catch (IOException ioex)
+                {
+                    Console.WriteLine(ioex.Message);
+                }
+                savedYes = true;
+            }
+            else
+            if (!savedialog) try
+                {
+                    // Displays a SaveFileDialog so the user can save the Image
+                    saveFileDialog2.Filter = "Gif Image|*.gif";
+                    saveFileDialog2.Title = "Save an Image File";
+                    saveFileDialog2.FileName = System.IO.Path.GetFileNameWithoutExtension(targetpath);
+                    saveFileDialog2.RestoreDirectory = false;
+                    saveFileDialog2.InitialDirectory = Path.GetDirectoryName(targetpath);
+                    if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+                    {
+                        newfilepath = System.IO.Path.GetFullPath(saveFileDialog2.FileName);
+                        File.Copy(tmpgifpath, newfilepath, savedialog);
+                        savedYes = true;
+                    } // if dialog OK
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
+            // Opens Fle Directory if checkbox enabled
+            if (checkBox_openaftersave.Checked && savedYes)
+            {
+                string args = string.Format("/e, /select, \"{0}\"", newfilepath);
+
+                ProcessStartInfo info = new ProcessStartInfo
+                {
+                    FileName = "explorer",
+                    Arguments = args
+                };
+                Thread.Sleep(300); // fast and dirty way of waiting for file finish writing, otherwise file gets deselected.
+                Process.Start(info);
+            }
+            // delete temporary file if save was successful
+            if (savedYes)
+            {
+                try
+                {
+                    File.Delete(tmpgifpath);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
             }
         }
 
@@ -1464,26 +1851,34 @@ namespace ImageStitcher
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // left and right arrow keys for changing image
+            if (keyData == Keys.A) { LoadPreviousImage(activePanel); return true; }
+            if (keyData == Keys.D) { LoadNextImage(activePanel); return true; }
             if (keyData == Keys.Left) { LoadPreviousImage(activePanel); return true; }
             if (keyData == Keys.Right) { LoadNextImage(activePanel); return true; }
+            // alt + O hotkey for rotations
+            if (keyData == (Keys.Alt | Keys.O)) { RotateImage(activePanel); return true; }
 
-            // O hotkey for rotations
-            if (keyData == Keys.O) { RotateImage(activePanel); return true; }
+            // alt + L hotkey for blur
+            if (keyData == (Keys.Alt | Keys.L)) { Blur(activePanel); return true; }
 
-            // L hotkey for blur
-            if ((keyData == Keys.L)) { Blur(activePanel); return true; }
+            // shift + alt + R hotkey for alternate randomize panels
+            //if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
+            if (keyData == (Keys.Shift | Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
 
-            // Alt + R hotkey for randomize both panels
-            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
+            // R hotkey for randomize panel
+            if (keyData == ( Keys.R)) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
+            // R hotkey for randomize panel
+            if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
 
-            // R hotkey for active panel
-            if (keyData == Keys.R) { LoadRandomImage(activePanel); return true; }
+            // U hotkey for jump back
+            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
 
-            // Alt + U hotkey for jump back both panels
-            if (keyData == (Keys.Alt | Keys.U)) { JumpBack(0); JumpBack(1); return true; }
+            // shift + alt + U hotkey for alternate jump back
+            if (keyData == (Keys.Shift | Keys.Alt | Keys.U)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
+            if (keyData == (Keys.S)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
 
-            // Delete or Shift + D hotkey for send to recycle
-            if ((keyData == Keys.Delete) || (keyData == Keys.D)) { SendToTrash(activePanel); return true; }
+            // Delete or alt + D hotkey for send to recycle
+            if ((keyData == Keys.Delete) || (keyData == (Keys.Alt | Keys.D))) { SendToTrash(activePanel); return true; }
 
             // Ctrl + X for cut
             if (keyData == (Keys.Control | Keys.X)) { Copycut(activePanel, "file", true); return true; }
@@ -1498,16 +1893,73 @@ namespace ImageStitcher
             if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, "bitmap", false); return true; }
 
             // Ctrl + Alt + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); return true; }
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { 
+                        string windowTitle = Path.GetFileName(Settings.Default.openFolderOnCut) + " - File Explorer";
+                        
+                        IntPtr hWnd = FindWindow(null, windowTitle);
+  
+                        if (hWnd != IntPtr.Zero)
+                        {
+                            SetForegroundWindow(hWnd);
 
+                        }
+                        else
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut);
+                        }
+                        Thread.Sleep(500);
+                        sendToBack(); 
+              } catch (Exception ex) { throw ex; }  
+                return true; }
+
+            // Alt + Spacebar to toggle if hotkeys affect both panels
+            if (keyData == (Keys.Alt | Keys.Space))
+            {
+                checkBox_hotkeyboth.Checked = !checkBox_hotkeyboth.Checked;
+                return true;
+            }
+            //
+            if (keyData == Keys.Q) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder1, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
+            // 
+            if (keyData == Keys.W ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder2, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
+            // 
+            if (keyData == Keys.E ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder3, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
             // end of hotkeys. ignore the keystroke
             else { return base.ProcessCmdKey(ref msg, keyData); }
         }
 
-        /*  Section 5: Toggle top/bottom or side/side stitching
-        */
 
-        private void Button_verticalhorizontal_Click(object sender, EventArgs e)
+    static string GetUniquePath(string path)
+    {
+        if (!File.Exists(path)) return path;
+
+        var dir = Path.GetDirectoryName(path);
+        var file = Path.GetFileNameWithoutExtension(path);
+        var ext = Path.GetExtension(path);
+
+        for (int i = 1; ; i++)
+        {
+            var candidate = Path.Combine(dir, $"{file}{i}{ext}"); // e.g., name1.txt
+            if (!File.Exists(candidate)) return candidate;
+        }
+    }
+
+    // Move and auto-suffix if destination exists
+    static void MoveWithSuffix(string sourcePath, string destPath)
+    {
+
+        var uniqueDest = GetUniquePath(destPath);
+        File.Move(sourcePath, uniqueDest);
+    }
+     public string GetActiveFilePath()
+     {
+            return activePanel == 0 ? imageFilesLeftPanel[imageIndexLeftPanel] : imageFilesRightPanel[imageIndexRightPanel];
+      }
+
+    /*  Section 5: Toggle top/bottom or side/side stitching
+    */
+
+    private void Button_verticalhorizontal_Click(object sender, EventArgs e)
         {
             splitContainer_bothimages.Orientation = (splitContainer_bothimages.Orientation == Orientation.Vertical ? Orientation.Horizontal : Orientation.Vertical);
             button_verticalhorizontal.Text = (splitContainer_bothimages.Orientation == Orientation.Vertical ? "Stack images vertically" : "Put images side by side");
@@ -1516,7 +1968,6 @@ namespace ImageStitcher
 
         private void Button_swapimages_Click(object sender, EventArgs e)
         {
-
             var tmp1 = imageFilesLeftPanel;
             imageFilesLeftPanel = imageFilesRightPanel;
             imageFilesRightPanel = tmp1;
@@ -1634,8 +2085,9 @@ namespace ImageStitcher
                 int picY = (containerheight - picheight) / 2;
 
                 targetpicturebox.Size = new Size(picwidth, picheight);
-                targetpicturebox.Image = new Bitmap(targetpicturebox.Image, new Size(picwidth, picheight));
-                // https://stackoverflow.com/questions/9375588/keeping-a-picturebox-centered-inside-a-container
+                // https://stackoverflow.com/questions/9375588/keeping-a-picturebox-c
+                //
+                // ed-inside-a-container
                 targetpicturebox.Dock = DockStyle.None;
                 targetpicturebox.Location = new Point(picX, picY);
                 targetpicturebox.Refresh();
@@ -1713,7 +2165,7 @@ namespace ImageStitcher
             targetpicturebox.Image = bmp;
         }
 
-        private bool LoadImage(int targetPanel, string imagePath)
+        public bool LoadImage(int targetPanel, string imagePath)
         {
             try
             {
@@ -1727,28 +2179,127 @@ namespace ImageStitcher
                         targetpicturebox.ImageLocation = imagePath;
                     }
                     targetpicturebox.Size = new Size(bmpTemp.Width, bmpTemp.Height);
-                    targetpicturebox.Image = new Bitmap(bmpTemp);
+                    if (checkBox_blur.Checked)
+                    {
+                        try
+                        {
+
+                            string blurlevel = "15";
+                            int number;
+                            bool success = int.TryParse(textBox_blurLevel.Text, out number);
+                            if (success) blurlevel = textBox_blurLevel.Text;
+                            //Debug.WriteLine(blurlevel);
+                            string ext = System.IO.Path.GetExtension(imagePath);
+                            string outputvisibility = "/C ";
+
+                            string tmpgifname = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmpblur" + ext;
+                            var tmpgifpath = tmpAppDataPath + tmpgifname;
+
+                            string cropgifcommand = "";
+                            // cmd for imagemagick. good quality
+                            cropgifcommand = $"magick \"{imagePath}\"  -blur 0x{blurlevel} +region \"{tmpgifpath}\"";
+                            string arg = outputvisibility + cropgifcommand;
+                            Process proc = new Process
+                            {
+                                StartInfo = new ProcessStartInfo
+                                {
+                                    FileName = "cmd.exe",
+                                    Arguments = arg,
+                                    UseShellExecute = false,
+                                    CreateNoWindow = true
+                                }
+                            };
+
+                            proc.Start();
+                            proc.WaitForExit();
+
+                            targetpicturebox.ImageLocation = tmpgifpath;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                        }
+                    } else if (checkBox_pixelate.Checked)
+                    {
+                        try
+                        {
+
+                            string pixlevel = "15";
+                            string resize = "1500";
+                            int number;
+                            bool success = int.TryParse(textBox_pixelateLevel.Text, out number);
+                            if (success)
+                            {
+                                pixlevel = textBox_pixelateLevel.Text;
+                                resize = (100*number).ToString();
+                            }
+                            //Debug.WriteLine(pixlevel);
+                            string ext = System.IO.Path.GetExtension(imagePath);
+                            string outputvisibility = "/C ";
+
+                            string tmpimagename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmppixel" + ext;
+                            var tmpimagepath = tmpAppDataPath + tmpimagename;
+
+                            string cropgifcommand = "";
+                            // cmd for imagemagick. good quality
+                            cropgifcommand = $"magick \"{imagePath}\"  -scale {pixlevel}% -scale {resize}% \"{tmpimagepath}\"";
+                            string arg = outputvisibility + cropgifcommand;
+                            Process proc = new Process
+                            {
+                                StartInfo = new ProcessStartInfo
+                                {
+                                    FileName = "cmd.exe",
+                                    Arguments = arg,
+                                    UseShellExecute = false,
+                                    CreateNoWindow = true
+                                }
+                            };
+
+                            proc.Start();
+                            proc.WaitForExit();
+
+                            targetpicturebox.ImageLocation = tmpimagepath;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                        }
+                    }
+                    else
+                    {
+                        targetpicturebox.Image = new Bitmap(bmpTemp);
+                    }
+
                     targetpicturebox.Dock = System.Windows.Forms.DockStyle.Fill;
+                    String imageFolder = Path.GetDirectoryName(imagePath);
+
                     return true;
                 }
             }
-            catch (Exception)
+            catch (Exception er)
             {
                 string loaderrormsg = "Failed to load image: " + imagePath;
                 if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, loaderrormsg); }
                 if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, loaderrormsg); }
-                return true; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
+                try
+                {
+                    //   DragDropHandler(targetPanel, new String[] { GetCurrentImage(targetPanel) }); ;
+                    return true;
+                }
+                catch (Exception ex) { Debug.WriteLine(ex.ToString()); return false; }
+                Debug.WriteLine(er.ToString());
+                return false; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
             }
         }
 
         /* app closing save settings */
 
         // https://www.codeproject.com/Articles/15013/Windows-Forms-User-Settings-in-C
-        private String tmpAppDataPath;
+        public String tmpAppDataPath;
 
         private void clearTmpAppData()
-        {
-            if (File.Exists(tmpAppDataPath))
+        { //https://stackoverflow.com/questions/6392031/how-to-check-if-another-instance-of-the-application-is-running
+            if (Directory.Exists(tmpAppDataPath)& System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() ==1)
                 Directory.Delete(tmpAppDataPath, true);
         }
 
@@ -1758,30 +2309,39 @@ namespace ImageStitcher
             {
                 ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
 
+                // Copy window location to app settings
+                Settings.Default.WindowLocation = this.Location;
 
-            // Copy window location to app settings
-            Settings.Default.WindowLocation = this.Location;
+                // Copy window size to app settings
+                if (this.WindowState == FormWindowState.Normal)
+                {
+                    Settings.Default.WindowSize = this.Size;
+                }
+                else
+                {
+                    Settings.Default.WindowSize = this.RestoreBounds.Size;
+                }
+                Settings.Default.SplitContainerSplitterDistance = savesplitterdistance;
+                Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
+                Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
+                Settings.Default.showinfo = this.checkBox_showfilename.Checked;
+                Settings.Default.HotkeyBoth = this.checkBox_hotkeyboth.Checked;
+                Settings.Default.BlurCheckbox = this.checkBox_blur.Checked;
+                Settings.Default.BlurLevel = this.textBox_blurLevel.Text;
+                Settings.Default.PixelateCheckbox = this.checkBox_pixelate.Checked;
+                Settings.Default.PixelateLevel = this.textBox_pixelateLevel.Text;
 
-            // Copy window size to app settings
-            if (this.WindowState == FormWindowState.Normal)
-            {
-                Settings.Default.WindowSize = this.Size;
-            }
-            else
-            {
-                Settings.Default.WindowSize = this.RestoreBounds.Size;
-            }
-            Settings.Default.SplitContainerSplitterDistance = savesplitterdistance;
-            Settings.Default.RandomizeOnClick = this.checkBox_randomOnClick.Checked;
-            Settings.Default.OpenFolderAfterSave = this.checkBox_openaftersave.Checked;
-
-            if (imageFilesLeftPanel!= null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; } else
+                if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; }
+                else
                 {
                     Settings.Default.LastFile = "";
                 }
 
-            // Save settings
-            Settings.Default.Save();
+                // remember number of image panels
+                Settings.Default.NumberOfPanels = numberofimagepanels;
+
+                // Save settings
+                Settings.Default.Save();
             }
             catch (ConfigurationErrorsException exception)
             {
@@ -1838,14 +2398,17 @@ namespace ImageStitcher
             public string slideshow_leftshufflemode;
             public string slideshow_rightshufflemode;
             public DispatcherTimer slideshow_timer;
+
             public slideshow_bot(string slideshow_leftshufflemode, string slideshow_rightshufflemode, DispatcherTimer slideshow_timer)
             {
                 this.slideshow_leftshufflemode = slideshow_leftshufflemode;
                 this.slideshow_rightshufflemode = slideshow_rightshufflemode;
                 this.slideshow_timer = slideshow_timer;
-            }   
+            }
         }
+
         public slideshow_bot default_slideshowbot;
+
         public void slideshow_start(int timeinterval_sec, string leftmode, string rightmode)
         {
             DispatcherTimer timer = default_slideshowbot.slideshow_timer;
@@ -1866,13 +2429,15 @@ namespace ImageStitcher
             slideshow_advance(0, default_slideshowbot.slideshow_leftshufflemode);
             slideshow_advance(1, default_slideshowbot.slideshow_leftshufflemode);
         }
-        
+
         private void slideshow_advance(int targetpicturebox, string shufflemode)
         {
-            if(String.Equals(shufflemode, "random")){
+            if (String.Equals(shufflemode, "random"))
+            {
                 LoadRandomImage(targetpicturebox);
             }
-            if (String.Equals(shufflemode, "ordered")){
+            if (String.Equals(shufflemode, "ordered"))
+            {
                 LoadNextImage(targetpicturebox);
             }
         }
@@ -1890,7 +2455,6 @@ namespace ImageStitcher
             //ImageStitcher.Window1 icwin = new ImageStitcher.Window1();
             //icwin.Show();
 
-
             Image targetimage = activePanel == 0 ? pictureBox_leftpanel.Image : pictureBox_rightpanel.Image;
 
             Form_Crop crop_window = new Form_Crop(this);
@@ -1900,18 +2464,20 @@ namespace ImageStitcher
             crop_window.pntLocation = location;
 
             String image_path = "";
-            if (activePanel == 0 && imageFilesLeftPanel != null && imageCountLeftPanel != 0) image_path = imageFilesLeftPanel[imageIndexLeftPanel];
+            if (activePanel == 0 && imageFilesLeftPanel != null && imageCountLeftPanel != 0) image_path = imageFilesLeftPanel[imageIndexLeftPanel]; crop_window.Width = splitContainer_bothimages.Width;
+            crop_window.Height = splitContainer_bothimages.Height;
             if (activePanel == 1 && imageFilesRightPanel != null && imageCountRightPanel != 0) image_path = imageFilesRightPanel[imageIndexRightPanel];
+
             if (!String.IsNullOrEmpty(image_path))
             {
-                crop_window.Load_img(image_path);
+                crop_window.Load_img(image_path, activePanel);
                 crop_window.Show();
             }
         }
-        
+
         public int[] getCropWindowPositions()
         {
-            int[] result= new int[10];
+            int[] result = new int[10];
 
             Point pbllocation = pictureBox_leftpanel.PointToScreen(new Point(0, 0));
             Point pbrlocation = pictureBox_rightpanel.PointToScreen(new Point(0, 0));
@@ -1928,28 +2494,38 @@ namespace ImageStitcher
 
             return result;
         }
-        public void cropSaveImage(bool overwrite)
+
+        public void cropSaveImage(bool overwrite, int targetpanel)
         {
-            string filename="",directorypath="";
+            string filename = "", directorypath = "";
             bool savedialog = true;
             if (overwrite) savedialog = false;
-            if ((activePanel == 0) && pictureBox_leftpanel.Image != null)
+            if ((targetpanel == 0) && pictureBox_leftpanel.Image != null)
             {
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesLeftPanel[imageIndexLeftPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesLeftPanel[imageIndexLeftPanel]); }
                 Image targetimage = pictureBox_leftpanel.Image;
                 SaveImage(targetimage, filename, directorypath, savedialog);
             }
-            if ((activePanel == 1) && pictureBox_rightpanel.Image != null)
+            if ((targetpanel == 1) && pictureBox_rightpanel.Image != null)
             {
                 Image targetimage = pictureBox_rightpanel.Image;
                 if (imageFilesRightPanel != null && imageCountRightPanel != 0) { filename = System.IO.Path.GetFileName(imageFilesRightPanel[imageIndexRightPanel]); directorypath = System.IO.Path.GetDirectoryName(imageFilesRightPanel[imageIndexRightPanel]); }
                 SaveImage(targetimage, filename, directorypath, savedialog);
             }
         }
-        public void LoadActiveImage (Image targetimage)
+
+        public void LoadImage(int targetpanel, Image targetimage)
+        {
+            PictureBox targetpictureBox = targetpanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
+            targetpictureBox.Image = targetimage;
+            targetpictureBox.Invalidate();
+            Resize_imagepanels();
+        }
+
+        public void LoadActiveImage(string targetpath)
         {
             PictureBox targetpictureBox = activePanel == 0 ? pictureBox_leftpanel : pictureBox_rightpanel;
-            targetpictureBox.Image = targetimage;
+            targetpictureBox.ImageLocation = targetpath;
             targetpictureBox.Invalidate();
             Resize_imagepanels();
         }
@@ -1960,56 +2536,47 @@ namespace ImageStitcher
         }
 
         private void webpToGifToolStripMenuItem_Click(object sender, EventArgs e)
-        { // requires Python, Pillow installed, and script set in path https://gist.github.com/nimatrueway/0e743d92056e2c5f995e25b848a1bdcd
-            // in the script, rename Python3 to Python if not found
-            string inputfilepath = "";
+        { 
+            string arg = "";
+            string ofilepath = "";
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                inputfilepath = imageFilesLeftPanel[imageIndexLeftPanel];
+                ofilepath = imageFilesLeftPanel[imageIndexLeftPanel];
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                inputfilepath = imageFilesRightPanel[imageIndexRightPanel];
+                ofilepath = imageFilesRightPanel[imageIndexRightPanel];
             }
-            string fileExt = System.IO.Path.GetExtension(inputfilepath);
-            string inputbackupfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
-            string inputbackupfilepath = tmpAppDataPath + inputbackupfilename;
+            string fileExt = System.IO.Path.GetExtension(ofilepath);
+            string tmpfilename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmp" + fileExt;
+            string tmpImage = tmpAppDataPath + tmpfilename;
+            string finalImage = Path.ChangeExtension(ofilepath, ".gif");
             DirectoryInfo di = Directory.CreateDirectory(tmpAppDataPath);
-
-            System.IO.File.Move(inputfilepath, inputbackupfilepath);
-            string outputfilepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(inputfilepath), System.IO.Path.GetFileNameWithoutExtension(inputfilepath)) + ".gif";
-            string tmpoutputfilepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(inputbackupfilepath), System.IO.Path.GetFileNameWithoutExtension(inputbackupfilepath)) + ".gif";
-
-            String cmd_webptogif = $"python_pillow_webp2gif.py \"{inputbackupfilepath}\"";
-            string outputvisibility = "/C ";
-            // use "/C "+ for cmd.exe to close automatically "/K "+ for cmd.exe to stay open and view ffmpeg output 
-            string arg = outputvisibility + cmd_webptogif;
-
+            System.IO.File.Move(ofilepath, tmpImage);
+            string argdel = "&& del \"{tmpImage}\"";
+            arg = $"/C magick  \"{tmpImage}\" -layers optimizetransparency \"{finalImage}\"";
             Process proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
                     Arguments = arg,
-                    UseShellExecute = false,
-                    CreateNoWindow = false
                 }
             };
 
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
 
-            System.IO.File.Move(tmpoutputfilepath, outputfilepath);
-
-            LoadImage(contextmenufocus, outputfilepath);
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                imageFilesLeftPanel[imageIndexLeftPanel] = outputfilepath;
+                imageFilesLeftPanel[imageIndexLeftPanel] = finalImage;
             }
             if ((contextmenufocus == 1) && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                imageFilesRightPanel[imageIndexRightPanel] = outputfilepath;
+                imageFilesRightPanel[imageIndexRightPanel] = finalImage;
             }
+
+            LoadImage(contextmenufocus, finalImage);
         }
 
         private void button_settings_Click(object sender, EventArgs e)
@@ -2028,6 +2595,510 @@ namespace ImageStitcher
             location.X += button_settings.Width / 2;
             main_settings.pntLocation = location;
             main_settings.Show();
+        }
+
+        // Skins dark/light mode
+
+        public void DarkModeRefresh()
+        {
+            if (Settings.Default.DarkMode == true)
+            {
+                Color darkcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColor);
+                Color darkaccentcolor = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorAccent);
+                pictureBox_leftpanel.BackColor = darkcolor;
+                pictureBox_rightpanel.BackColor = darkcolor;
+                panel_controls.BackColor = darkaccentcolor;
+                this.BackColor = darkaccentcolor;
+                splitContainer_bothimages.BackColor = darkaccentcolor;
+
+                Color darkcolortext = (Color)System.Drawing.ColorTranslator.FromHtml(Settings.Default.DarkModeColorText);
+
+                foreach (Control subC in panel_controls.Controls)
+                {
+                    subC.BackColor = darkaccentcolor;
+                    if (!(subC is Button))
+                    {
+                        subC.ForeColor = darkcolortext;
+                    }
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Flat;
+                        ((Button)subC).FlatAppearance.BorderColor = darkcolor;
+                        if (subC.BackgroundImage is null) { subC.ForeColor = darkcolortext; }
+                    }
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, true);
+
+                label_filename_leftpanel.BackColor = darkaccentcolor;
+                label_filename_rightpanel.BackColor = darkaccentcolor;
+                label_filename_leftpanel.ForeColor = darkcolortext;
+                label_filename_rightpanel.ForeColor = darkcolortext;
+                label_imageindex_leftpanel.BackColor = darkaccentcolor;
+                label_imageindex_leftpanel.ForeColor = darkcolortext;
+                label_imageindex_rightpanel.BackColor = darkaccentcolor;
+                label_imageindex_rightpanel.ForeColor = darkcolortext;
+            }
+            if (Settings.Default.DarkMode == false)
+            {
+                Color lightbackground = SystemColors.Control;
+                Color lighttextcolor = Color.Black;
+                Color lightforeground = SystemColors.WindowText;
+                pictureBox_leftpanel.BackColor = SystemColors.GradientInactiveCaption;
+                pictureBox_rightpanel.BackColor = SystemColors.GradientInactiveCaption;
+                panel_controls.BackColor = SystemColors.Control;
+                splitContainer_bothimages.BackColor = lightbackground;
+                foreach (Control subC in panel_controls.Controls)
+                {
+                    subC.BackColor = lightbackground;
+                    subC.ForeColor = lighttextcolor;
+
+                    if (subC is Button)
+                    {
+                        ((Button)subC).FlatStyle = FlatStyle.Standard;
+                        ((Button)subC).FlatAppearance.BorderColor = SystemColors.Control;
+                    }
+                }
+                DarkTitleBarClass.UseImmersiveDarkMode(Handle, false);
+                this.BackColor = SystemColors.Control;
+
+                label_filename_leftpanel.BackColor = lightbackground;
+                label_filename_rightpanel.BackColor = lightbackground;
+                label_filename_leftpanel.ForeColor = lighttextcolor;
+                label_filename_rightpanel.ForeColor = lighttextcolor;
+                label_imageindex_leftpanel.BackColor = lightbackground;
+                label_imageindex_leftpanel.ForeColor = lightforeground;
+                label_imageindex_rightpanel.BackColor = lightbackground;
+                label_imageindex_rightpanel.ForeColor = lightforeground;
+            }
+        }
+
+        // image quality when saving
+        private static System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)
+        { // https://efundies.com/csharp-save-jpg/
+            var codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageDecoders();
+            foreach (var codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
+            }
+            return null;
+        }
+
+        public int numberofimagepanels = 0;
+
+        private void set_NumberOfPanels(int npanels)
+        {
+            if (npanels == 1)
+            {
+                panel_bothimages.Controls.Add(pictureBox_leftpanel);
+                pictureBox_leftpanel.Controls.Add(label_imageindex_leftpanel);
+                numberofimagepanels = 1;
+                splitContainer_bothimages.Hide();
+                button_numberofpanels.Text = "Switch to Dual";
+                activePanel = 0;
+            }
+            else if (npanels == 2)
+            {
+                splitContainer_bothimages.Panel1.Controls.Add(pictureBox_leftpanel);
+                pictureBox_leftpanel.Controls.Add(label_imageindex_leftpanel);
+                Resize_imagepanels();
+                numberofimagepanels = 2;
+                splitContainer_bothimages.Show();
+                button_numberofpanels.Text = "Switch to Single";
+            }
+        }
+
+        private void button_numberofpanels_Click(object sender, EventArgs e)
+        {
+            // flip between 1 and 2
+            int flip = numberofimagepanels - 1;
+            flip = 1 - flip;
+            set_NumberOfPanels(flip + 1);
+        }
+
+        private void checkBox_hotkeyboth_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.HotkeyBoth = checkBox_hotkeyboth.Checked;
+        }
+
+        private void splitContainer_bothimages_MouseUp(object sender, MouseEventArgs e)
+        {
+            panel_bothimages.Focus(); // remove dotted line around splitter
+        }
+
+        private void textBox_extfilter_KeyPress(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                allowedImageExtensions = new string[1];
+                allowedImageExtensions[0] = textBox_extfilter.Text;
+                if (string.IsNullOrEmpty(textBox_extfilter.Text)) { allowedImageExtensions = defaultallowedImageExtensions; }
+                ReloadPanel(0); ReloadPanel(1);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void button_copy_Click(object sender, EventArgs e)
+        {
+            Copycut(activePanel, "file", false);
+        }
+
+        private bool firstload = true;
+
+        private void watchFolder(String folderPath)
+        {
+            fileSystemWatcher_ImageFolder.Path = folderPath;
+            fileSystemWatcher_ImageFolder.SynchronizingObject = this;
+
+            fileSystemWatcher_ImageFolder.Filter = "*.*";
+            fileSystemWatcher_ImageFolder.Created += new FileSystemEventHandler(onFileAdded);
+            if (Settings.Default.LoadSubfolders) { Debug.WriteLine("subdirectories added"); fileSystemWatcher_ImageFolder.IncludeSubdirectories = true; }
+
+            fileSystemWatcher_ImageFolder.Deleted += new FileSystemEventHandler(OnDeleted);
+
+            Debug.WriteLine("watcher added");
+            fileSystemWatcher_ImageFolder.EnableRaisingEvents = true;
+        }
+
+        private async void onFileAdded(object source, FileSystemEventArgs e)
+        {
+            string fileAddedPath= e.FullPath;
+            if (Settings.Default.loadNewFile == false) return;
+            try
+            {
+                bool isImage = defaultallowedImageExtensions.Any(fileAddedPath.ToLower().EndsWith);
+                if (fileAddedPath.EndsWith(".part"))
+                {
+                    Debug.WriteLine("part file detected.");
+                }
+                else
+                 if (isImage)
+                {
+                    int timeout = 10000;
+                    while (timeout > 0)
+                    {
+                        try
+                        {
+                            this.Invoke((MethodInvoker)delegate
+                            {
+                                if (getCurrentFoldersList() != null)
+                                {
+                                    DragDropHandler(activePanel, fileAddedPath, getCurrentFoldersList());
+                                }
+                                else
+                                {
+                                    //Debug.Print("null folders list");
+                                    DragDropHandler(activePanel, new string[] { fileAddedPath });
+                                    //watchFolder(Path.GetDirectoryName(fileAddedPath));
+                                }
+                            });
+                            UpdateLabelImageIndex();
+                            //don't forget to either return from the function or break out fo the while loop
+                            break;
+                        }
+                        catch (IOException ex)
+                        {
+                            //you could do the sleep in here, but its probably a good idea to exit the error handler as soon as possible
+                            Debug.WriteLine(ex);
+                        }
+                        Thread.Sleep(100);
+
+                        //if its a very long wait this will acumulate very small errors. 
+                        //For most things it's probably fine, but if you need precision over a long time span, consider
+                        //   using some sort of timer or DateTime.Now as a better alternative
+                        timeout -= 100;
+                    }
+                    Debug.WriteLine("image file detected.");
+                    //LoadImage(activePanel, fileAddedPath);
+                }
+
+                if (Settings.Default.bringToFront) bringToFront();
+            }
+            catch (Exception ex)
+            {
+                //check here why it failed and ask user to retry if the file is in use.
+               System.Diagnostics.Debug.WriteLine($"File error created: {e.FullPath}");
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
+        // https://stackoverflow.com/questions/2636721/bring-another-processes-window-to-foreground-when-it-has-showintaskbar-false
+        [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+        public static extern IntPtr FindWindow(String lpClassName, String lpWindowName);
+
+        [DllImport("USER32.DLL")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        public static void bringToFront(string title)
+        {
+            // Get a handle to the Calculator application.
+            IntPtr handle = FindWindow(null, title);
+
+            // Verify is a running process.
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            // Make the foreground application
+            SetForegroundWindow(handle);
+        }
+        public static void bringToFront()
+        {
+
+            Process currentProcess = Process.GetCurrentProcess();
+            IntPtr hWnd = currentProcess.MainWindowHandle;
+
+            // Get a handle to the application.
+            IntPtr handle = hWnd;
+
+            // Verify is a running process.
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            // Make the foreground application
+            SetForegroundWindow(handle);
+        }
+        // end window to foreground
+
+        //https://stackoverflow.com/questions/1181336/how-to-send-a-wpf-window-to-the-back
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(
+    IntPtr hWnd,
+    IntPtr hWndInsertAfter,
+    int X,
+    int Y,
+    int cx,
+    int cy,
+    uint uFlags);
+
+        const UInt32 SWP_NOSIZE = 0x0001;
+        const UInt32 SWP_NOMOVE = 0x0002;
+
+        static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+
+        static void SendWpfWindowBack(System.Windows.Window window)
+        {
+            var hWnd = new WindowInteropHelper(window).Handle;
+            SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        }
+        public static void sendToBack()
+        {
+
+            Process currentProcess = Process.GetCurrentProcess();
+            IntPtr hWnd = currentProcess.MainWindowHandle;
+
+            // Get a handle to the application.
+            IntPtr handle = hWnd;
+
+            // Verify is a running process.
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        }
+        // end send window to back
+
+        private void OnDeleted(object source, FileSystemEventArgs e)
+        {
+            if (!Settings.Default.loadNewFile) return;
+            string deletedfilepath = e.FullPath;
+            List<String> imageFilesActivePanel = getCurrentPanel();
+            int imageIndexActivePanel = getCurrentIndex();
+            string[] currentFoldersList = getCurrentFoldersList();
+            if (currentFoldersList == null) { currentFoldersList = new string[] { Path.GetDirectoryName(deletedfilepath) } ; }
+            if (imageIndexActivePanel >= 0 )
+            {
+
+                string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
+
+
+                int restorepriorimageindex = getPreviousIndex();
+                int restorecurrentimageindex = getCurrentIndex();
+
+
+                if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel] && currentFoldersList != null)
+                {
+                    DragDropHandler(activePanel, imageFilesActivePanel[getPreviousIndex()], currentFoldersList);
+                    if (restorepriorimageindex < restorecurrentimageindex) restorecurrentimageindex -= 1;
+                    setPreviousIndex(restorecurrentimageindex);
+                }
+                else if (currentFoldersList != null)
+                {
+                    DragDropHandler(activePanel, currentImagePath, currentFoldersList);
+                    if (restorepriorimageindex > restorecurrentimageindex) restorepriorimageindex -= 1;
+                    setPreviousIndex(restorepriorimageindex);
+                }
+                else
+                {
+                    ClearPanel(activePanel);
+                    DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
+                }
+                UpdateLabelImageIndex();
+            }
+
+        }
+        private List<String> getCurrentPanel()
+        {
+            if (activePanel == 0)
+            return imageFilesLeftPanel;
+            if (activePanel == 1)
+                return imageFilesRightPanel;
+            return null;
+        }
+        private int getCurrentIndex()
+        {
+            if (activePanel == 0) { 
+                if (imageFilesLeftPanel == null) { return -1; }
+                return imageIndexLeftPanel; }
+            if (activePanel == 1)
+            {
+                if (imageFilesRightPanel == null) { return -1; }
+                return imageIndexRightPanel;
+            }
+            return -1;
+        }
+        private string[] getCurrentFoldersList()
+        {
+            if (activePanel == 0)
+                return currentFoldersListLeft;
+            if (activePanel == 1)
+                return currentFoldersListRight;
+            return null;
+        }
+        private void setCurrentFoldersList(string[] foldersList)
+        {
+            if (activePanel == 0)
+                 currentFoldersListLeft = foldersList;
+            if (activePanel == 1)
+                 currentFoldersListRight = foldersList;
+            return;
+        }
+        private int getPreviousIndex()
+        {
+            if (activePanel == 0)
+                return priorimageIndexLeftPanel;
+            if(activePanel == 1)
+                return priorimageIndexRightPanel;
+            return -1;  
+
+        }
+        private void setPreviousIndex(int i)
+        {
+            if (activePanel == 0)
+                 priorimageIndexLeftPanel = i;
+            if (activePanel == 1)
+                 priorimageIndexRightPanel = i;
+        }
+        string[] currentFoldersListLeft = null;
+        string[] currentFoldersListRight = null;
+
+        private void MainWindow_Shown(object sender, EventArgs e)
+        {
+            // try to load the last opened file, or its directory if file could not be opened
+            if (Settings.Default.rememberLastFile && !String.IsNullOrEmpty(Settings.Default.LastFile) && imageCountLeftPanel == 0 && firstload)
+            {
+                try
+                {
+                    DragDropHandler(0, new string[] { Settings.Default.LastFile });
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        DragDropHandler(0, new string[] { System.IO.Path.GetDirectoryName(Settings.Default.LastFile) });
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+            // load default directory
+            if (Settings.Default.loaddefaultdir && !String.IsNullOrEmpty(Settings.Default.DefaultDirectory) && imageCountLeftPanel == 0 && imageCountRightPanel == 0 && firstload)
+            {
+                try
+                {
+                    // optionally run a custom external script
+                    if (Settings.Default.scriptonload)
+                    {
+                        System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        process.StartInfo.FileName = "cmd.exe";
+                        process.StartInfo.Arguments = "/C " + "\"" + Settings.Default.scriptloc + "\"";
+                        process.Start();
+                        if (Settings.Default.scriptwait) process.WaitForExit();
+                    }
+                    DragDropHandler(0, new string[] { Settings.Default.DefaultDirectory });
+                    DragDropHandler(1, new string[] { Settings.Default.DefaultDirectory });
+
+
+                    watchFolder(Settings.Default.DefaultDirectory);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
+            }
+        }
+
+        private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
+        {
+
+        }
+
+        private void toolStripTextBox_gotopic_Click(object sender, EventArgs e)
+        {
+            toolStripTextBox_gotopic.Text = "";
+        }
+
+
+
+        private void toolStripTextBox_gotopic_TextChanged(object sender, EventArgs e)
+        {
+          
+            string gotopic_text = toolStripTextBox_gotopic.Text;
+            if (String.IsNullOrEmpty(gotopic_text)) return;
+            int goto_index = -1;
+            int.TryParse(gotopic_text, out goto_index);
+            if (goto_index > 0)
+            {
+
+                if (activePanel == 0 && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+                {
+                    if (goto_index < imageCountLeftPanel)
+                    {
+                        LoadImage(activePanel, imageFilesLeftPanel[goto_index - 1]);
+                        priorimageIndexLeftPanel = imageIndexLeftPanel;
+                        imageIndexLeftPanel = goto_index - 1;
+                        Resize_imagepanels();
+                        UpdateLabelImageIndex();
+                    }
+                }
+                if (activePanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+                {
+                    if (goto_index < imageCountRightPanel)
+                    {
+                        LoadImage(activePanel, imageFilesRightPanel[goto_index - 1]);
+                        priorimageIndexRightPanel = imageIndexRightPanel;
+                        imageIndexRightPanel = goto_index - 1;
+                        Resize_imagepanels();
+                        UpdateLabelImageIndex();
+                    }
+                }
+
+            }
+        }
+
+        private void toolStripTextBox_gotopic_Leave(object sender, EventArgs e)
+        {
+            toolStripTextBox_gotopic.Text = "Go to index...";
         }
     } // end MainWindow : Form
 }

@@ -12,7 +12,7 @@ namespace ImageStitcher.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -181,7 +181,7 @@ namespace ImageStitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool loaddefaultdir {
             get {
                 return ((bool)(this["loaddefaultdir"]));
@@ -200,6 +200,318 @@ namespace ImageStitcher.Properties {
             }
             set {
                 this["CropOverwrite"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DarkMode {
+            get {
+                return ((bool)(this["DarkMode"]));
+            }
+            set {
+                this["DarkMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#181A1B")]
+        public string DarkModeColor {
+            get {
+                return ((string)(this["DarkModeColor"]));
+            }
+            set {
+                this["DarkModeColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#424242")]
+        public string DarkModeColorAccent {
+            get {
+                return ((string)(this["DarkModeColorAccent"]));
+            }
+            set {
+                this["DarkModeColorAccent"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#CCD6DD")]
+        public string DarkModeColorText {
+            get {
+                return ((string)(this["DarkModeColorText"]));
+            }
+            set {
+                this["DarkModeColorText"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("70")]
+        public long ImageSaveQuality {
+            get {
+                return ((long)(this["ImageSaveQuality"]));
+            }
+            set {
+                this["ImageSaveQuality"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int NumberOfPanels {
+            get {
+                return ((int)(this["NumberOfPanels"]));
+            }
+            set {
+                this["NumberOfPanels"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool scriptonload {
+            get {
+                return ((bool)(this["scriptonload"]));
+            }
+            set {
+                this["scriptonload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string scriptloc {
+            get {
+                return ((string)(this["scriptloc"]));
+            }
+            set {
+                this["scriptloc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool scriptwait {
+            get {
+                return ((bool)(this["scriptwait"]));
+            }
+            set {
+                this["scriptwait"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool showinfo {
+            get {
+                return ((bool)(this["showinfo"]));
+            }
+            set {
+                this["showinfo"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool LoadSubfolders {
+            get {
+                return ((bool)(this["LoadSubfolders"]));
+            }
+            set {
+                this["LoadSubfolders"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HotkeyBoth {
+            get {
+                return ((bool)(this["HotkeyBoth"]));
+            }
+            set {
+                this["HotkeyBoth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string lastsavedfolderSave {
+            get {
+                return ((string)(this["lastsavedfolderSave"]));
+            }
+            set {
+                this["lastsavedfolderSave"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string lastsavedfolderStitch {
+            get {
+                return ((string)(this["lastsavedfolderStitch"]));
+            }
+            set {
+                this["lastsavedfolderStitch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultWindowsOpen {
+            get {
+                return ((string)(this["DefaultWindowsOpen"]));
+            }
+            set {
+                this["DefaultWindowsOpen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultEditor {
+            get {
+                return ((string)(this["DefaultEditor"]));
+            }
+            set {
+                this["DefaultEditor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool BlurCheckbox {
+            get {
+                return ((bool)(this["BlurCheckbox"]));
+            }
+            set {
+                this["BlurCheckbox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string BlurLevel {
+            get {
+                return ((string)(this["BlurLevel"]));
+            }
+            set {
+                this["BlurLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PixelateCheckbox {
+            get {
+                return ((bool)(this["PixelateCheckbox"]));
+            }
+            set {
+                this["PixelateCheckbox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PixelateLevel {
+            get {
+                return ((string)(this["PixelateLevel"]));
+            }
+            set {
+                this["PixelateLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool bringToFront {
+            get {
+                return ((bool)(this["bringToFront"]));
+            }
+            set {
+                this["bringToFront"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool loadNewFile {
+            get {
+                return ((bool)(this["loadNewFile"]));
+            }
+            set {
+                this["loadNewFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string openFolderOnCut {
+            get {
+                return ((string)(this["openFolderOnCut"]));
+            }
+            set {
+                this["openFolderOnCut"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FastMoveFolder1 {
+            get {
+                return ((string)(this["FastMoveFolder1"]));
+            }
+            set {
+                this["FastMoveFolder1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FastMoveFolder2 {
+            get {
+                return ((string)(this["FastMoveFolder2"]));
+            }
+            set {
+                this["FastMoveFolder2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FastMoveFolder3 {
+            get {
+                return ((string)(this["FastMoveFolder3"]));
+            }
+            set {
+                this["FastMoveFolder3"] = value;
             }
         }
     }

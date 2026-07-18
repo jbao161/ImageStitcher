@@ -6,7 +6,6 @@ namespace ImageStitcher
 {
     public static class GifExtension
     {//https://stackoverflow.com/questions/47343230/how-do-you-get-the-duration-of-a-gif-file-in-c
-
         public static TimeSpan? GetGifDuration(this Image image, int fps = 60)
         {
             var minimumFrameDelay = (1000.0 / fps);
