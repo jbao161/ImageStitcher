@@ -64,6 +64,9 @@ namespace ImageStitcher
             checkBox_bringToFront.Checked = Settings.Default.bringToFront;
             checkBox_loadNewFile.Checked = Settings.Default.loadNewFile;
             textBox_openFolderOnCut.Text = Settings.Default.openFolderOnCut;
+            textBox_fastMoveFolder1.Text= Settings.Default.FastMoveFolder1 ;
+            textBox_fastMoveFolder2.Text= Settings.Default.FastMoveFolder2 ;
+            textBox_fastMoveFolder3.Text = Settings.Default.FastMoveFolder3 ;
         }
 
         private void form_settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -82,6 +85,9 @@ namespace ImageStitcher
             Settings.Default.bringToFront = checkBox_bringToFront.Checked;
             Settings.Default.loadNewFile = checkBox_loadNewFile.Checked ;
             Settings.Default.openFolderOnCut = textBox_openFolderOnCut.Text;
+            Settings.Default.FastMoveFolder1 = textBox_fastMoveFolder1.Text;
+            Settings.Default.FastMoveFolder2 = textBox_fastMoveFolder2.Text;
+            Settings.Default.FastMoveFolder3 = textBox_fastMoveFolder3.Text;
         }
 
         private void checkBox_darkskin_CheckedChanged(object sender, EventArgs e)
@@ -109,7 +115,18 @@ namespace ImageStitcher
         {
             chooseFileOrFolder(textBox_openFolderOnCut, false);
         }
-
+        private void button_FastMoveFolder1(object sender, EventArgs e)
+        {
+            chooseFileOrFolder(textBox_fastMoveFolder1, false);
+        }
+        private void button_FastMoveFolder2(object sender, EventArgs e)
+        {
+            chooseFileOrFolder(textBox_fastMoveFolder2, false);
+        }
+        private void button_FastMoveFolder3(object sender, EventArgs e)
+        {
+            chooseFileOrFolder(textBox_fastMoveFolder3, false);
+        }
         private void button_defaultEditor_Click(object sender, EventArgs e)
         {
             chooseFileOrFolder(textBox_defaulteditor, true);

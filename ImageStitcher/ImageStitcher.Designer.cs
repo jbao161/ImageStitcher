@@ -39,8 +39,6 @@
             this.label_imageindex_rightpanel = new System.Windows.Forms.Label();
             this.pictureBox_rightpanel = new System.Windows.Forms.PictureBox();
             this.panel_controls = new System.Windows.Forms.Panel();
-            this.textBox_pixelateLevel = new System.Windows.Forms.TextBox();
-            this.checkBox_pixelate = new System.Windows.Forms.CheckBox();
             this.button_copy = new System.Windows.Forms.Button();
             this.button_crop = new System.Windows.Forms.Button();
             this.button_swapimages = new System.Windows.Forms.Button();
@@ -60,6 +58,8 @@
             this.button_settings = new System.Windows.Forms.Button();
             this.checkBox_blur = new System.Windows.Forms.CheckBox();
             this.textBox_blurLevel = new System.Windows.Forms.TextBox();
+            this.textBox_pixelateLevel = new System.Windows.Forms.TextBox();
+            this.checkBox_pixelate = new System.Windows.Forms.CheckBox();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.contextMenu_image = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +84,7 @@
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.previousLeftArrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nextRightArrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox_gotopic = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jumpBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -221,8 +222,6 @@
             // 
             // panel_controls
             // 
-            this.panel_controls.Controls.Add(this.textBox_pixelateLevel);
-            this.panel_controls.Controls.Add(this.checkBox_pixelate);
             this.panel_controls.Controls.Add(this.button_copy);
             this.panel_controls.Controls.Add(this.button_crop);
             this.panel_controls.Controls.Add(this.button_swapimages);
@@ -242,30 +241,14 @@
             this.panel_controls.Controls.Add(this.button_settings);
             this.panel_controls.Controls.Add(this.checkBox_blur);
             this.panel_controls.Controls.Add(this.textBox_blurLevel);
+            this.panel_controls.Controls.Add(this.textBox_pixelateLevel);
+            this.panel_controls.Controls.Add(this.checkBox_pixelate);
             this.panel_controls.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_controls.Location = new System.Drawing.Point(0, 457);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
             this.panel_controls.Name = "panel_controls";
             this.panel_controls.Size = new System.Drawing.Size(1150, 80);
             this.panel_controls.TabIndex = 7;
-            // 
-            // textBox_pixelateLevel
-            // 
-            this.textBox_pixelateLevel.Location = new System.Drawing.Point(500, 40);
-            this.textBox_pixelateLevel.Name = "textBox_pixelateLevel";
-            this.textBox_pixelateLevel.Size = new System.Drawing.Size(34, 20);
-            this.textBox_pixelateLevel.TabIndex = 25;
-            this.textBox_pixelateLevel.Text = "15";
-            // 
-            // checkBox_pixelate
-            // 
-            this.checkBox_pixelate.AutoSize = true;
-            this.checkBox_pixelate.Location = new System.Drawing.Point(454, 43);
-            this.checkBox_pixelate.Name = "checkBox_pixelate";
-            this.checkBox_pixelate.Size = new System.Drawing.Size(40, 17);
-            this.checkBox_pixelate.TabIndex = 24;
-            this.checkBox_pixelate.Text = "Pix";
-            this.checkBox_pixelate.UseVisualStyleBackColor = true;
             // 
             // button_copy
             // 
@@ -492,6 +475,24 @@
             this.textBox_blurLevel.TabIndex = 23;
             this.textBox_blurLevel.Text = "15";
             // 
+            // textBox_pixelateLevel
+            // 
+            this.textBox_pixelateLevel.Location = new System.Drawing.Point(500, 40);
+            this.textBox_pixelateLevel.Name = "textBox_pixelateLevel";
+            this.textBox_pixelateLevel.Size = new System.Drawing.Size(34, 20);
+            this.textBox_pixelateLevel.TabIndex = 25;
+            this.textBox_pixelateLevel.Text = "15";
+            // 
+            // checkBox_pixelate
+            // 
+            this.checkBox_pixelate.AutoSize = true;
+            this.checkBox_pixelate.Location = new System.Drawing.Point(454, 43);
+            this.checkBox_pixelate.Name = "checkBox_pixelate";
+            this.checkBox_pixelate.Size = new System.Drawing.Size(40, 17);
+            this.checkBox_pixelate.TabIndex = 24;
+            this.checkBox_pixelate.Text = "Pix";
+            this.checkBox_pixelate.UseVisualStyleBackColor = true;
+            // 
             // contextMenu_image
             // 
             this.contextMenu_image.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -517,11 +518,12 @@
             this.clearToolStripMenuItem,
             this.previousLeftArrowToolStripMenuItem,
             this.nextRightArrowToolStripMenuItem,
+            this.toolStripTextBox_gotopic,
             this.toolStripSeparator2,
             this.randomToolStripMenuItem,
             this.jumpBackToolStripMenuItem});
             this.contextMenu_image.Name = "contextMenuStrip1";
-            this.contextMenu_image.Size = new System.Drawing.Size(186, 458);
+            this.contextMenu_image.Size = new System.Drawing.Size(186, 483);
             this.contextMenu_image.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_image_Opening);
             // 
             // editToolStripMenuItem
@@ -668,6 +670,15 @@
             this.nextRightArrowToolStripMenuItem.Text = "Next (Right Arrow)";
             this.nextRightArrowToolStripMenuItem.Click += new System.EventHandler(this.NextRightArrowToolStripMenuItem_Click);
             // 
+            // toolStripTextBox_gotopic
+            // 
+            this.toolStripTextBox_gotopic.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox_gotopic.Name = "toolStripTextBox_gotopic";
+            this.toolStripTextBox_gotopic.Size = new System.Drawing.Size(100, 23);
+            this.toolStripTextBox_gotopic.Text = "Go to index...";
+            this.toolStripTextBox_gotopic.Click += new System.EventHandler(this.toolStripTextBox_gotopic_Click);
+            this.toolStripTextBox_gotopic.TextChanged += new System.EventHandler(this.toolStripTextBox_gotopic_TextChanged);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -735,6 +746,7 @@
             this.panel_controls.ResumeLayout(false);
             this.panel_controls.PerformLayout();
             this.contextMenu_image.ResumeLayout(false);
+            this.contextMenu_image.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher_ImageFolder)).EndInit();
             this.ResumeLayout(false);
 
@@ -804,6 +816,7 @@
         private System.Windows.Forms.TextBox textBox_pixelateLevel;
         private System.Windows.Forms.CheckBox checkBox_pixelate;
         private System.IO.FileSystemWatcher fileSystemWatcher_ImageFolder;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_gotopic;
     }
 }
 

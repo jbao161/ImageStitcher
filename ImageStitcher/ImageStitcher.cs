@@ -1,7 +1,6 @@
 ﻿using ImageStitcher.Properties;
 
 using Microsoft.VisualBasic.FileIO;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -11,15 +10,11 @@ using System.Drawing;
 
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Interop;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using Path = System.IO.Path;
 
@@ -160,7 +155,7 @@ namespace ImageStitcher
                 string imagepathR = "";
                 try
                 {
-                    if (imageIndexLeftPanel == 0 && imageCountLeftPanel == 0)
+                    if (imageCountLeftPanel == 0)
                     {
                         label_filename_leftpanel.Text = "";
                     }
@@ -173,7 +168,7 @@ namespace ImageStitcher
                         Utils.GetFileSizeString(imagepathL) + " " +
                         Utils.GetDimensionString(pictureBox_leftpanel.Image);
                     }
-                    if (imageIndexRightPanel == 0 && imageCountRightPanel == 0)
+                    if (imageCountRightPanel == 0)
                     {
                         label_filename_rightpanel.Text = "";
                     }
@@ -329,7 +324,7 @@ namespace ImageStitcher
         }
         private void DragDropHandler(int targetPanel, string startfile, string[] filepaths,  bool loadsubfolders)
         {
-            if (String.IsNullOrEmpty(filepaths[0])) return;
+            //if (String.IsNullOrEmpty(filepaths[0])) return;
             try
             {
                 string testpath = System.IO.Path.GetDirectoryName(filepaths[0]);
@@ -400,7 +395,7 @@ namespace ImageStitcher
                     }
                     Resize_imagepanels();
                     UpdateLabelImageIndex();
-
+                    setCurrentFoldersList(filepaths);
                 }
             }
             catch (Exception ex)
@@ -1016,6 +1011,9 @@ namespace ImageStitcher
 
         private void contextMenu_image_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // reset label
+            toolStripTextBox_gotopic.Text = "Go to index...";
+
             // disable 'fix webp image' when not applicable
             fixCorruptedImageToolStripMenuItem.Enabled = !(contextmenufocus == 0 && imageCountLeftPanel == 0) ||
                 (contextmenufocus == 1 && imageCountRightPanel == 0) ||
@@ -1062,7 +1060,7 @@ namespace ImageStitcher
 
         private void Removefromlist(int targetpanel)
         {
-            if (targetpanel == 0 && imageCountLeftPanel == 0 || targetpanel == 1 && imageCountRightPanel == 0) { return; }
+            if (targetpanel == 0 && imageCountLeftPanel == 0 || targetpanel == 1 && imageCountRightPanel == 0) { ClearPanel(activePanel); return; }
             if (targetpanel == 0)
             {
                 try
@@ -1073,7 +1071,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexLeftPanel;
                 imageIndexLeftPanel -= 1;
-                if (imageIndexLeftPanel < 0) imageIndexLeftPanel = 0;
+                if (imageIndexLeftPanel < 0) imageIndexLeftPanel = imageCountLeftPanel-1; // loop around to bottom of image list
                 LoadNextImage(targetpanel);
                 priorimageIndexLeftPanel = restorepriorimageindex;
             }
@@ -1087,7 +1085,7 @@ namespace ImageStitcher
                 catch (Exception) { throw; }
                 int restorepriorimageindex = priorimageIndexRightPanel;
                 imageIndexRightPanel -= 1;
-                if (imageIndexRightPanel < 0) imageIndexRightPanel = 0;
+                if (imageIndexRightPanel < 0) imageIndexRightPanel = imageCountRightPanel-1;
                 LoadNextImage(targetpanel);
                 priorimageIndexRightPanel = restorepriorimageindex;
             }
@@ -1365,16 +1363,31 @@ namespace ImageStitcher
             }
         }
 
-        //https://stackoverflow.com/questions/9646114/open-file-location
+        //https://stackoverflow.com/questions/9646114/open-file-location this fails if filename has symbols
+        //https://stackoverflow.com/questions/334630/opening-a-folder-in-explorer-and-selecting-a-file
         private void OpenFileLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+
+            string p = null;
+
             if (contextmenufocus == 0 && imageFilesLeftPanel != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
-                Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
+                p = imageFilesLeftPanel[imageIndexLeftPanel];
+                //Process.Start("explorer.exe", "/select, " + imageFilesLeftPanel[imageIndexLeftPanel]);
             }
             if (contextmenufocus == 1 && imageFilesRightPanel != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
             {
-                Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
+                p = imageFilesRightPanel[imageIndexRightPanel];
+                //Process.Start("explorer.exe", "/select, " + imageFilesRightPanel[imageIndexRightPanel]);
+            }
+            if (p != null) { 
+            string args = string.Format("/e, /select, \"{0}\"", Path.GetFullPath(p));
+
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.FileName = "explorer";
+            info.Arguments = args;
+            Process.Start(info);
             }
         }
 
@@ -1838,9 +1851,10 @@ namespace ImageStitcher
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // left and right arrow keys for changing image
+            if (keyData == Keys.A) { LoadPreviousImage(activePanel); return true; }
+            if (keyData == Keys.D) { LoadNextImage(activePanel); return true; }
             if (keyData == Keys.Left) { LoadPreviousImage(activePanel); return true; }
             if (keyData == Keys.Right) { LoadNextImage(activePanel); return true; }
-
             // alt + O hotkey for rotations
             if (keyData == (Keys.Alt | Keys.O)) { RotateImage(activePanel); return true; }
 
@@ -1851,7 +1865,9 @@ namespace ImageStitcher
             //if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(0); LoadRandomImage(1); return true; }
             if (keyData == (Keys.Shift | Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
 
-            // alt + R hotkey for randomize panel
+            // R hotkey for randomize panel
+            if (keyData == ( Keys.R)) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
+            // R hotkey for randomize panel
             if (keyData == (Keys.Alt | Keys.R)) { LoadRandomImage(activePanel); if (checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { LoadRandomImage(1 - activePanel); } return true; }
 
             // U hotkey for jump back
@@ -1859,6 +1875,7 @@ namespace ImageStitcher
 
             // shift + alt + U hotkey for alternate jump back
             if (keyData == (Keys.Shift | Keys.Alt | Keys.U)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
+            if (keyData == (Keys.S)) { JumpBack(activePanel); if (!checkBox_hotkeyboth.Checked & numberofimagepanels == 2) { JumpBack(1 - activePanel); } return true; }
 
             // Delete or alt + D hotkey for send to recycle
             if ((keyData == Keys.Delete) || (keyData == (Keys.Alt | Keys.D))) { SendToTrash(activePanel); return true; }
@@ -1876,7 +1893,23 @@ namespace ImageStitcher
             if (keyData == (Keys.Control | Keys.C)) { Copycut(activePanel, "bitmap", false); return true; }
 
             // Ctrl + Alt + X for cut and remove from list
-            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut); sendToBack(); } catch (Exception ex) { Debug.WriteLine(ex); }  
+            if (keyData == (Keys.Control | Keys.Alt | Keys.X)) { Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut)) try { 
+                        string windowTitle = Path.GetFileName(Settings.Default.openFolderOnCut) + " - File Explorer";
+                        
+                        IntPtr hWnd = FindWindow(null, windowTitle);
+  
+                        if (hWnd != IntPtr.Zero)
+                        {
+                            SetForegroundWindow(hWnd);
+
+                        }
+                        else
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut);
+                        }
+                        Thread.Sleep(500);
+                        sendToBack(); 
+              } catch (Exception ex) { throw ex; }  
                 return true; }
 
             // Alt + Spacebar to toggle if hotkeys affect both panels
@@ -1885,15 +1918,48 @@ namespace ImageStitcher
                 checkBox_hotkeyboth.Checked = !checkBox_hotkeyboth.Checked;
                 return true;
             }
-
+            //
+            if (keyData == Keys.Q) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder1, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
+            // 
+            if (keyData == Keys.W ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder2, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
+            // 
+            if (keyData == Keys.E ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder3, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
             // end of hotkeys. ignore the keystroke
             else { return base.ProcessCmdKey(ref msg, keyData); }
         }
 
-        /*  Section 5: Toggle top/bottom or side/side stitching
-        */
 
-        private void Button_verticalhorizontal_Click(object sender, EventArgs e)
+    static string GetUniquePath(string path)
+    {
+        if (!File.Exists(path)) return path;
+
+        var dir = Path.GetDirectoryName(path);
+        var file = Path.GetFileNameWithoutExtension(path);
+        var ext = Path.GetExtension(path);
+
+        for (int i = 1; ; i++)
+        {
+            var candidate = Path.Combine(dir, $"{file}{i}{ext}"); // e.g., name1.txt
+            if (!File.Exists(candidate)) return candidate;
+        }
+    }
+
+    // Move and auto-suffix if destination exists
+    static void MoveWithSuffix(string sourcePath, string destPath)
+    {
+
+        var uniqueDest = GetUniquePath(destPath);
+        File.Move(sourcePath, uniqueDest);
+    }
+     public string GetActiveFilePath()
+     {
+            return activePanel == 0 ? imageFilesLeftPanel[imageIndexLeftPanel] : imageFilesRightPanel[imageIndexRightPanel];
+      }
+
+    /*  Section 5: Toggle top/bottom or side/side stitching
+    */
+
+    private void Button_verticalhorizontal_Click(object sender, EventArgs e)
         {
             splitContainer_bothimages.Orientation = (splitContainer_bothimages.Orientation == Orientation.Vertical ? Orientation.Horizontal : Orientation.Vertical);
             button_verticalhorizontal.Text = (splitContainer_bothimages.Orientation == Orientation.Vertical ? "Stack images vertically" : "Put images side by side");
@@ -2119,8 +2185,10 @@ namespace ImageStitcher
                         {
 
                             string blurlevel = "15";
-                            var isNumeric = int.TryParse(textBox_blurLevel.Text, out int n);
-                            if (isNumeric) blurlevel = textBox_blurLevel.Text;
+                            int number;
+                            bool success = int.TryParse(textBox_blurLevel.Text, out number);
+                            if (success) blurlevel = textBox_blurLevel.Text;
+                            //Debug.WriteLine(blurlevel);
                             string ext = System.IO.Path.GetExtension(imagePath);
                             string outputvisibility = "/C ";
 
@@ -2146,6 +2214,51 @@ namespace ImageStitcher
                             proc.WaitForExit();
 
                             targetpicturebox.ImageLocation = tmpgifpath;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                        }
+                    } else if (checkBox_pixelate.Checked)
+                    {
+                        try
+                        {
+
+                            string pixlevel = "15";
+                            string resize = "1500";
+                            int number;
+                            bool success = int.TryParse(textBox_pixelateLevel.Text, out number);
+                            if (success)
+                            {
+                                pixlevel = textBox_pixelateLevel.Text;
+                                resize = (100*number).ToString();
+                            }
+                            //Debug.WriteLine(pixlevel);
+                            string ext = System.IO.Path.GetExtension(imagePath);
+                            string outputvisibility = "/C ";
+
+                            string tmpimagename = DateTime.Now.ToString("yyyy_MM_dd_HHmmssfff") + " tmppixel" + ext;
+                            var tmpimagepath = tmpAppDataPath + tmpimagename;
+
+                            string cropgifcommand = "";
+                            // cmd for imagemagick. good quality
+                            cropgifcommand = $"magick \"{imagePath}\"  -scale {pixlevel}% -scale {resize}% \"{tmpimagepath}\"";
+                            string arg = outputvisibility + cropgifcommand;
+                            Process proc = new Process
+                            {
+                                StartInfo = new ProcessStartInfo
+                                {
+                                    FileName = "cmd.exe",
+                                    Arguments = arg,
+                                    UseShellExecute = false,
+                                    CreateNoWindow = true
+                                }
+                            };
+
+                            proc.Start();
+                            proc.WaitForExit();
+
+                            targetpicturebox.ImageLocation = tmpimagepath;
                         }
                         catch (Exception ex)
                         {
@@ -2648,19 +2761,6 @@ namespace ImageStitcher
 
             Debug.WriteLine("watcher added");
             fileSystemWatcher_ImageFolder.EnableRaisingEvents = true;
-
-            if (activePanel == 0)
-            {
-                if (currentFoldersListLeft == null) { currentFoldersListLeft = new string[1]; return; }
-                Array.Resize<string>(ref currentFoldersListLeft, currentFoldersListLeft.Length +1);
-                currentFoldersListLeft[currentFoldersListLeft.Length] = folderPath;
-            }
-            if (activePanel == 1)
-            {
-                if (currentFoldersListLeft == null) { currentFoldersListRight = new string[1]; return; }
-                Array.Resize<string>(ref currentFoldersListRight, currentFoldersListRight.Length + 1);
-                currentFoldersListRight[currentFoldersListRight.Length] = folderPath;
-            }
         }
 
         private async void onFileAdded(object source, FileSystemEventArgs e)
@@ -2682,21 +2782,21 @@ namespace ImageStitcher
                     {
                         try
                         {
-                            string[] foldersList = getCurrentFoldersList(); ;
-                            if (foldersList == null) { 
-                                foldersList =  new string[1]; 
-
-                            }
-                            if (foldersList[0]== null)
-                            {
-                                foldersList[0] = (Path.GetDirectoryName(fileAddedPath));
-                            }
                             this.Invoke((MethodInvoker)delegate
                             {
-                                DragDropHandler(activePanel, fileAddedPath, foldersList);
+                                if (getCurrentFoldersList() != null)
+                                {
+                                    DragDropHandler(activePanel, fileAddedPath, getCurrentFoldersList());
+                                }
+                                else
+                                {
+                                    //Debug.Print("null folders list");
+                                    DragDropHandler(activePanel, new string[] { fileAddedPath });
+                                    //watchFolder(Path.GetDirectoryName(fileAddedPath));
+                                }
                             });
-
-                            //don't forget to either return from the function or break out of the while loop
+                            UpdateLabelImageIndex();
+                            //don't forget to either return from the function or break out fo the while loop
                             break;
                         }
                         catch (IOException ex)
@@ -2810,34 +2910,37 @@ namespace ImageStitcher
             if (!Settings.Default.loadNewFile) return;
             string deletedfilepath = e.FullPath;
             List<String> imageFilesActivePanel = getCurrentPanel();
-            if (imageFilesActivePanel == null) { ClearPanel(activePanel); return; } // imageFilesActivePanel was null when directory is empty. this fixed the error.
-            int imagecountActivePanel = imageFilesActivePanel.Count;
-            if (imagecountActivePanel == 0) { ClearPanel(activePanel); return; }
             int imageIndexActivePanel = getCurrentIndex();
-            if (imageIndexActivePanel < 0) { ClearPanel(activePanel); return; }
-            string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
             string[] currentFoldersList = getCurrentFoldersList();
-
-            int restorepriorimageindex = getPreviousIndex();
-            int restorecurrentimageindex = getCurrentIndex();
-
-
-
-   
-
-            if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel] && currentFoldersList != null)
+            if (currentFoldersList == null) { currentFoldersList = new string[] { Path.GetDirectoryName(deletedfilepath) } ; }
+            if (imageIndexActivePanel >= 0 )
             {
-                DragDropHandler(activePanel, imageFilesActivePanel[getPreviousIndex()], currentFoldersList);
-                if (restorepriorimageindex < restorecurrentimageindex) restorecurrentimageindex -= 1;
+
+                string currentImagePath = imageFilesActivePanel[imageIndexActivePanel];
+
+
+                int restorepriorimageindex = getPreviousIndex();
+                int restorecurrentimageindex = getCurrentIndex();
+
+
+                if (deletedfilepath == imageFilesActivePanel[imageIndexActivePanel] && currentFoldersList != null)
+                {
+                    DragDropHandler(activePanel, imageFilesActivePanel[getPreviousIndex()], currentFoldersList);
+                    if (restorepriorimageindex < restorecurrentimageindex) restorecurrentimageindex -= 1;
                     setPreviousIndex(restorecurrentimageindex);
-            }
-            else if (currentFoldersList != null) {
-                DragDropHandler(activePanel, currentImagePath, currentFoldersList);
-                if (restorepriorimageindex > restorecurrentimageindex) restorepriorimageindex -= 1;
-                setPreviousIndex(restorepriorimageindex);
-            } else
-            {
-                DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
+                }
+                else if (currentFoldersList != null)
+                {
+                    DragDropHandler(activePanel, currentImagePath, currentFoldersList);
+                    if (restorepriorimageindex > restorecurrentimageindex) restorepriorimageindex -= 1;
+                    setPreviousIndex(restorepriorimageindex);
+                }
+                else
+                {
+                    ClearPanel(activePanel);
+                    DragDropHandler(activePanel, new string[] { Path.GetDirectoryName(deletedfilepath) });
+                }
+                UpdateLabelImageIndex();
             }
 
         }
@@ -2851,10 +2954,14 @@ namespace ImageStitcher
         }
         private int getCurrentIndex()
         {
-            if (activePanel == 0)
-                return imageIndexLeftPanel;
+            if (activePanel == 0) { 
+                if (imageFilesLeftPanel == null) { return -1; }
+                return imageIndexLeftPanel; }
             if (activePanel == 1)
+            {
+                if (imageFilesRightPanel == null) { return -1; }
                 return imageIndexRightPanel;
+            }
             return -1;
         }
         private string[] getCurrentFoldersList()
@@ -2944,6 +3051,54 @@ namespace ImageStitcher
         private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
         {
 
+        }
+
+        private void toolStripTextBox_gotopic_Click(object sender, EventArgs e)
+        {
+            toolStripTextBox_gotopic.Text = "";
+        }
+
+
+
+        private void toolStripTextBox_gotopic_TextChanged(object sender, EventArgs e)
+        {
+          
+            string gotopic_text = toolStripTextBox_gotopic.Text;
+            if (String.IsNullOrEmpty(gotopic_text)) return;
+            int goto_index = -1;
+            int.TryParse(gotopic_text, out goto_index);
+            if (goto_index > 0)
+            {
+
+                if (activePanel == 0 && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
+                {
+                    if (goto_index < imageCountLeftPanel)
+                    {
+                        LoadImage(activePanel, imageFilesLeftPanel[goto_index - 1]);
+                        priorimageIndexLeftPanel = imageIndexLeftPanel;
+                        imageIndexLeftPanel = goto_index - 1;
+                        Resize_imagepanels();
+                        UpdateLabelImageIndex();
+                    }
+                }
+                if (activePanel == 1 && pictureBox_rightpanel.Image != null && imageFilesRightPanel != null && imageCountRightPanel != 0)
+                {
+                    if (goto_index < imageCountRightPanel)
+                    {
+                        LoadImage(activePanel, imageFilesRightPanel[goto_index - 1]);
+                        priorimageIndexRightPanel = imageIndexRightPanel;
+                        imageIndexRightPanel = goto_index - 1;
+                        Resize_imagepanels();
+                        UpdateLabelImageIndex();
+                    }
+                }
+
+            }
+        }
+
+        private void toolStripTextBox_gotopic_Leave(object sender, EventArgs e)
+        {
+            toolStripTextBox_gotopic.Text = "Go to index...";
         }
     } // end MainWindow : Form
 }
