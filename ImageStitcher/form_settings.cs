@@ -64,7 +64,8 @@ namespace ImageStitcher
             checkBox_bringToFront.Checked = Settings.Default.bringToFront;
             checkBox_loadNewFile.Checked = Settings.Default.loadNewFile;
             textBox_openFolderOnCut.Text = Settings.Default.openFolderOnCut;
-            textBox_fastMoveFolder1.Text= Settings.Default.FastMoveFolder1 ;
+            textBox_openFolderOnCut2.Text = Settings.Default.openFolderOnCut2;
+            textBox_fastMoveFolder1.Text= Settings.Default.FastMoveFolder1;
             textBox_fastMoveFolder2.Text= Settings.Default.FastMoveFolder2 ;
             textBox_fastMoveFolder3.Text = Settings.Default.FastMoveFolder3 ;
             textBox_fastMoveFolder4.Text = Settings.Default.FastMoveFolder4;
@@ -86,6 +87,7 @@ namespace ImageStitcher
             Settings.Default.bringToFront = checkBox_bringToFront.Checked;
             Settings.Default.loadNewFile = checkBox_loadNewFile.Checked ;
             Settings.Default.openFolderOnCut = textBox_openFolderOnCut.Text;
+            Settings.Default.openFolderOnCut2 = textBox_openFolderOnCut2.Text;
             Settings.Default.FastMoveFolder1 = textBox_fastMoveFolder1.Text;
             Settings.Default.FastMoveFolder2 = textBox_fastMoveFolder2.Text;
             Settings.Default.FastMoveFolder3 = textBox_fastMoveFolder3.Text;
@@ -175,6 +177,11 @@ namespace ImageStitcher
                 }
             }
 
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            chooseFileOrFolder(textBox_openFolderOnCut2, false);
         }
     }
 }

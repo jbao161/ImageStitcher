@@ -116,7 +116,7 @@
     <Setting Name="openFolderOnCut" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FastMoveFolder1" Type="System.String" Scope="User">
+    <Setting Name="openFolderOnCut2" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="FastMoveFolder2" Type="System.String" Scope="User">
@@ -126,6 +126,9 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="FastMoveFolder4" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FastMoveFolder1" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

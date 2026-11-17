@@ -1,0 +1,22 @@
+[
+  {
+    "key": "Q",
+    "destinationFolder": "E:/_FF/test",
+    "description": "Move image to E:\\_FF\\test folder"
+  },
+  {
+    "key": "W",
+    "destinationFolder": "",
+    "description": "Move image to folder 2 - Set destinationFolder to enable"
+  },
+  {
+    "key": "E",
+    "destinationFolder": "",
+    "description": "Move image to folder 3 - Set destinationFolder to enable"
+  },
+  {
+    "key": "Z",
+    "destinationFolder": "",
+    "description": "Move image to folder 4 - Set destinationFolder to enable"
+  }
+]

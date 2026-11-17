@@ -31,6 +31,8 @@ namespace ImageStitcher
         // Track if error message is showing on each panel
         private bool _leftPanelHasLoadError = false;
         private bool _rightPanelHasLoadError = false;
+        // Keyboard shortcut manager for dynamic binding
+        private KeyboardShortcutManager _keyboardShortcutManager;
         public List<ShortcutConfig> masterKeymap;
         public List<ShortcutConfig> GetKeyboardMappings()
         {
@@ -399,13 +401,17 @@ namespace ImageStitcher
                 Debug.WriteLine(ex.ToString());
             }
 
-            // Initialize timer for checking corrupted images every 2 seconds
-            _conversionCheckTimer = new System.Windows.Forms.Timer();
-            _conversionCheckTimer.Interval = 2000; // 2 seconds
-            _conversionCheckTimer.Tick += ConversionCheckTimer_Tick;
-            _conversionCheckTimer.Start();
+                // Initialize timer for checking corrupted images every 2 seconds
+                _conversionCheckTimer = new System.Windows.Forms.Timer();
+                _conversionCheckTimer.Interval = 2000; // 2 seconds
+                _conversionCheckTimer.Tick += ConversionCheckTimer_Tick;
+                _conversionCheckTimer.Start();
 
-        }
+                // Initialize keyboard shortcut manager
+                _keyboardShortcutManager = new KeyboardShortcutManager();
+                _keyboardShortcutManager.LoadBindings();
+
+            }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
         {
@@ -2078,23 +2084,57 @@ namespace ImageStitcher
                         sendToBack(); 
               } catch (Exception ex) { throw ex; }  
                 return true; }
+            // Ctrl + Shift + Alt + X for cut and remove from list
+            if (keyData == (Keys.Control | Keys.Shift | Keys.Alt | Keys.X))
+            {
+                Copycut(activePanel, "file", true); Removefromlist(activePanel); if (!String.IsNullOrEmpty(Settings.Default.openFolderOnCut2)) try
+                    {
+                        string windowTitle = Path.GetFileName(Settings.Default.openFolderOnCut2) + " - File Explorer";
 
+                        IntPtr hWnd = FindWindow(null, windowTitle);
+
+                        if (hWnd != IntPtr.Zero)
+                        {
+                            SetForegroundWindow(hWnd);
+
+                        }
+                        else
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", @Settings.Default.openFolderOnCut2);
+                        }
+                        Thread.Sleep(500);
+                        sendToBack();
+                    }
+                    catch (Exception ex) { throw ex; }
+                return true;
+            }
             // Alt + Spacebar to toggle if hotkeys affect both panels
             if (keyData == (Keys.Alt | Keys.Space))
             {
                 checkBox_hotkeyboth.Checked = !checkBox_hotkeyboth.Checked;
                 return true;
             }
-            //
-            if (keyData == Keys.Q) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder1, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
-            // 
-            if (keyData == Keys.W ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder2, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
-            // 
-            if (keyData == Keys.E ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder3, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
-            // 
-            if (keyData == Keys.Z) { MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder4, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
+
+            // Check for dynamic keyboard shortcuts (configured via KeyboardShortcuts.json)
+            if (_keyboardShortcutManager != null && _keyboardShortcutManager.TryGetDestinationFolder(keyData, out string destinationFolder))
+            {
+                if (!string.IsNullOrWhiteSpace(destinationFolder) && File.Exists(GetActiveFilePath()))
+                {
+                    try
+                    {
+                        MoveWithSuffix(GetActiveFilePath(), Path.Combine(destinationFolder, Path.GetFileName(GetActiveFilePath())));
+                        Removefromlist(activePanel);
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error moving file with keyboard shortcut: {ex}");
+                    }
+                }
+            }
+
             // end of hotkeys. ignore the keystroke
-            else { return base.ProcessCmdKey(ref msg, keyData); }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
 

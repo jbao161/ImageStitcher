@@ -118,6 +118,7 @@
     <Compile Include="ImageS.xaml.cs">
       <DependentUpon>ImageS.xaml</DependentUpon>
     </Compile>
+    <Compile Include="KeyboardShortcutBinding.cs" />
     <Compile Include="PictureBoxS.cs">
       <SubType>Component</SubType>
     </Compile>
