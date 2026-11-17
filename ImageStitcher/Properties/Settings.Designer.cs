@@ -514,5 +514,17 @@ namespace ImageStitcher.Properties {
                 this["FastMoveFolder3"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FastMoveFolder4 {
+            get {
+                return ((string)(this["FastMoveFolder4"]));
+            }
+            set {
+                this["FastMoveFolder4"] = value;
+            }
+        }
     }
 }

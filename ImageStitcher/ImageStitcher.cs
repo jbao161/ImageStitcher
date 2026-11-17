@@ -1,16 +1,16 @@
 ﻿using ImageStitcher.Properties;
-
 using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Data.Odbc;
 using System.Diagnostics;
 using System.Drawing;
-
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -20,8 +20,62 @@ using Path = System.IO.Path;
 
 namespace ImageStitcher
 {
+
+ 
     public partial class MainWindow : Form
     {
+        private static DateTime lastEventTime;
+        // Track files that have already been checked for conversion to avoid duplicate attempts
+        private HashSet<string> _filesCheckedForConversion = new HashSet<string>();
+        private System.Windows.Forms.Timer _conversionCheckTimer;
+        // Track if error message is showing on each panel
+        private bool _leftPanelHasLoadError = false;
+        private bool _rightPanelHasLoadError = false;
+        public List<ShortcutConfig> masterKeymap;
+        public List<ShortcutConfig> GetKeyboardMappings()
+        {
+            List<ShortcutConfig> masterKeymap = new List<ShortcutConfig>();
+
+            // Replace with the absolute path to your .db file
+            string dbPath = @"C:\your_folder\database.db";
+            string connString = $"Driver={{SQLite3 ODBC Driver}};Database={dbPath};";
+
+            using (OdbcConnection connection = new OdbcConnection(connString))
+            {
+                string query = "SELECT Id, Name, Price FROM Products";
+                OdbcCommand command = new OdbcCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    using (OdbcDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ShortcutConfig keymap = new ShortcutConfig();
+
+                            // Map database values to object properties safely
+                            keymap.ActionName = reader["ActionName"].ToString();
+                            keymap.ActionKey = reader["ActionKey"].ToString();
+                            keymap.ActionModifier = reader["ActionModifier"].ToString();
+                            keymap.DestinationFolder = reader["DestinationFolder"].ToString();
+
+                            masterKeymap.Add(keymap);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions here (e.g., driver missing or path wrong)
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
+            this.masterKeymap = masterKeymap;
+            return masterKeymap;
+        }
+        // Holds the runtime shortcuts cached from your database file
+        private List<ShortcutConfig> _registeredShortcuts = new List<ShortcutConfig>();
+
         // begin https://www.codeproject.com/tips/472294/position-a-windows-forms-messagebox-in-csharp
         [DllImport("user32.dll")]
         private static extern IntPtr FindWindow(IntPtr classname, string title); // extern method: FindWindow
@@ -89,17 +143,69 @@ namespace ImageStitcher
             }
         }
 
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            foreach (var config in _registeredShortcuts)
+            {
+                // Parse strings directly to standard WinForms System.Windows.Forms.Keys
+                if (Enum.TryParse<Keys>(config.ActionKey, true, out var targetKey) &&
+                    Enum.TryParse<Keys>(config.ActionModifier, true, out var targetModifier))
+                {
+                    // Isolate modifier flags out of the global pressed key data
+                    Keys pressedModifier = e.Modifiers;
+                    Keys pressedKey = e.KeyCode;
+
+                    // Handle the case where the database specifies "None" for a modifier
+                    if (config.ActionModifier.Equals("None", StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetModifier = Keys.None;
+                    }
+
+                    // Match exact key and modifier parameters
+                    if (pressedKey == targetKey && pressedModifier == targetModifier)
+                    {
+                        if (config.ActionName == "MoveFileAction")
+                        {
+                            MoveWithSuffix(GetActiveFilePath(), Path.Combine(config.DestinationFolder, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel);
+
+                            // Stop the key press from bubbling further into standard OS or control logic
+                            e.Handled = true;
+                            e.SuppressKeyPress = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        public class ShortcutConfig
+        {
+            public string ActionName { get; set; }
+            public string ActionKey { get; set; }        // E.g., "M"
+            public string ActionModifier { get; set; }   // E.g., "Control", "Alt", "None"
+            public string DestinationFolder { get; set; }
+        }
+        public void setupDBkeyshortcuts()
+        {
+            // CRITICAL: Allows the Form to intercept key events before child controls process them
+            this.KeyPreview = true;
+
+            // Subscribing to the form key event
+            this.KeyDown += MainForm_KeyDown;
+
+            // Load configurations into memory at startup
+            GetKeyboardMappings();
+        }
         public MainWindow()
         {
             InitializeComponent();
-
+            setupDBkeyshortcuts();
             UpdateLabelImageIndex();
         }
 
         public MainWindow(string filepath)
         {
             InitializeComponent();
-
+            setupDBkeyshortcuts();
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath });
             firstload = false;
@@ -108,7 +214,7 @@ namespace ImageStitcher
         public MainWindow(string filepath, bool loadsubfolders)
         {
             InitializeComponent();
-
+            setupDBkeyshortcuts();
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { filepath }, loadsubfolders);
             firstload = false;
@@ -117,7 +223,7 @@ namespace ImageStitcher
         public MainWindow(string leftfilepath, string rightfilepath)
         {
             InitializeComponent();
-
+            setupDBkeyshortcuts();
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { leftfilepath });
             DragDropHandler(1, new String[] { rightfilepath });
@@ -127,7 +233,7 @@ namespace ImageStitcher
         public MainWindow(string leftfilepath, string rightfilepath, bool loadsubfolders)
         {
             InitializeComponent();
-
+            setupDBkeyshortcuts();
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { leftfilepath }, loadsubfolders);
             DragDropHandler(1, new String[] { rightfilepath }, loadsubfolders);
@@ -137,7 +243,7 @@ namespace ImageStitcher
         public MainWindow(string leftfilepath, string rightfilepath, bool lsub, bool rsub)
         {
             InitializeComponent();
-
+            setupDBkeyshortcuts();
             UpdateLabelImageIndex();
             DragDropHandler(0, new String[] { leftfilepath }, lsub);
             DragDropHandler(1, new String[] { rightfilepath }, rsub);
@@ -293,6 +399,12 @@ namespace ImageStitcher
                 Debug.WriteLine(ex.ToString());
             }
 
+            // Initialize timer for checking corrupted images every 2 seconds
+            _conversionCheckTimer = new System.Windows.Forms.Timer();
+            _conversionCheckTimer.Interval = 2000; // 2 seconds
+            _conversionCheckTimer.Tick += ConversionCheckTimer_Tick;
+            _conversionCheckTimer.Start();
+
         }
 
         private void PictureBox_DragEnter(object sender, DragEventArgs e)
@@ -392,17 +504,19 @@ namespace ImageStitcher
                             imageIndexRightPanel = imageIndex;
                             priorimageIndexRightPanel = imageIndex;
                         }
+                                }
+                                        Resize_imagepanels();
+                                        UpdateLabelImageIndex();
+                                        setCurrentFoldersList(filepaths);
+                                        // Clear the checked files set when loading new images
+                                        _filesCheckedForConversion.Clear();
+                                    }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("failed in dragdrophandler: " + ex);
+                        }
                     }
-                    Resize_imagepanels();
-                    UpdateLabelImageIndex();
-                    setCurrentFoldersList(filepaths);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("failed in dragdrophandler: " + ex);
-            }
-        }
         private void DragDropHandler(int targetPanel, string[] filepaths, bool loadsubfolders)
         {
             DragDropHandler(targetPanel, "", filepaths,  Settings.Default.LoadSubfolders);
@@ -1613,6 +1727,7 @@ namespace ImageStitcher
 
             proc.Start();
             proc.WaitForExit();//May need to wait for the process to exit too
+            Debug.Print(arg);
 
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
             {
@@ -1623,10 +1738,62 @@ namespace ImageStitcher
                 imageFilesRightPanel[imageIndexRightPanel] = finalImage;
             }
 
-            LoadImage(contextmenufocus, finalImage);
-        }
+                LoadImage(contextmenufocus, finalImage);
 
-        private void SaveImage(Image targetimage, string filename, string directorypath, Boolean savedialog)
+            }
+
+            private void ConversionCheckTimer_Tick(object sender, EventArgs e)
+            {
+                // Check if left panel has a load error and a corrupted JPG that hasn't been checked yet
+                if (_leftPanelHasLoadError && imageFilesLeftPanel != null && imageCountLeftPanel > 0 && imageIndexLeftPanel < imageFilesLeftPanel.Count)
+                {
+                    string leftPanelFile = imageFilesLeftPanel[imageIndexLeftPanel];
+                    if (ShouldAttemptConversion(leftPanelFile))
+                    {
+                        contextmenufocus = 0;
+                        SetUpConversionAndRetry(leftPanelFile);
+                    }
+                }
+
+                // Check if right panel has a load error and a corrupted JPG that hasn't been checked yet
+                if (_rightPanelHasLoadError && imageFilesRightPanel != null && imageCountRightPanel > 0 && imageIndexRightPanel < imageFilesRightPanel.Count)
+                {
+                    string rightPanelFile = imageFilesRightPanel[imageIndexRightPanel];
+                    if (ShouldAttemptConversion(rightPanelFile))
+                    {
+                        contextmenufocus = 1;
+                        SetUpConversionAndRetry(rightPanelFile);
+                    }
+                }
+            }
+
+            private bool ShouldAttemptConversion(string filePath)
+            {
+                // Check if file is a JPG/JPEG and hasn't been checked yet
+                if (string.IsNullOrEmpty(filePath) || _filesCheckedForConversion.Contains(filePath))
+                    return false;
+
+                string ext = Path.GetExtension(filePath).ToLower();
+                return ext == ".jpg" || ext == ".jpeg";
+            }
+
+            private void SetUpConversionAndRetry(string filePath)
+            {
+                // Mark file as checked
+                _filesCheckedForConversion.Add(filePath);
+
+                try
+                {
+                    // Attempt the conversion
+                    webptojpgToolStripMenuItem_ClickAsync(contextMenu_image, EventArgs.Empty);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Conversion attempt failed for {filePath}: {ex}");
+                }
+            }
+
+            private void SaveImage(Image targetimage, string filename, string directorypath, Boolean savedialog)
         {
             bool savedYes = false;
             string newfilepath = System.IO.Path.Combine(directorypath, filename);
@@ -1924,6 +2091,8 @@ namespace ImageStitcher
             if (keyData == Keys.W ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder2, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
             // 
             if (keyData == Keys.E ) {  MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder3, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
+            // 
+            if (keyData == Keys.Z) { MoveWithSuffix(GetActiveFilePath(), Path.Combine(Settings.Default.FastMoveFolder4, Path.GetFileName(GetActiveFilePath()))); Removefromlist(activePanel); return true; }
             // end of hotkeys. ignore the keystroke
             else { return base.ProcessCmdKey(ref msg, keyData); }
         }
@@ -2231,7 +2400,7 @@ namespace ImageStitcher
                             if (success)
                             {
                                 pixlevel = textBox_pixelateLevel.Text;
-                                resize = (100*number).ToString();
+                                resize = (100 * number).ToString();
                             }
                             //Debug.WriteLine(pixlevel);
                             string ext = System.IO.Path.GetExtension(imagePath);
@@ -2270,26 +2439,31 @@ namespace ImageStitcher
                         targetpicturebox.Image = new Bitmap(bmpTemp);
                     }
 
-                    targetpicturebox.Dock = System.Windows.Forms.DockStyle.Fill;
-                    String imageFolder = Path.GetDirectoryName(imagePath);
+                            targetpicturebox.Dock = System.Windows.Forms.DockStyle.Fill;
+                            String imageFolder = Path.GetDirectoryName(imagePath);
 
-                    return true;
-                }
-            }
-            catch (Exception er)
-            {
-                string loaderrormsg = "Failed to load image: " + imagePath;
-                if (targetPanel == 0) { WriteTextOnImage(pictureBox_leftpanel, loaderrormsg); }
-                if (targetPanel == 1) { WriteTextOnImage(pictureBox_rightpanel, loaderrormsg); }
-                try
-                {
-                    //   DragDropHandler(targetPanel, new String[] { GetCurrentImage(targetPanel) }); ;
-                    return true;
-                }
-                catch (Exception ex) { Debug.WriteLine(ex.ToString()); return false; }
-                Debug.WriteLine(er.ToString());
-                return false; // supposed to return false, but i want to load image path anyways so i can delete corrupted images --- too lazy to fix behavior in the usage right now
-            }
+                            // Clear error flag on successful load
+                            if (targetPanel == 0) _leftPanelHasLoadError = false;
+                            if (targetPanel == 1) _rightPanelHasLoadError = false;
+
+                            return true;
+                        }
+                    }
+                        catch (Exception er)
+                        {
+                            string loaderrormsg = "Failed to load image: " + imagePath;
+                            if (targetPanel == 0) 
+                            { 
+                                WriteTextOnImage(pictureBox_leftpanel, loaderrormsg);
+                                _leftPanelHasLoadError = true;
+                            }
+                            if (targetPanel == 1) 
+                            { 
+                                WriteTextOnImage(pictureBox_rightpanel, loaderrormsg);
+                                _rightPanelHasLoadError = true;
+                            }
+                            return true;
+                        }
         }
 
         /* app closing save settings */
@@ -2536,7 +2710,8 @@ namespace ImageStitcher
         }
 
         private void webpToGifToolStripMenuItem_Click(object sender, EventArgs e)
-        { 
+        {
+
             string arg = "";
             string ofilepath = "";
             if ((contextmenufocus == 0) && pictureBox_leftpanel.Image != null && imageFilesLeftPanel != null && imageCountLeftPanel != 0)
@@ -2754,7 +2929,7 @@ namespace ImageStitcher
             fileSystemWatcher_ImageFolder.SynchronizingObject = this;
 
             fileSystemWatcher_ImageFolder.Filter = "*.*";
-            fileSystemWatcher_ImageFolder.Created += new FileSystemEventHandler(onFileAdded);
+            fileSystemWatcher_ImageFolder.Created += new FileSystemEventHandler(OnFileAdded);
             if (Settings.Default.LoadSubfolders) { Debug.WriteLine("subdirectories added"); fileSystemWatcher_ImageFolder.IncludeSubdirectories = true; }
 
             fileSystemWatcher_ImageFolder.Deleted += new FileSystemEventHandler(OnDeleted);
@@ -2763,9 +2938,19 @@ namespace ImageStitcher
             fileSystemWatcher_ImageFolder.EnableRaisingEvents = true;
         }
 
-        private async void onFileAdded(object source, FileSystemEventArgs e)
+        private void OnFileAdded(object source, FileSystemEventArgs e)
         {
-            string fileAddedPath= e.FullPath;
+            DateTime currentTime = DateTime.Now;
+
+            // Check if the event occurred within the last 100 milliseconds
+            if ((DateTime.Now - lastEventTime).TotalMilliseconds < 100) // 100 ms debounce
+            {
+                return; // Ignore this event
+            }
+
+            // Update the last event time
+            lastEventTime = currentTime;
+            string fileAddedPath = e.FullPath;
             if (Settings.Default.loadNewFile == false) return;
             try
             {
@@ -2811,7 +2996,7 @@ namespace ImageStitcher
                         //   using some sort of timer or DateTime.Now as a better alternative
                         timeout -= 100;
                     }
-                    Debug.WriteLine("image file detected.");
+                    Debug.WriteLine(fileAddedPath + " image added to directory");
                     //LoadImage(activePanel, fileAddedPath);
                 }
 
@@ -2820,7 +3005,7 @@ namespace ImageStitcher
             catch (Exception ex)
             {
                 //check here why it failed and ask user to retry if the file is in use.
-               System.Diagnostics.Debug.WriteLine($"File error created: {e.FullPath}");
+                System.Diagnostics.Debug.WriteLine($"File error created: {e.FullPath}");
                 Debug.WriteLine(ex.ToString());
             }
         }
@@ -2907,6 +3092,17 @@ namespace ImageStitcher
 
         private void OnDeleted(object source, FileSystemEventArgs e)
         {
+            DateTime currentTime = DateTime.Now;
+
+            // Check if the event occurred within the last 5 seconds
+            if ((DateTime.Now - lastEventTime).TotalMilliseconds < 500) // 500 ms debounce
+            {
+                return; // Ignore this event
+            }
+
+            // Update the last event time
+            lastEventTime = currentTime;
+            Debug.Print("a file was deleted: " + e.FullPath);
             if (!Settings.Default.loadNewFile) return;
             string deletedfilepath = e.FullPath;
             List<String> imageFilesActivePanel = getCurrentPanel();

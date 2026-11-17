@@ -60,10 +60,13 @@ namespace ImageStitcher
             this.FastMoveFolderLabel1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.textBox_fastMoveFolder2 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.FastMoveFolderLabel2 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.textBox_fastMoveFolder3 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.FastMoveFolderLabel3 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
+            this.textBox_fastMoveFolder4 = new System.Windows.Forms.TextBox();
+            this.FastMoveFolderLabel4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // checkBox_reversefileorder
@@ -339,14 +342,14 @@ namespace ImageStitcher
             this.textBox_fastMoveFolder2.Size = new System.Drawing.Size(224, 20);
             this.textBox_fastMoveFolder2.TabIndex = 43;
             // 
-            // label1
+            // FastMoveFolderLabel2
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 330);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(98, 13);
-            this.label1.TabIndex = 42;
-            this.label1.Text = "Fast Move Folder 2";
+            this.FastMoveFolderLabel2.AutoSize = true;
+            this.FastMoveFolderLabel2.Location = new System.Drawing.Point(12, 330);
+            this.FastMoveFolderLabel2.Name = "FastMoveFolderLabel2";
+            this.FastMoveFolderLabel2.Size = new System.Drawing.Size(98, 13);
+            this.FastMoveFolderLabel2.TabIndex = 42;
+            this.FastMoveFolderLabel2.Text = "Fast Move Folder 2";
             // 
             // button3
             // 
@@ -368,26 +371,58 @@ namespace ImageStitcher
             this.textBox_fastMoveFolder3.Size = new System.Drawing.Size(224, 20);
             this.textBox_fastMoveFolder3.TabIndex = 46;
             // 
-            // label2
+            // FastMoveFolderLabel3
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 367);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(98, 13);
-            this.label2.TabIndex = 45;
-            this.label2.Text = "Fast Move Folder 3";
+            this.FastMoveFolderLabel3.AutoSize = true;
+            this.FastMoveFolderLabel3.Location = new System.Drawing.Point(12, 367);
+            this.FastMoveFolderLabel3.Name = "FastMoveFolderLabel3";
+            this.FastMoveFolderLabel3.Size = new System.Drawing.Size(98, 13);
+            this.FastMoveFolderLabel3.TabIndex = 45;
+            this.FastMoveFolderLabel3.Text = "Fast Move Folder 3";
+            // 
+            // button4
+            // 
+            this.button4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button4.BackgroundImage")));
+            this.button4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button4.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.Location = new System.Drawing.Point(243, 413);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(35, 31);
+            this.button4.TabIndex = 50;
+            this.button4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button_FastMoveFolder4);
+            // 
+            // textBox_fastMoveFolder4
+            // 
+            this.textBox_fastMoveFolder4.Location = new System.Drawing.Point(12, 420);
+            this.textBox_fastMoveFolder4.Name = "textBox_fastMoveFolder4";
+            this.textBox_fastMoveFolder4.Size = new System.Drawing.Size(224, 20);
+            this.textBox_fastMoveFolder4.TabIndex = 49;
+            // 
+            // FastMoveFolderLabel4
+            // 
+            this.FastMoveFolderLabel4.AutoSize = true;
+            this.FastMoveFolderLabel4.Location = new System.Drawing.Point(13, 404);
+            this.FastMoveFolderLabel4.Name = "FastMoveFolderLabel4";
+            this.FastMoveFolderLabel4.Size = new System.Drawing.Size(98, 13);
+            this.FastMoveFolderLabel4.TabIndex = 48;
+            this.FastMoveFolderLabel4.Text = "Fast Move Folder 4";
             // 
             // form_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(306, 444);
+            this.ClientSize = new System.Drawing.Size(306, 470);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.textBox_fastMoveFolder4);
+            this.Controls.Add(this.FastMoveFolderLabel4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox_fastMoveFolder3);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.FastMoveFolderLabel3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.textBox_fastMoveFolder2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.FastMoveFolderLabel2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox_fastMoveFolder1);
             this.Controls.Add(this.FastMoveFolderLabel1);
@@ -451,9 +486,12 @@ namespace ImageStitcher
         private System.Windows.Forms.Label FastMoveFolderLabel1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox_fastMoveFolder2;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label FastMoveFolderLabel2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBox_fastMoveFolder3;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label FastMoveFolderLabel3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TextBox textBox_fastMoveFolder4;
+        private System.Windows.Forms.Label FastMoveFolderLabel4;
     }
 }

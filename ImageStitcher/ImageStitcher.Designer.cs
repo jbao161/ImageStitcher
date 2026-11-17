@@ -716,7 +716,7 @@
             this.fileSystemWatcher_ImageFolder.IncludeSubdirectories = true;
             this.fileSystemWatcher_ImageFolder.SynchronizingObject = this;
             this.fileSystemWatcher_ImageFolder.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
-            this.fileSystemWatcher_ImageFolder.Created += new System.IO.FileSystemEventHandler(this.onFileAdded);
+            this.fileSystemWatcher_ImageFolder.Created += new System.IO.FileSystemEventHandler(this.OnFileAdded);
             this.fileSystemWatcher_ImageFolder.Deleted += new System.IO.FileSystemEventHandler(this.OnDeleted);
             // 
             // MainWindow
