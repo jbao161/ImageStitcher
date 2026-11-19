@@ -362,6 +362,7 @@ namespace ImageStitcher
                 this.textBox_blurLevel.Text = Settings.Default.BlurLevel;
                 this.checkBox_pixelate.Checked = Settings.Default.PixelateCheckbox;
                 this.textBox_pixelateLevel.Text = Settings.Default.PixelateLevel;
+                this.checkBox_fastMove.Checked = Settings.Default.fastMove;
 
                 // create tmp folder
                 tmpAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageStitcher\\tmp\\";
@@ -1780,7 +1781,7 @@ namespace ImageStitcher
                     return false;
 
                 string ext = Path.GetExtension(filePath).ToLower();
-                return ext == ".jpg" || ext == ".jpeg";
+                return ext == ".jpg" || ext == ".jpeg" || ext == ".png";
             }
 
             private void SetUpConversionAndRetry(string filePath)
@@ -2122,8 +2123,11 @@ namespace ImageStitcher
                 {
                     try
                     {
-                        MoveWithSuffix(GetActiveFilePath(), Path.Combine(destinationFolder, Path.GetFileName(GetActiveFilePath())));
-                        Removefromlist(activePanel);
+                        if (checkBox_fastMove.Checked)
+                        {
+                            MoveWithSuffix(GetActiveFilePath(), Path.Combine(destinationFolder, Path.GetFileName(GetActiveFilePath())));
+                            Removefromlist(activePanel);
+                        }
                         return true;
                     }
                     catch (Exception ex)
@@ -2544,6 +2548,7 @@ namespace ImageStitcher
                 Settings.Default.BlurLevel = this.textBox_blurLevel.Text;
                 Settings.Default.PixelateCheckbox = this.checkBox_pixelate.Checked;
                 Settings.Default.PixelateLevel = this.textBox_pixelateLevel.Text;
+                Settings.Default.fastMove = this.checkBox_fastMove.Checked;
 
                 if (imageFilesLeftPanel != null && imageCountLeftPanel != 0) { Settings.Default.LastFile = imageFilesLeftPanel[imageIndexLeftPanel]; }
                 else
@@ -3335,6 +3340,11 @@ namespace ImageStitcher
         private void toolStripTextBox_gotopic_Leave(object sender, EventArgs e)
         {
             toolStripTextBox_gotopic.Text = "Go to index...";
+        }
+
+        private void checkBox_fastMove_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.fastMove = checkBox_fastMove.Checked;
         }
     } // end MainWindow : Form
 }

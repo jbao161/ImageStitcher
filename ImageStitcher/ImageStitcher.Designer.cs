@@ -92,6 +92,7 @@
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.fileSystemWatcher_ImageFolder = new System.IO.FileSystemWatcher();
+            this.checkBox_fastMove = new System.Windows.Forms.CheckBox();
             this.panel_bothimages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_bothimages)).BeginInit();
             this.splitContainer_bothimages.Panel1.SuspendLayout();
@@ -112,7 +113,7 @@
             this.panel_bothimages.Controls.Add(this.splitContainer_bothimages);
             this.panel_bothimages.Location = new System.Drawing.Point(0, 0);
             this.panel_bothimages.Name = "panel_bothimages";
-            this.panel_bothimages.Size = new System.Drawing.Size(1150, 451);
+            this.panel_bothimages.Size = new System.Drawing.Size(1251, 451);
             this.panel_bothimages.TabIndex = 0;
             // 
             // splitContainer_bothimages
@@ -138,8 +139,8 @@
             this.splitContainer_bothimages.Panel2.Controls.Add(this.pictureBox_rightpanel);
             this.splitContainer_bothimages.Panel2.DragDrop += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragDrop);
             this.splitContainer_bothimages.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.PictureBox_DragEnter);
-            this.splitContainer_bothimages.Size = new System.Drawing.Size(1150, 451);
-            this.splitContainer_bothimages.SplitterDistance = 558;
+            this.splitContainer_bothimages.Size = new System.Drawing.Size(1251, 451);
+            this.splitContainer_bothimages.SplitterDistance = 607;
             this.splitContainer_bothimages.SplitterWidth = 1;
             this.splitContainer_bothimages.TabIndex = 0;
             this.splitContainer_bothimages.TabStop = false;
@@ -160,7 +161,7 @@
             // 
             this.label_filename_leftpanel.AutoSize = true;
             this.label_filename_leftpanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label_filename_leftpanel.Location = new System.Drawing.Point(438, 0);
+            this.label_filename_leftpanel.Location = new System.Drawing.Point(487, 0);
             this.label_filename_leftpanel.Name = "label_filename_leftpanel";
             this.label_filename_leftpanel.Size = new System.Drawing.Size(120, 13);
             this.label_filename_leftpanel.TabIndex = 2;
@@ -172,7 +173,7 @@
             this.pictureBox_leftpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_leftpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_leftpanel.Name = "pictureBox_leftpanel";
-            this.pictureBox_leftpanel.Size = new System.Drawing.Size(558, 451);
+            this.pictureBox_leftpanel.Size = new System.Drawing.Size(607, 451);
             this.pictureBox_leftpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_leftpanel.TabIndex = 0;
             this.pictureBox_leftpanel.TabStop = false;
@@ -187,7 +188,7 @@
             // 
             this.label_filename_rightpanel.AutoSize = true;
             this.label_filename_rightpanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label_filename_rightpanel.Location = new System.Drawing.Point(465, 0);
+            this.label_filename_rightpanel.Location = new System.Drawing.Point(517, 0);
             this.label_filename_rightpanel.Name = "label_filename_rightpanel";
             this.label_filename_rightpanel.Size = new System.Drawing.Size(126, 13);
             this.label_filename_rightpanel.TabIndex = 2;
@@ -209,7 +210,7 @@
             this.pictureBox_rightpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox_rightpanel.Location = new System.Drawing.Point(0, 0);
             this.pictureBox_rightpanel.Name = "pictureBox_rightpanel";
-            this.pictureBox_rightpanel.Size = new System.Drawing.Size(591, 451);
+            this.pictureBox_rightpanel.Size = new System.Drawing.Size(643, 451);
             this.pictureBox_rightpanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_rightpanel.TabIndex = 0;
             this.pictureBox_rightpanel.TabStop = false;
@@ -222,6 +223,7 @@
             // 
             // panel_controls
             // 
+            this.panel_controls.Controls.Add(this.checkBox_fastMove);
             this.panel_controls.Controls.Add(this.button_copy);
             this.panel_controls.Controls.Add(this.button_crop);
             this.panel_controls.Controls.Add(this.button_swapimages);
@@ -247,13 +249,13 @@
             this.panel_controls.Location = new System.Drawing.Point(0, 457);
             this.panel_controls.MaximumSize = new System.Drawing.Size(10000, 300);
             this.panel_controls.Name = "panel_controls";
-            this.panel_controls.Size = new System.Drawing.Size(1150, 80);
+            this.panel_controls.Size = new System.Drawing.Size(1251, 80);
             this.panel_controls.TabIndex = 7;
             // 
             // button_copy
             // 
             this.button_copy.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_copy.Location = new System.Drawing.Point(540, 0);
+            this.button_copy.Location = new System.Drawing.Point(641, 0);
             this.button_copy.Name = "button_copy";
             this.button_copy.Size = new System.Drawing.Size(50, 80);
             this.button_copy.TabIndex = 21;
@@ -266,7 +268,7 @@
             this.button_crop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_crop.BackgroundImage")));
             this.button_crop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.button_crop.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_crop.Location = new System.Drawing.Point(590, 0);
+            this.button_crop.Location = new System.Drawing.Point(691, 0);
             this.button_crop.Name = "button_crop";
             this.button_crop.Size = new System.Drawing.Size(70, 80);
             this.button_crop.TabIndex = 2;
@@ -280,7 +282,7 @@
             this.button_swapimages.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_swapimages.BackgroundImage")));
             this.button_swapimages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_swapimages.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_swapimages.Location = new System.Drawing.Point(660, 0);
+            this.button_swapimages.Location = new System.Drawing.Point(761, 0);
             this.button_swapimages.Name = "button_swapimages";
             this.button_swapimages.Size = new System.Drawing.Size(70, 80);
             this.button_swapimages.TabIndex = 5;
@@ -296,7 +298,7 @@
             this.button_verticalhorizontal.Dock = System.Windows.Forms.DockStyle.Right;
             this.button_verticalhorizontal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_verticalhorizontal.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button_verticalhorizontal.Location = new System.Drawing.Point(730, 0);
+            this.button_verticalhorizontal.Location = new System.Drawing.Point(831, 0);
             this.button_verticalhorizontal.Name = "button_verticalhorizontal";
             this.button_verticalhorizontal.Size = new System.Drawing.Size(70, 80);
             this.button_verticalhorizontal.TabIndex = 8;
@@ -310,7 +312,7 @@
             this.button_preview.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_preview.BackgroundImage")));
             this.button_preview.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_preview.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_preview.Location = new System.Drawing.Point(800, 0);
+            this.button_preview.Location = new System.Drawing.Point(901, 0);
             this.button_preview.Name = "button_preview";
             this.button_preview.Size = new System.Drawing.Size(60, 80);
             this.button_preview.TabIndex = 1;
@@ -323,7 +325,7 @@
             this.button_slideshow.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_slideshow.BackgroundImage")));
             this.button_slideshow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_slideshow.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_slideshow.Location = new System.Drawing.Point(860, 0);
+            this.button_slideshow.Location = new System.Drawing.Point(961, 0);
             this.button_slideshow.Name = "button_slideshow";
             this.button_slideshow.Size = new System.Drawing.Size(70, 80);
             this.button_slideshow.TabIndex = 13;
@@ -340,7 +342,7 @@
             this.button_trash.Dock = System.Windows.Forms.DockStyle.Right;
             this.button_trash.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_trash.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button_trash.Location = new System.Drawing.Point(930, 0);
+            this.button_trash.Location = new System.Drawing.Point(1031, 0);
             this.button_trash.Name = "button_trash";
             this.button_trash.Size = new System.Drawing.Size(70, 80);
             this.button_trash.TabIndex = 11;
@@ -390,7 +392,7 @@
             // 
             this.checkBox_screengrab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_screengrab.AutoSize = true;
-            this.checkBox_screengrab.Location = new System.Drawing.Point(1066, 3);
+            this.checkBox_screengrab.Location = new System.Drawing.Point(1167, 3);
             this.checkBox_screengrab.Name = "checkBox_screengrab";
             this.checkBox_screengrab.Size = new System.Drawing.Size(81, 17);
             this.checkBox_screengrab.TabIndex = 12;
@@ -411,7 +413,7 @@
             // 
             this.checkBox_openaftersave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_openaftersave.AutoSize = true;
-            this.checkBox_openaftersave.Location = new System.Drawing.Point(1011, 60);
+            this.checkBox_openaftersave.Location = new System.Drawing.Point(1112, 60);
             this.checkBox_openaftersave.Name = "checkBox_openaftersave";
             this.checkBox_openaftersave.Size = new System.Drawing.Size(136, 17);
             this.checkBox_openaftersave.TabIndex = 7;
@@ -427,7 +429,7 @@
             this.button_save.Dock = System.Windows.Forms.DockStyle.Right;
             this.button_save.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_save.ForeColor = System.Drawing.Color.Green;
-            this.button_save.Location = new System.Drawing.Point(1000, 0);
+            this.button_save.Location = new System.Drawing.Point(1101, 0);
             this.button_save.MinimumSize = new System.Drawing.Size(150, 0);
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(150, 80);
@@ -719,11 +721,22 @@
             this.fileSystemWatcher_ImageFolder.Created += new System.IO.FileSystemEventHandler(this.OnFileAdded);
             this.fileSystemWatcher_ImageFolder.Deleted += new System.IO.FileSystemEventHandler(this.OnDeleted);
             // 
+            // checkBox_fastMove
+            // 
+            this.checkBox_fastMove.AutoSize = true;
+            this.checkBox_fastMove.Location = new System.Drawing.Point(550, 17);
+            this.checkBox_fastMove.Name = "checkBox_fastMove";
+            this.checkBox_fastMove.Size = new System.Drawing.Size(76, 17);
+            this.checkBox_fastMove.TabIndex = 26;
+            this.checkBox_fastMove.Text = "Fast Move";
+            this.checkBox_fastMove.UseVisualStyleBackColor = true;
+            this.checkBox_fastMove.CheckedChanged += new System.EventHandler(this.checkBox_fastMove_CheckedChanged);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1150, 537);
+            this.ClientSize = new System.Drawing.Size(1251, 537);
             this.Controls.Add(this.panel_controls);
             this.Controls.Add(this.panel_bothimages);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -817,6 +830,7 @@
         private System.Windows.Forms.CheckBox checkBox_pixelate;
         private System.IO.FileSystemWatcher fileSystemWatcher_ImageFolder;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_gotopic;
+        private System.Windows.Forms.CheckBox checkBox_fastMove;
     }
 }
 

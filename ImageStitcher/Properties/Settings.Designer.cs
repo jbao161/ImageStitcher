@@ -493,49 +493,13 @@ namespace ImageStitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FastMoveFolder2 {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool fastMove {
             get {
-                return ((string)(this["FastMoveFolder2"]));
+                return ((bool)(this["fastMove"]));
             }
             set {
-                this["FastMoveFolder2"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FastMoveFolder3 {
-            get {
-                return ((string)(this["FastMoveFolder3"]));
-            }
-            set {
-                this["FastMoveFolder3"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FastMoveFolder4 {
-            get {
-                return ((string)(this["FastMoveFolder4"]));
-            }
-            set {
-                this["FastMoveFolder4"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FastMoveFolder1 {
-            get {
-                return ((string)(this["FastMoveFolder1"]));
-            }
-            set {
-                this["FastMoveFolder1"] = value;
+                this["fastMove"] = value;
             }
         }
     }

@@ -55,18 +55,6 @@ namespace ImageStitcher
             this.button_openOnCut = new System.Windows.Forms.Button();
             this.button_openInWindows = new System.Windows.Forms.Button();
             this.button_defaultEditor = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox_fastMoveFolder1 = new System.Windows.Forms.TextBox();
-            this.FastMoveFolderLabel1 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox_fastMoveFolder2 = new System.Windows.Forms.TextBox();
-            this.FastMoveFolderLabel2 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.textBox_fastMoveFolder3 = new System.Windows.Forms.TextBox();
-            this.FastMoveFolderLabel3 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.textBox_fastMoveFolder4 = new System.Windows.Forms.TextBox();
-            this.FastMoveFolderLabel4 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
             this.textBox_openFolderOnCut2 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -296,122 +284,6 @@ namespace ImageStitcher
             this.button_defaultEditor.UseVisualStyleBackColor = true;
             this.button_defaultEditor.Click += new System.EventHandler(this.button_defaultEditor_Click);
             // 
-            // button1
-            // 
-            this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
-            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button1.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(241, 357);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(35, 31);
-            this.button1.TabIndex = 41;
-            this.button1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button_FastMoveFolder1);
-            // 
-            // textBox_fastMoveFolder1
-            // 
-            this.textBox_fastMoveFolder1.Location = new System.Drawing.Point(10, 364);
-            this.textBox_fastMoveFolder1.Name = "textBox_fastMoveFolder1";
-            this.textBox_fastMoveFolder1.Size = new System.Drawing.Size(224, 20);
-            this.textBox_fastMoveFolder1.TabIndex = 40;
-            // 
-            // FastMoveFolderLabel1
-            // 
-            this.FastMoveFolderLabel1.AutoSize = true;
-            this.FastMoveFolderLabel1.Location = new System.Drawing.Point(11, 348);
-            this.FastMoveFolderLabel1.Name = "FastMoveFolderLabel1";
-            this.FastMoveFolderLabel1.Size = new System.Drawing.Size(98, 13);
-            this.FastMoveFolderLabel1.TabIndex = 39;
-            this.FastMoveFolderLabel1.Text = "Fast Move Folder 1";
-            // 
-            // button2
-            // 
-            this.button2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button2.BackgroundImage")));
-            this.button2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button2.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(241, 394);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(35, 31);
-            this.button2.TabIndex = 44;
-            this.button2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button_FastMoveFolder2);
-            // 
-            // textBox_fastMoveFolder2
-            // 
-            this.textBox_fastMoveFolder2.Location = new System.Drawing.Point(10, 401);
-            this.textBox_fastMoveFolder2.Name = "textBox_fastMoveFolder2";
-            this.textBox_fastMoveFolder2.Size = new System.Drawing.Size(224, 20);
-            this.textBox_fastMoveFolder2.TabIndex = 43;
-            // 
-            // FastMoveFolderLabel2
-            // 
-            this.FastMoveFolderLabel2.AutoSize = true;
-            this.FastMoveFolderLabel2.Location = new System.Drawing.Point(11, 385);
-            this.FastMoveFolderLabel2.Name = "FastMoveFolderLabel2";
-            this.FastMoveFolderLabel2.Size = new System.Drawing.Size(98, 13);
-            this.FastMoveFolderLabel2.TabIndex = 42;
-            this.FastMoveFolderLabel2.Text = "Fast Move Folder 2";
-            // 
-            // button3
-            // 
-            this.button3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button3.BackgroundImage")));
-            this.button3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button3.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(241, 431);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(35, 31);
-            this.button3.TabIndex = 47;
-            this.button3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button_FastMoveFolder3);
-            // 
-            // textBox_fastMoveFolder3
-            // 
-            this.textBox_fastMoveFolder3.Location = new System.Drawing.Point(10, 438);
-            this.textBox_fastMoveFolder3.Name = "textBox_fastMoveFolder3";
-            this.textBox_fastMoveFolder3.Size = new System.Drawing.Size(224, 20);
-            this.textBox_fastMoveFolder3.TabIndex = 46;
-            // 
-            // FastMoveFolderLabel3
-            // 
-            this.FastMoveFolderLabel3.AutoSize = true;
-            this.FastMoveFolderLabel3.Location = new System.Drawing.Point(11, 422);
-            this.FastMoveFolderLabel3.Name = "FastMoveFolderLabel3";
-            this.FastMoveFolderLabel3.Size = new System.Drawing.Size(98, 13);
-            this.FastMoveFolderLabel3.TabIndex = 45;
-            this.FastMoveFolderLabel3.Text = "Fast Move Folder 3";
-            // 
-            // button4
-            // 
-            this.button4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button4.BackgroundImage")));
-            this.button4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button4.Font = new System.Drawing.Font("Carlito", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(242, 468);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(35, 31);
-            this.button4.TabIndex = 50;
-            this.button4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button_FastMoveFolder4);
-            // 
-            // textBox_fastMoveFolder4
-            // 
-            this.textBox_fastMoveFolder4.Location = new System.Drawing.Point(11, 475);
-            this.textBox_fastMoveFolder4.Name = "textBox_fastMoveFolder4";
-            this.textBox_fastMoveFolder4.Size = new System.Drawing.Size(224, 20);
-            this.textBox_fastMoveFolder4.TabIndex = 49;
-            // 
-            // FastMoveFolderLabel4
-            // 
-            this.FastMoveFolderLabel4.AutoSize = true;
-            this.FastMoveFolderLabel4.Location = new System.Drawing.Point(12, 459);
-            this.FastMoveFolderLabel4.Name = "FastMoveFolderLabel4";
-            this.FastMoveFolderLabel4.Size = new System.Drawing.Size(98, 13);
-            this.FastMoveFolderLabel4.TabIndex = 48;
-            this.FastMoveFolderLabel4.Text = "Fast Move Folder 4";
-            // 
             // button5
             // 
             this.button5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button5.BackgroundImage")));
@@ -445,22 +317,10 @@ namespace ImageStitcher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(306, 511);
+            this.ClientSize = new System.Drawing.Size(306, 351);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.textBox_openFolderOnCut2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.textBox_fastMoveFolder4);
-            this.Controls.Add(this.FastMoveFolderLabel4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.textBox_fastMoveFolder3);
-            this.Controls.Add(this.FastMoveFolderLabel3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.textBox_fastMoveFolder2);
-            this.Controls.Add(this.FastMoveFolderLabel2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox_fastMoveFolder1);
-            this.Controls.Add(this.FastMoveFolderLabel1);
             this.Controls.Add(this.button_defaultEditor);
             this.Controls.Add(this.button_openInWindows);
             this.Controls.Add(this.button_openOnCut);
@@ -516,18 +376,6 @@ namespace ImageStitcher
         private System.Windows.Forms.Button button_openOnCut;
         private System.Windows.Forms.Button button_openInWindows;
         private System.Windows.Forms.Button button_defaultEditor;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox_fastMoveFolder1;
-        private System.Windows.Forms.Label FastMoveFolderLabel1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox_fastMoveFolder2;
-        private System.Windows.Forms.Label FastMoveFolderLabel2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox_fastMoveFolder3;
-        private System.Windows.Forms.Label FastMoveFolderLabel3;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.TextBox textBox_fastMoveFolder4;
-        private System.Windows.Forms.Label FastMoveFolderLabel4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.TextBox textBox_openFolderOnCut2;
         private System.Windows.Forms.Label label1;
